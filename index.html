@@ -160,52 +160,30 @@
     </div>
 
     <!-- JavaScript文件加载 -->
-    <script src="js/main.js"></script>
     <script src="js/word-adventure-data.js"></script>
     <script src="js/word-adventure-engine.js"></script>
     <script src="js/word-adventure-ui.js"></script>
+    <script src="js/main.js"></script>
     <script>
         // ===== 单词冒险岛主入口 =====
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
             try {
+                console.log('单词冒险岛启动中...');
+                
                 // 显示加载界面
                 showGlobalLoading();
                 
-                // 等待所有依赖加载完成
-                if (typeof WordAdventure === 'undefined') {
-                    throw new Error('游戏引擎未加载');
-                }
+                // 简化的初始化流程
+                initializeSimpleGame();
                 
-                // 初始化游戏
-                await WordAdventure.init();
-                
-                // 初始化UI
-                if (typeof WordAdventureUI !== 'undefined') {
-                    WordAdventureUI.init();
-                }
-                
-                // 设置游戏事件监听
-                setupGameEventListeners();
-                
-                // 更新玩家状态栏
-                updatePlayerStatusBar();
-                
-                // 检查每日登录奖励
-                checkDailyLogin();
-                
-                // 检查复习提醒
-                checkReviewReminder();
+                // 设置基本事件监听
+                setupBasicEventListeners();
                 
                 // 隐藏加载界面
                 setTimeout(() => {
                     hideGlobalLoading();
-                    
-                    // 显示连续学习提示
-                    const streak = WordAdventure.gameState.player.progress.streak;
-                    if (streak > 0) {
-                        showStreakNotification(streak);
-                    }
-                }, 1500);
+                    showWelcomeMessage();
+                }, 1000);
                 
                 console.log('单词冒险岛启动完成');
                 
@@ -492,6 +470,93 @@
                 // 显示任务徽章
                 document.getElementById('daily-quest-badge').style.display = 'inline-block';
             }
+        }
+        
+        // ===== 简化的游戏初始化 =====
+        function initializeSimpleGame() {
+            // 加载保存的游戏状态
+            loadSimpleGameState();
+            
+            // 更新玩家状态栏
+            updatePlayerStatusBar();
+        }
+        
+        function loadSimpleGameState() {
+            const savedState = localStorage.getItem('word-adventure-simple-state');
+            
+            if (savedState) {
+                try {
+                    const state = JSON.parse(savedState);
+                    // 简单的状态恢复
+                    if (state.player) {
+                        updatePlayerStats(state.player);
+                    }
+                } catch (error) {
+                    console.log('使用默认游戏状态');
+                }
+            }
+        }
+        
+        function updatePlayerStats(playerData = null) {
+            if (playerData) {
+                document.getElementById('player-level').textContent = playerData.level || 1;
+                document.getElementById('coins-amount').textContent = playerData.coins || 100;
+                
+                const exp = playerData.exp || 0;
+                const level = playerData.level || 1;
+                const expNeeded = level * 100;
+                const expPercentage = (exp / expNeeded) * 100;
+                
+                const expFill = document.getElementById('exp-fill');
+                const expText = document.getElementById('exp-text');
+                
+                if (expFill) {
+                    expFill.style.width = `${expPercentage}%`;
+                }
+                
+                if (expText) {
+                    expText.textContent = `${exp}/${expNeeded}`;
+                }
+            }
+        }
+        
+        function setupBasicEventListeners() {
+            // 导航链接
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    const pageFrame = document.getElementById('page-frame');
+                    if (pageFrame && href) {
+                        pageFrame.src = href;
+                        
+                        // 更新导航状态
+                        document.querySelectorAll('.nav-item').forEach(nav => {
+                            nav.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    }
+                });
+            });
+            
+            // 设置按钮
+            const settingsBtn = document.getElementById('settings-btn');
+            if (settingsBtn) {
+                settingsBtn.addEventListener('click', function() {
+                    alert('设置功能开发中...');
+                });
+            }
+        }
+        
+        function showWelcomeMessage() {
+            const messages = [
+                '欢迎来到单词冒险岛！🏝️',
+                '开始你的英语学习之旅！📚',
+                '每个单词都有魔法故事！✨'
+            ];
+            
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            showFloatingText(message, 'welcome');
         }
         
         // ===== 工具函数 =====
