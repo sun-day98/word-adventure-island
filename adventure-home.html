@@ -228,34 +228,34 @@
             
             console.log('找到islands-container，开始生成内容...');
             
-            // 简化的岛屿数据
+            // 使用新的岛屿数据
             const islands = [
                 {
                     id: 'creature_island',
-                    name: '奇妙生物岛',
-                    description: '学习基础动物、颜色、水果单词',
-                    grade: [1, 2],
-                    difficulty: 'beginner',
+                    name: IslandWords.creature_island.name,
+                    description: IslandWords.creature_island.description,
+                    grade: IslandWords.creature_island.grade,
+                    difficulty: IslandWords.creature_island.difficulty,
                     unlocked: true,
                     progress: 30,
                     icon: '🏝️'
                 },
                 {
                     id: 'volcano_island', 
-                    name: '能量火山岛',
-                    description: '掌握动作和情感表达类单词',
-                    grade: [3, 4],
-                    difficulty: 'intermediate',
+                    name: IslandWords.volcano_island.name,
+                    description: IslandWords.volcano_island.description,
+                    grade: IslandWords.volcano_island.grade,
+                    difficulty: IslandWords.volcano_island.difficulty,
                     unlocked: true,
                     progress: 15,
                     icon: '🌋'
                 },
                 {
                     id: 'pyramid_island',
-                    name: '智慧金字塔',
-                    description: '学习抽象概念和复杂词汇',
-                    grade: [5, 6],
-                    difficulty: 'advanced',
+                    name: IslandWords.pyramid_island.name,
+                    description: IslandWords.pyramid_island.description,
+                    grade: IslandWords.pyramid_island.grade,
+                    difficulty: IslandWords.pyramid_island.difficulty,
                     unlocked: false,
                     progress: 0,
                     icon: '🔒'

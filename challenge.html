@@ -815,21 +815,20 @@
         }
         
         function loadSampleWord() {
-            // 简化的单词数据
-            const sampleWord = {
-                word: 'elephant',
-                phonetic: '/ˈelɪfənt/',
-                chinese: '大象',
-                mnemonic: '俺发狮子？不，是大象！',
-                association: '大象用长长的鼻子喷水，好像在玩魔法水枪'
-            };
+            // 从数据库加载随机单词
+            const allWords = [
+                ...IslandWords.creature_island.words,
+                ...IslandWords.volcano_island.words
+            ];
+            
+            const randomWord = allWords[Math.floor(Math.random() * allWords.length)];
             
             // 更新单词显示
-            document.getElementById('preview-word').textContent = sampleWord.word;
-            document.getElementById('preview-phonetic').textContent = sampleWord.phonetic;
-            document.getElementById('preview-chinese').textContent = sampleWord.chinese;
-            document.getElementById('preview-mnemonic').textContent = `记忆口诀：${sampleWord.mnemonic}`;
-            document.getElementById('preview-association').textContent = `联想场景：${sampleWord.association}`;
+            document.getElementById('preview-word').textContent = randomWord.word;
+            document.getElementById('preview-phonetic').textContent = randomWord.phonetic;
+            document.getElementById('preview-chinese').textContent = randomWord.chinese;
+            document.getElementById('preview-mnemonic').textContent = `记忆口诀：${randomWord.mnemonic}`;
+            document.getElementById('preview-association').textContent = `联想场景：${randomWord.association}`;
         }
 
         // ===== 挑战功能函数 =====
