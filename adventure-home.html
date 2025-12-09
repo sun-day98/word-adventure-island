@@ -556,34 +556,35 @@
         }
 
         function startDailyChallenge() {
-            if (window.parent && window.parent.NavigationManager) {
-                window.parent.NavigationManager.navigateToPage('daily-challenge.html');
-            }
+            console.log('开始每日挑战');
+            showFloatingText('每日挑战功能开发中...', 'info');
+            
+            // 跳转到挑战页面
+            window.location.href = 'challenges.html';
         }
 
         function startReview() {
-            const reviewingWords = WordAdventure.gameState.learning.reviewingWords;
-            const now = Date.now();
-            const dueWords = reviewingWords.filter(review => review.reviewDate <= now);
+            console.log('开始单词复习');
+            showFloatingText('单词复习功能开发中...', 'info');
             
-            if (dueWords.length === 0) {
-                showFloatingText('暂无需要复习的单词', 'info');
-                return;
-            }
-            
-            if (window.parent && window.parent.NavigationManager) {
-                window.parent.NavigationManager.navigateToPage(`review.html?words=${dueWords.map(w => w.wordId).join(',')}`);
-            }
+            // 跳转到单词书页面
+            window.location.href = 'word-book.html';
         }
 
         function startStoryMode() {
+            console.log('开始剧情模式');
+            showFloatingText('剧情模式功能开发中...', 'info');
+            
+            // 显示剧情章节
             showStoryChapter('chapter1');
         }
 
         function startChallenge() {
-            if (window.parent && window.parent.NavigationManager) {
-                window.parent.NavigationManager.navigateToPage('challenges.html');
-            }
+            console.log('开始自由挑战');
+            showFloatingText('自由挑战功能开发中...', 'info');
+            
+            // 跳转到挑战页面
+            window.location.href = 'challenges.html';
         }
 
         // ===== 游戏指南 =====
@@ -653,8 +654,57 @@
 
         // ===== 工具函数 =====
         function showFloatingText(text, type) {
-            if (window.parent && window.parent.showFloatingText) {
-                window.parent.showFloatingText(text, type);
+            const floatingText = document.createElement('div');
+            floatingText.className = `floating-text floating-${type}`;
+            floatingText.textContent = text;
+            
+            floatingText.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 20px;
+                z-index: 1000;
+                font-size: 16px;
+                animation: fadeInOut 2s ease-in-out;
+            `;
+            
+            document.body.appendChild(floatingText);
+            
+            setTimeout(() => {
+                if (floatingText.parentNode) {
+                    floatingText.parentNode.removeChild(floatingText);
+                }
+            }, 2000);
+        }
+        
+        function showStoryChapter(chapterId) {
+            const chapterSection = document.getElementById('current-chapter');
+            const mapSection = document.getElementById('island-map');
+            const quickStartSection = document.querySelector('.quick-start');
+            const goalsSection = document.querySelector('.daily-goals');
+            
+            if (chapterSection && mapSection) {
+                // 显示剧情章节，隐藏其他内容
+                chapterSection.style.display = 'block';
+                mapSection.style.display = 'none';
+                
+                if (quickStartSection) quickStartSection.style.display = 'none';
+                if (goalsSection) goalsSection.style.display = 'none';
+                
+                // 设置章节标题
+                const chapterTitle = document.getElementById('chapter-title');
+                if (chapterTitle) {
+                    const chapters = {
+                        'chapter1': '奇妙的相遇',
+                        'chapter2': '火山试炼',
+                        'chapter3': '智慧守护'
+                    };
+                    chapterTitle.textContent = chapters[chapterId] || '冒险开始';
+                }
             }
         }
 
@@ -662,10 +712,62 @@
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
                 renderIslandMap();
-                renderDailyGoals();
+                renderDailyGoalsSimple();
             }
         });
     </script>
+    
+    <style>
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        
+        .scene-illustration {
+            text-align: center;
+            font-size: 40px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .character-quest {
+            display: inline-block;
+            margin: 0 15px;
+            animation: bounce 2s infinite;
+        }
+        
+        .character-guide {
+            display: inline-block;
+            margin: 0 15px;
+            animation: bounce 2s infinite 0.5s;
+        }
+        
+        .scene-background {
+            display: inline-block;
+            margin: 0 15px;
+            font-size: 60px;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+        
+        .dialogue-bubble {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .dialogue-bubble p {
+            margin: 10px 0;
+        }
+    </style>
 
     <style>
         /* 冒险主页专属样式 */
