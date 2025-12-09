@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 编辑资料</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <button class="back-btn" onclick="parent.navigateToPage('profile.html')">← 返回</button>
+            <h1>编辑资料</h1>
+            <button class="save-btn" onclick="saveProfile()">保存</button>
+        </header>
+
+        <!-- 头像编辑 -->
+        <section class="avatar-section">
+            <div class="avatar-container">
+                <img src="assets/images/ui/avatar-default.png" alt="用户头像" class="edit-avatar">
+                <button class="change-avatar-btn" onclick="changeAvatar()">
+                    <span>📷</span>
+                    <span>更换头像</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 基本信息 -->
+        <section class="basic-info-section">
+            <h2>基本信息</h2>
+            <form id="profile-form" class="edit-form">
+                <div class="form-group">
+                    <label for="nickname">昵称</label>
+                    <input type="text" id="nickname" name="nickname" value="Alex Chen" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">性别</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="gender" value="male" checked>
+                            <span class="radio-custom"></span>
+                            <span>男</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="gender" value="female">
+                            <span class="radio-custom"></span>
+                            <span>女</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday">生日</label>
+                    <input type="date" id="birthday" name="birthday" value="1995-06-15" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="height">身高 (cm)</label>
+                    <input type="number" id="height" name="height" value="175" min="100" max="250" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="weight">体重 (kg)</label>
+                    <input type="number" id="weight" name="weight" value="68" min="30" max="200" step="0.1" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="goal-weight">目标体重 (kg)</label>
+                    <input type="number" id="goal-weight" name="goalWeight" value="65" min="30" max="200" step="0.1" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="activity-level">活动水平</label>
+                    <select id="activity-level" name="activityLevel" class="form-select">
+                        <option value="sedentary">久坐少动</option>
+                        <option value="light" selected>轻度活动</option>
+                        <option value="moderate">中度活动</option>
+                        <option value="active">高度活动</option>
+                        <option value="very-active">极度活动</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">个人简介</label>
+                    <textarea id="bio" name="bio" placeholder="介绍一下自己，分享你的健身理念..." class="form-textarea">健身爱好者 | 坚持就是胜利 💪</textarea>
+                </div>
+            </form>
+        </section>
+
+        <!-- 健身目标 -->
+        <section class="fitness-goals-section">
+            <h2>健身目标</h2>
+            <div class="goals-grid">
+                <div class="goal-item">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="goals" value="weight-loss" checked>
+                        <span class="checkbox-custom"></span>
+                        <span>减脂瘦身</span>
+                    </label>
+                </div>
+                <div class="goal-item">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="goals" value="muscle-gain" checked>
+                        <span class="checkbox-custom"></span>
+                        <span>增肌塑形</span>
+                    </label>
+                </div>
+                <div class="goal-item">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="goals" value="endurance">
+                        <span class="checkbox-custom"></span>
+                        <span>提升耐力</span>
+                    </label>
+                </div>
+                <div class="goal-item">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="goals" value="flexibility" checked>
+                        <span class="checkbox-custom"></span>
+                        <span>增强柔韧</span>
+                    </label>
+                </div>
+                <div class="goal-item">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="goals" value="health">
+                        <span class="checkbox-custom"></span>
+                        <span>保持健康</span>
+                    </label>
+                </div>
+                <div class="goal-item">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="goals" value="stress-relief">
+                        <span class="checkbox-custom"></span>
+                        <span>缓解压力</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- 饮食偏好 -->
+        <section class="diet-preferences-section">
+            <h2>饮食偏好</h2>
+            <div class="diet-options">
+                <div class="diet-item">
+                    <label class="radio-label">
+                        <input type="radio" name="diet-type" value="omnivore" checked>
+                        <span class="radio-custom"></span>
+                        <span>均衡饮食</span>
+                    </label>
+                </div>
+                <div class="diet-item">
+                    <label class="radio-label">
+                        <input type="radio" name="diet-type" value="vegetarian">
+                        <span class="radio-custom"></span>
+                        <span>素食主义</span>
+                    </label>
+                </div>
+                <div class="diet-item">
+                    <label class="radio-label">
+                        <input type="radio" name="diet-type" value="vegan">
+                        <span class="radio-custom"></span>
+                        <span>纯素食</span>
+                    </label>
+                </div>
+                <div class="diet-item">
+                    <label class="radio-label">
+                        <input type="radio" name="diet-type" value="keto">
+                        <span class="radio-custom"></span>
+                        <span>生酮饮食</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="allergies-section">
+                <h3>过敏源（可多选）</h3>
+                <div class="allergies-grid">
+                    <div class="allergy-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allergies" value="nuts">
+                            <span class="checkbox-custom"></span>
+                            <span>坚果</span>
+                        </label>
+                    </div>
+                    <div class="allergy-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allergies" value="seafood">
+                            <span class="checkbox-custom"></span>
+                            <span>海鲜</span>
+                        </label>
+                    </div>
+                    <div class="allergy-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allergies" value="dairy">
+                            <span class="checkbox-custom"></span>
+                            <span>乳制品</span>
+                        </label>
+                    </div>
+                    <div class="allergy-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allergies" value="eggs">
+                            <span class="checkbox-custom"></span>
+                            <span>鸡蛋</span>
+                        </label>
+                    </div>
+                    <div class="allergy-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allergies" value="gluten">
+                            <span class="checkbox-custom"></span>
+                            <span>麸质</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 通知设置 -->
+        <section class="notification-settings-section">
+            <h2>通知偏好</h2>
+            <div class="notification-options">
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>训练提醒</h4>
+                        <p>每日定时提醒您进行训练</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>饮食记录</h4>
+                        <p>提醒您记录每日饮食</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>饮水提醒</h4>
+                        <p>定时提醒补充水分</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>成就通知</h4>
+                        <p>获得新成就时通知</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- 隐私设置 -->
+        <section class="privacy-settings-section">
+            <h2>隐私设置</h2>
+            <div class="privacy-options">
+                <div class="privacy-item">
+                    <div class="privacy-info">
+                        <h4>公开个人资料</h4>
+                        <p>其他用户可以查看您的基本信息</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="privacy-item">
+                    <div class="privacy-info">
+                        <h4>公开运动数据</h4>
+                        <p>好友可以查看您的运动记录</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="privacy-item">
+                    <div class="privacy-info">
+                        <h4>接收好友请求</h4>
+                        <p>允许其他用户发送好友请求</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 头像选择弹窗 -->
+    <div class="modal-overlay" id="avatar-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>更换头像</h3>
+                <button class="close-btn" onclick="closeAvatarModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="avatar-options">
+                    <button class="avatar-option" onclick="takePhoto()">
+                        <span class="avatar-option-icon">📷</span>
+                        <span>拍照</span>
+                    </button>
+                    <button class="avatar-option" onclick="selectFromGallery()">
+                        <span class="avatar-option-icon">🖼️</span>
+                        <span>从相册选择</span>
+                    </button>
+                    <button class="avatar-option" onclick="useDefaultAvatar()">
+                        <span class="avatar-option-icon">👤</span>
+                        <span>使用默认头像</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function saveProfile() {
+            // 收集表单数据
+            const formData = {
+                nickname: document.getElementById('nickname').value,
+                gender: document.querySelector('input[name="gender"]:checked').value,
+                birthday: document.getElementById('birthday').value,
+                height: document.getElementById('height').value,
+                weight: document.getElementById('weight').value,
+                goalWeight: document.getElementById('goal-weight').value,
+                activityLevel: document.getElementById('activity-level').value,
+                bio: document.getElementById('bio').value,
+                goals: Array.from(document.querySelectorAll('input[name="goals"]:checked')).map(cb => cb.value),
+                dietType: document.querySelector('input[name="diet-type"]:checked').value,
+                allergies: Array.from(document.querySelectorAll('input[name="allergies"]:checked')).map(cb => cb.value)
+            };
+
+            // 验证必填字段
+            if (!formData.nickname.trim()) {
+                alert('请填写昵称');
+                return;
+            }
+
+            if (!formData.height || formData.height < 100 || formData.height > 250) {
+                alert('请输入有效的身高');
+                return;
+            }
+
+            if (!formData.weight || formData.weight < 30 || formData.weight > 200) {
+                alert('请输入有效的体重');
+                return;
+            }
+
+            // 模拟保存数据
+            console.log('保存用户资料:', formData);
+            
+            // 显示保存成功提示
+            const saveBtn = document.querySelector('.save-btn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = '保存中...';
+            saveBtn.disabled = true;
+
+            setTimeout(() => {
+                saveBtn.textContent = '已保存';
+                setTimeout(() => {
+                    saveBtn.textContent = originalText;
+                    saveBtn.disabled = false;
+                    parent.navigateToPage('profile.html');
+                }, 1000);
+            }, 1000);
+        }
+
+        function changeAvatar() {
+            document.getElementById('avatar-modal').style.display = 'block';
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('avatar-modal').style.display = 'none';
+        }
+
+        function takePhoto() {
+            alert('拍照功能：请使用相机拍摄头像');
+            closeAvatarModal();
+        }
+
+        function selectFromGallery() {
+            alert('相册选择：请从相册中选择头像');
+            closeAvatarModal();
+        }
+
+        function useDefaultAvatar() {
+            document.querySelector('.edit-avatar').src = 'assets/images/ui/avatar-default.png';
+            closeAvatarModal();
+        }
+
+        // 实时计算BMI
+        document.getElementById('height').addEventListener('input', calculateBMI);
+        document.getElementById('weight').addEventListener('input', calculateBMI);
+
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            
+            if (height && weight) {
+                const heightInMeters = height / 100;
+                const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+                
+                // 可以在这里显示BMI信息
+                console.log('BMI:', bmi);
+            }
+        }
+
+        // 初始化页面时计算BMI
+        calculateBMI();
+    </script>
+</body>
+</html>

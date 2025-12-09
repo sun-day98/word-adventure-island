@@ -1,0 +1,173 @@
+# 农业巡检机器人实验版本 - 物料清单 BOM
+# 总预算：560元
+# 制作时间：2天
+# 难度：初级
+
+=================================
+核心控制系统
+=================================
+Item: 树莓派 Zero W
+Spec: BCM2835, 512MB RAM, WiFi, Bluetooth
+Quantity: 1
+Unit Price: ¥150
+Total Price: ¥150
+Supplier: 淘宝店铺"树莓派之家"
+Part Number: RPI-ZERO-W
+Link: https://item.taobao.com/item.htm?id=123456789
+Notes: 包含散热片和外壳
+
+=================================
+移动平台
+=================================
+Item: TT马达+轮子套件
+Spec: 6V直流马达, 65mm直径橡胶轮
+Quantity: 2套
+Unit Price: ¥30
+Total Price: ¥60
+Supplier: 淘宝店铺"机器人配件店"
+Part Number: TT-MOTOR-KIT
+Link: https://item.taobao.com/item.htm?id=234567890
+Notes: 包含马达座和固定螺丝
+
+Item: 3D打印底盘
+Spec: PLA材质, 200x150x50mm
+Quantity: 1套
+Unit Price: ¥80
+Total Price: ¥80
+Supplier: 本地3D打印店
+Part Number: CUSTOM-CHASSIS
+Link: 本地制作
+Notes: 包含底座、盖板、固定支架
+
+=================================
+视觉系统
+=================================
+Item: 树莓派摄像头模块V2
+Spec: 800万像素, 1080p, CSI接口
+Quantity: 1
+Unit Price: ¥100
+Total Price: ¥100
+Supplier: 淘宝店铺"树莓派官方店"
+Part Number: RPI-CAMERA-V2
+Link: https://item.taobao.com/item.htm?id=345678901
+Notes: 原装正品，带排线
+
+Item: SG90舵机
+Spec: 9g微型舵机, 180度旋转
+Quantity: 1
+Unit Price: ¥15
+Total Price: ¥15
+Supplier: 淘宝店铺"电子元件店"
+Part Number: SG90-9G
+Link: https://item.taobao.com/item.htm?id=456789012
+Notes: 用于摄像头转动
+
+=================================
+传感器系统
+=================================
+Item: HC-SR04超声波传感器
+Spec: 2-400cm测距, 5mm精度
+Quantity: 1
+Unit Price: ¥20
+Total Price: ¥20
+Supplier: 淘宝店铺"传感器之家"
+Part Number: HC-SR04
+Link: https://item.taobao.com/item.htm?id=567890123
+Notes: 用于基础避障
+
+=================================
+电源系统
+=================================
+Item: 20000mAh移动电源
+Spec: 5V/2.4A输出, Type-C接口
+Quantity: 1
+Unit Price: ¥100
+Total Price: ¥100
+Supplier: 京东"罗马仕旗舰店"
+Part Number: ROMOSS-PB20
+Link: https://item.jd.com/123456.html
+Notes: 可连续供电4-6小时
+
+=================================
+电子元件
+=================================
+Item: 公母头杜邦线
+Spec: 40根套装, 20cm长度
+Quantity: 1套
+Unit Price: ¥20
+Total Price: ¥20
+Supplier: 淘宝店铺"电子元件批发"
+Part Number: DUPONT-40P
+Link: https://item.taobao.com/item.htm?id=678901234
+Notes: 颜色齐全，质量可靠
+
+Item: 830孔面包板
+Spec: 6.5x8.5cm, 自粘背胶
+Quantity: 1
+Unit Price: ¥15
+Total Price: ¥15
+Supplier: 淘宝店铺"电子元件批发"
+Part Number: BB-830
+Link: https://item.taobao.com/item.htm?id=789012345
+Notes: 用于原型测试
+
+=================================
+工具材料
+=================================
+Item: 热熔胶枪
+Spec: 20W, 7mm胶棒
+Quantity: 1套
+Unit Price: ¥25
+Total Price: ¥25
+Supplier: 淘宝店铺"五金工具店"
+Part Number: HOT-GUN-20W
+Link: https://item.taobao.com/item.htm?id=890123456
+Notes: 包含5根胶棒
+
+Item: 小螺丝刀套装
+Spec: 6件套, 磁性十字一字
+Quantity: 1套
+Unit Price: ¥15
+Total Price: ¥15
+Supplier: 淘宝店铺"五金工具店"
+Part Number: SCREW-SET-6
+Link: https://item.taobao.com/item.htm?id=901234567
+Notes: 用于组装和调试
+
+=================================
+费用汇总
+=================================
+核心控制系统: ¥150
+移动平台: ¥140
+视觉系统: ¥115
+传感器系统: ¥20
+电源系统: ¥100
+电子元件: ¥35
+工具材料: ¥40
+---------------------------------
+总计: ¥600
+
+=================================
+优惠策略
+=================================
+1. 同店满减优惠：满200减15
+2. 关注店铺折扣：95折
+3. 批量采购折扣：9.8折
+预计实际花费: ¥560
+
+=================================
+替代方案
+=================================
+如果3D打印成本过高，可以用以下替代：
+- 硬纸板底盘：成本¥0（使用快递包装）
+- 泡沫板底盘：成本¥10（文具店购买）
+- 亚克力板底盘：成本¥30（激光切割店）
+
+=================================
+紧急替代采购
+=================================
+如果主要渠道缺货，可使用以下替代：
+树莓派 Zero W → 树莓派 3A+ (¥200)
+TT马达套件 → N20马达套件 (¥40)
+SG90舵机 → MG90S舵机 (¥20)
+HC-SR04 → JSN-SR04T (¥25)

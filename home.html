@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 首页</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <div class="header-content">
+                <div class="greeting">
+                    <h1>早上好，Alex! 🌟</h1>
+                    <p class="date">今天是12月5日，让我们一起健身吧！</p>
+                </div>
+                <div class="notification-btn">
+                    <span class="notification-dot">3</span>
+                    🔔
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 今日数据概览 -->
+            <section class="today-overview">
+                <h2>今日数据</h2>
+                <div class="data-cards">
+                    <div class="data-card">
+                        <div class="card-icon">🔥</div>
+                        <div class="card-value">485</div>
+                        <div class="card-label">卡路里</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="card-icon">👟</div>
+                        <div class="card-value">8,542</div>
+                        <div class="card-label">步数</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="card-icon">⏱️</div>
+                        <div class="card-value">45</div>
+                        <div class="card-label">运动分钟</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="card-icon">💧</div>
+                        <div class="card-value">1.8L</div>
+                        <div class="card-label">饮水量</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 今日推荐课程 -->
+            <section class="recommended-courses">
+                <div class="section-header">
+                    <h2>今日推荐</h2>
+                    <a href="courses.html" class="view-all">查看全部 →</a>
+                </div>
+                <div class="course-list">
+                    <div class="course-item" onclick="parent.navigateToPage('course-detail.html')">
+                        <div class="course-image">
+                            <img src="assets/images/courses/yoga-beginner.jpg" alt="初学者瑜伽">
+                            <span class="difficulty">初级</span>
+                        </div>
+                        <div class="course-info">
+                            <h3>初学者瑜伽</h3>
+                            <p>舒缓身心，提升柔韧性</p>
+                            <div class="course-meta">
+                                <span class="duration">20分钟</span>
+                                <span class="calories">80卡路里</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="course-item" onclick="parent.navigateToPage('course-detail.html')">
+                        <div class="course-image">
+                            <img src="assets/images/courses/hiit-intense.jpg" alt="高强度间歇训练">
+                            <span class="difficulty advanced">高级</span>
+                        </div>
+                        <div class="course-info">
+                            <h3>HIIT燃脂训练</h3>
+                            <p>高效燃脂，塑造完美身材</p>
+                            <div class="course-meta">
+                                <span class="duration">30分钟</span>
+                                <span class="calories">350卡路里</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 饮食记录 -->
+            <section class="diet-record">
+                <div class="section-header">
+                    <h2>饮食记录</h2>
+                    <a href="diet.html" class="add-btn">+ 记录</a>
+                </div>
+                <div class="diet-summary">
+                    <div class="progress-ring">
+                        <svg width="80" height="80">
+                            <circle cx="40" cy="40" r="35" stroke="#e6e6e6" stroke-width="6" fill="none"/>
+                            <circle cx="40" cy="40" r="35" stroke="#4CAF50" stroke-width="6" fill="none"
+                                    stroke-dasharray="220" stroke-dashoffset="88"
+                                    transform="rotate(-90 40 40)"/>
+                        </svg>
+                        <div class="progress-text">1,200/2,000</div>
+                    </div>
+                    <div class="meal-info">
+                        <p>今日已摄入 <strong>1,200</strong> 卡路里</p>
+                        <p>建议摄入 <strong>2,000</strong> 卡路里</p>
+                        <a href="diet-detail.html" class="detail-link">查看详情 →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 成就徽章 -->
+            <section class="achievements">
+                <div class="section-header">
+                    <h2>最新成就</h2>
+                    <a href="profile.html" class="view-all">查看全部 →</a>
+                </div>
+                <div class="badges">
+                    <div class="badge-item">
+                        <img src="assets/images/badges/7day-streak.png" alt="连续7天">
+                        <span>连续7天</span>
+                    </div>
+                    <div class="badge-item">
+                        <img src="assets/images/badges/first-workout.png" alt="首次训练">
+                        <span>首次训练</span>
+                    </div>
+                    <div class="badge-item">
+                        <img src="assets/images/badges/calorie-warrior.png" alt="燃脂战士">
+                        <span>燃脂战士</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

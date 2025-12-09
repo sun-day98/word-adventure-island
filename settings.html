@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 设置</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <button class="back-btn" onclick="parent.navigateToPage('profile.html')">← 返回</button>
+            <h1>设置</h1>
+        </header>
+
+        <!-- 通用设置 -->
+        <section class="settings-section">
+            <h2>通用设置</h2>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>语言</h3>
+                        <p>选择应用显示语言</p>
+                    </div>
+                    <div class="setting-control">
+                        <select id="language-select" class="setting-select" onchange="changeLanguage()">
+                            <option value="zh-CN">简体中文</option>
+                            <option value="zh-TW">繁体中文</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>单位设置</h3>
+                        <p>选择重量和长度单位</p>
+                    </div>
+                    <div class="setting-control">
+                        <select id="unit-select" class="setting-select" onchange="changeUnits()">
+                            <option value="metric">公制 (kg, cm)</option>
+                            <option value="imperial">英制 (lbs, ft)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>时间格式</h3>
+                        <p>选择时间显示格式</p>
+                    </div>
+                    <div class="setting-control">
+                        <select id="time-format" class="setting-select" onchange="changeTimeFormat()">
+                            <option value="24h">24小时制</option>
+                            <option value="12h">12小时制</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 通知设置 -->
+        <section class="settings-section">
+            <h2>通知设置</h2>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>训练提醒</h3>
+                        <p>每日定时提醒进行训练</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleNotification('workout')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>训练提醒时间</h3>
+                        <p>设置每日训练提醒时间</p>
+                    </div>
+                    <div class="setting-control">
+                        <input type="time" id="workout-time" value="19:00" class="time-input" onchange="updateWorkoutTime()">
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>饮食记录提醒</h3>
+                        <p>定时提醒记录饮食</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleNotification('diet')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>饮水提醒</h3>
+                        <p>定时提醒补充水分</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleNotification('water')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>成就通知</h3>
+                        <p>获得新成就时通知</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleNotification('achievement')">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据与隐私 -->
+        <section class="settings-section">
+            <h2>数据与隐私</h2>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>数据同步</h3>
+                        <p>自动同步数据到云端</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleDataSync()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>位置信息</h3>
+                        <p>允许应用获取位置信息</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleLocation()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>健康数据</h3>
+                        <p>连接健康应用获取步数等数据</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleHealthData()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>隐私政策</h3>
+                        <p>查看我们的隐私政策</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="link-btn" onclick="parent.navigateToPage('privacy-policy.html')">查看</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 应用设置 -->
+        <section class="settings-section">
+            <h2>应用设置</h2>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>深色模式</h3>
+                        <p>开启深色主题保护眼睛</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleDarkMode()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>自动播放视频</h3>
+                        <p>在WiFi环境下自动播放课程视频</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleAutoPlay()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>高清画质</h3>
+                        <p>在WiFi下使用高清画质</p>
+                    </div>
+                    <div class="setting-control">
+                        <label class="switch">
+                            <input type="checkbox" checked onchange="toggleHD()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>清除缓存</h3>
+                        <p>清理应用缓存数据</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="action-btn" onclick="clearCache()">清除</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 账号管理 -->
+        <section class="settings-section">
+            <h2>账号管理</h2>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>修改密码</h3>
+                        <p>更新登录密码</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="link-btn" onclick="changePassword()">修改</button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>绑定手机</h3>
+                        <p>更换绑定的手机号</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="link-btn" onclick="changePhone()">更换</button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>账号注销</h3>
+                        <p>永久删除账号和数据</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="danger-btn" onclick="deleteAccount()">注销</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关于 -->
+        <section class="settings-section">
+            <h2>关于</h2>
+            <div class="settings-list">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>版本信息</h3>
+                        <p>FitLife v2.0.1</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="link-btn" onclick="checkUpdate()">检查更新</button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>用户反馈</h3>
+                        <p>告诉我们您的想法和建议</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="link-btn" onclick="sendFeedback()">反馈</button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>帮助中心</h3>
+                        <p>获取使用帮助和常见问题解答</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="link-btn" onclick="openHelp()">帮助</button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>评分应用</h3>
+                        <p>在应用商店为我们评分</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="link-btn" onclick="rateApp()">评分</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function changeLanguage() {
+            const language = document.getElementById('language-select').value;
+            console.log('切换语言:', language);
+            alert(`语言已切换为: ${language}`);
+        }
+
+        function changeUnits() {
+            const units = document.getElementById('unit-select').value;
+            console.log('切换单位:', units);
+            alert(`单位已切换为: ${units === 'metric' ? '公制' : '英制'}`);
+        }
+
+        function changeTimeFormat() {
+            const format = document.getElementById('time-format').value;
+            console.log('切换时间格式:', format);
+            alert(`时间格式已切换为: ${format === '24h' ? '24小时制' : '12小时制'}`);
+        }
+
+        function toggleNotification(type) {
+            console.log('切换通知:', type);
+            alert(`${getNotificationName(type)}通知已${event.target.checked ? '开启' : '关闭'}`);
+        }
+
+        function getNotificationName(type) {
+            const names = {
+                'workout': '训练提醒',
+                'diet': '饮食记录',
+                'water': '饮水提醒',
+                'achievement': '成就通知'
+            };
+            return names[type] || '通知';
+        }
+
+        function updateWorkoutTime() {
+            const time = document.getElementById('workout-time').value;
+            console.log('更新训练时间:', time);
+            alert(`训练提醒时间已更新为: ${time}`);
+        }
+
+        function toggleDataSync() {
+            console.log('切换数据同步');
+            alert(`数据同步已${event.target.checked ? '开启' : '关闭'}`);
+        }
+
+        function toggleLocation() {
+            console.log('切换位置信息');
+            alert(`位置信息已${event.target.checked ? '开启' : '关闭'}`);
+        }
+
+        function toggleHealthData() {
+            console.log('切换健康数据');
+            if (event.target.checked) {
+                alert('正在连接健康应用...');
+            } else {
+                alert('健康数据连接已断开');
+            }
+        }
+
+        function toggleDarkMode() {
+            console.log('切换深色模式');
+            if (event.target.checked) {
+                document.body.classList.add('dark-mode');
+                alert('深色模式已开启');
+            } else {
+                document.body.classList.remove('dark-mode');
+                alert('深色模式已关闭');
+            }
+        }
+
+        function toggleAutoPlay() {
+            console.log('切换自动播放');
+            alert(`自动播放已${event.target.checked ? '开启' : '关闭'}`);
+        }
+
+        function toggleHD() {
+            console.log('切换高清画质');
+            alert(`高清画质已${event.target.checked ? '开启' : '关闭'}`);
+        }
+
+        function clearCache() {
+            if (confirm('确定要清除缓存吗？这将删除所有离线数据。')) {
+                // 模拟清除缓存
+                alert('缓存清除完成');
+            }
+        }
+
+        function changePassword() {
+            const newPassword = prompt('请输入新密码:');
+            if (newPassword && newPassword.length >= 6) {
+                alert('密码修改成功');
+            } else {
+                alert('密码长度至少6位');
+            }
+        }
+
+        function changePhone() {
+            const newPhone = prompt('请输入新的手机号码:');
+            if (newPhone && /^1[3-9]\d{9}$/.test(newPhone)) {
+                alert('手机号码更换成功');
+            } else {
+                alert('请输入正确的手机号码');
+            }
+        }
+
+        function deleteAccount() {
+            const confirmation = confirm('警告：账号注销后将无法恢复，所有数据将被永久删除。确定要继续吗？');
+            
+            if (confirmation) {
+                const finalConfirm = confirm('最后确认：您真的要注销账号吗？');
+                if (finalConfirm) {
+                    alert('账号注销成功，感谢您的使用');
+                    // 实际应用中这里应该跳转到登录页
+                }
+            }
+        }
+
+        function checkUpdate() {
+            alert('正在检查更新...\n当前版本已是最新版本');
+        }
+
+        function sendFeedback() {
+            const feedback = prompt('请输入您的反馈意见:');
+            if (feedback && feedback.trim()) {
+                alert('感谢您的反馈！我们会认真考虑您的建议。');
+            }
+        }
+
+        function openHelp() {
+            alert('正在打开帮助中心...');
+            // 实际应用中这里应该打开帮助页面
+        }
+
+        function rateApp() {
+            alert('感谢您的支持！请前往应用商店为我们评分。');
+        }
+
+        // 初始化设置状态
+        document.addEventListener('DOMContentLoaded', function() {
+            // 可以在这里加载用户的设置偏好
+            console.log('设置页面已加载');
+        });
+    </script>
+</body>
+</html>

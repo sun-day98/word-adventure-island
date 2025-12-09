@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词冒险岛 - 魔法英语学习世界</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/ios-status-bar.css">
+    <link rel="stylesheet" href="css/word-adventure.css">
+    <link rel="icon" href="assets/images/icon.png" type="image/png">
+</head>
+<body>
+    <!-- iOS状态栏模拟 -->
+    <div class="ios-status-bar">
+        <div class="status-left">9:41</div>
+        <div class="status-center">
+            <span class="signal"></span>
+            <span class="wifi"></span>
+            <span class="battery">100%</span>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="app-container word-adventure-app">
+        <!-- 游戏主界面 -->
+        <div id="game-container">
+            <!-- 游戏界面容器 -->
+            <iframe id="page-frame" src="adventure-home.html" frameborder="0"></iframe>
+            
+            <!-- 底部导航栏 -->
+            <nav class="bottom-nav adventure-nav">
+                <a href="adventure-home.html" class="nav-item active" data-page="adventure-home">
+                    <div class="nav-icon">🏝️</div>
+                    <span>冒险</span>
+                </a>
+                <a href="word-book.html" class="nav-item" data-page="word-book">
+                    <div class="nav-icon">📖</div>
+                    <span>单词</span>
+                </a>
+                <a href="challenges.html" class="nav-item" data-page="challenges">
+                    <div class="nav-icon">🎮</div>
+                    <span>挑战</span>
+                </a>
+                <a href="profile.html" class="nav-item" data-page="profile">
+                    <div class="nav-icon">👤</div>
+                    <span>我的</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- 玩家状态栏 -->
+        <div class="player-status-bar">
+            <div class="player-info">
+                <div class="player-avatar">
+                    <img src="assets/images/avatars/feifei.png" alt="霏霏" id="player-avatar">
+                    <div class="level-badge" id="player-level">Lv.1</div>
+                </div>
+                <div class="player-stats">
+                    <div class="exp-bar">
+                        <div class="exp-fill" id="exp-fill"></div>
+                        <span class="exp-text" id="exp-text">0/100</span>
+                    </div>
+                    <div class="coins-display">
+                        <span class="coins-icon">💰</span>
+                        <span id="coins-amount">100</span>
+                    </div>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button class="quick-btn" id="daily-quest-btn" title="每日任务">
+                    📋
+                    <span class="badge" id="daily-quest-badge" style="display:none;">!</span>
+                </button>
+                <button class="quick-btn" id="settings-btn" title="设置">
+                    ⚙️
+                </button>
+            </div>
+        </div>
+
+        <!-- 连续学习提示 -->
+        <div class="streak-notification" id="streak-notification" style="display:none;">
+            <div class="streak-content">
+                <span class="streak-icon">🔥</span>
+                <span class="streak-text">已连续学习 <span id="streak-days">1</span> 天！</span>
+                <button class="streak-close" onclick="hideStreakNotification()">×</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局加载提示 -->
+    <div id="global-loading" class="loading-overlay game-loading" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner magic-spinner"></div>
+            <p>正在进入单词冒险岛...</p>
+            <div class="loading-tips">
+                <span id="loading-tip">每个单词都有它的魔法故事！</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成就弹窗 -->
+    <div id="achievement-popup" class="achievement-popup" style="display:none;">
+        <div class="achievement-content">
+            <div class="achievement-icon">🏆</div>
+            <h3 class="achievement-title" id="achievement-title">成就解锁！</h3>
+            <p class="achievement-desc" id="achievement-desc">描述</p>
+            <div class="achievement-reward">
+                <span class="reward-exp">+<span id="reward-exp">0</span> EXP</span>
+            </div>
+            <button class="achievement-close" onclick="closeAchievement()">确定</button>
+        </div>
+    </div>
+
+    <!-- 道具使用确认 -->
+    <div id="item-confirm" class="modal-overlay" style="display:none;">
+        <div class="modal-content item-modal">
+            <h3>使用道具</h3>
+            <div class="item-preview">
+                <div class="item-icon" id="confirm-item-icon">📜</div>
+                <div class="item-info">
+                    <h4 id="confirm-item-name">提示卷轴</h4>
+                    <p id="confirm-item-desc">显示单词的第一个字母</p>
+                </div>
+            </div>
+            <div class="item-count">
+                拥有数量: <span id="confirm-item-count">1</span>
+            </div>
+            <div class="modal-actions">
+                <button class="secondary-btn" onclick="closeItemConfirm()">取消</button>
+                <button class="primary-btn" onclick="confirmUseItem()">使用</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 每日任务弹窗 -->
+    <div id="daily-quest-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content quest-modal">
+            <div class="quest-header">
+                <h3>每日任务</h3>
+                <div class="quest-date" id="quest-date">今天</div>
+            </div>
+            <div class="quest-list" id="quest-list">
+                <!-- 任务列表将动态生成 -->
+            </div>
+            <div class="quest-rewards">
+                <h4>完成奖励</h4>
+                <div class="reward-items">
+                    <div class="reward-item">
+                        <span class="reward-icon">💰</span>
+                        <span class="reward-value">50</span>
+                    </div>
+                    <div class="reward-item">
+                        <span class="reward-icon">⭐</span>
+                        <span class="reward-value">100 EXP</span>
+                    </div>
+                </div>
+            </div>
+            <button class="primary-btn" onclick="closeDailyQuest()">关闭</button>
+        </div>
+    </div>
+
+    <!-- JavaScript文件加载 -->
+    <script src="js/main.js"></script>
+    <script src="js/word-adventure-data.js"></script>
+    <script src="js/word-adventure-engine.js"></script>
+    <script src="js/word-adventure-ui.js"></script>
+    <script>
+        // ===== 单词冒险岛主入口 =====
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // 显示加载界面
+                showGlobalLoading();
+                
+                // 等待所有依赖加载完成
+                if (typeof WordAdventure === 'undefined') {
+                    throw new Error('游戏引擎未加载');
+                }
+                
+                // 初始化游戏
+                await WordAdventure.init();
+                
+                // 初始化UI
+                if (typeof WordAdventureUI !== 'undefined') {
+                    WordAdventureUI.init();
+                }
+                
+                // 设置游戏事件监听
+                setupGameEventListeners();
+                
+                // 更新玩家状态栏
+                updatePlayerStatusBar();
+                
+                // 检查每日登录奖励
+                checkDailyLogin();
+                
+                // 检查复习提醒
+                checkReviewReminder();
+                
+                // 隐藏加载界面
+                setTimeout(() => {
+                    hideGlobalLoading();
+                    
+                    // 显示连续学习提示
+                    const streak = WordAdventure.gameState.player.progress.streak;
+                    if (streak > 0) {
+                        showStreakNotification(streak);
+                    }
+                }, 1500);
+                
+                console.log('单词冒险岛启动完成');
+                
+            } catch (error) {
+                console.error('游戏启动失败:', error);
+                showErrorAndReload();
+            }
+        });
+        
+        // ===== 游戏事件监听 =====
+        function setupGameEventListeners() {
+            // 经验值获得
+            WordAdventure.on('experienceGained', function(data) {
+                updatePlayerStatusBar();
+                showFloatingText(`+${data.amount} EXP`, 'exp');
+            });
+            
+            // 金币获得
+            WordAdventure.on('coinsGained', function(data) {
+                updatePlayerStatusBar();
+                showFloatingText(`+${data.amount} 💰`, 'coins');
+            });
+            
+            // 升级
+            WordAdventure.on('levelUp', function(data) {
+                updatePlayerStatusBar();
+                showLevelUpEffect(data.newLevel);
+            });
+            
+            // 成就解锁
+            WordAdventure.on('achievementUnlocked', function(data) {
+                showAchievementPopup(data.achievement);
+            });
+            
+            // 单词学会
+            WordAdventure.on('wordLearned', function(data) {
+                updateDailyQuestProgress('wordsLearned', 1);
+            });
+            
+            // 挑战完成
+            WordAdventure.on('challengeCompleted', function(data) {
+                updateDailyQuestProgress('challengesCompleted', 1);
+            });
+            
+            // 复习单词到期
+            WordAdventure.on('reviewWordsDue', function(data) {
+                showReviewReminder(data.words.length);
+            });
+        }
+        
+        // ===== 玩家状态栏更新 =====
+        function updatePlayerStatusBar() {
+            if (!WordAdventure.gameState) return;
+            
+            const player = WordAdventure.gameState.player;
+            
+            // 更新等级
+            document.getElementById('player-level').textContent = `Lv.${player.stats.level}`;
+            
+            // 更新经验条
+            const currentExp = player.stats.exp;
+            const expNeeded = player.stats.level * 100;
+            const expPercentage = (currentExp / expNeeded) * 100;
+            
+            const expFill = document.getElementById('exp-fill');
+            expFill.style.width = `${expPercentage}%`;
+            
+            const expText = document.getElementById('exp-text');
+            expText.textContent = `${currentExp}/${expNeeded}`;
+            
+            // 更新金币
+            document.getElementById('coins-amount').textContent = player.inventory.coins;
+            
+            // 更新头像（如果有成长）
+            updatePlayerAvatar();
+        }
+        
+        function updatePlayerAvatar() {
+            const growth = WordAdventure.gameState.characterGrowth;
+            const avatar = document.getElementById('player-avatar');
+            
+            if (growth && growth.feifei) {
+                // 根据成长阶段更换头像
+                const stage = growth.feifei.currentStage;
+                if (stage >= 3) {
+                    avatar.src = 'assets/images/avatars/feifei-confident.png';
+                }
+            }
+        }
+        
+        // ===== 每日登录检查 =====
+        function checkDailyLogin() {
+            const lastPlay = WordAdventure.gameState.player.progress.lastPlayDate;
+            const today = new Date().toDateString();
+            
+            if (lastPlay !== today) {
+                // 新的一天，显示登录奖励
+                setTimeout(() => {
+                    showDailyLoginReward();
+                }, 2000);
+            }
+        }
+        
+        function showDailyLoginReward() {
+            const streak = WordAdventure.gameState.player.progress.streak;
+            const reward = streak > 1 ? WordAdventure.gameState.player.stats.level * 10 : 5;
+            
+            showFloatingText(`每日登录 +${reward} EXP`, 'daily-bonus');
+        }
+        
+        // ===== 复习提醒 =====
+        function checkReviewReminder() {
+            const reviewingWords = WordAdventure.gameState.learning.reviewingWords;
+            const now = Date.now();
+            
+            const dueWords = reviewingWords.filter(review => review.reviewDate <= now);
+            
+            if (dueWords.length > 0) {
+                setTimeout(() => {
+                    showReviewReminder(dueWords.length);
+                }, 3000);
+            }
+        }
+        
+        function showReviewReminder(count) {
+            showFloatingText(`有 ${count} 个单词需要复习`, 'reminder');
+        }
+        
+        // ===== 连续学习提示 =====
+        function showStreakNotification(days) {
+            const notification = document.getElementById('streak-notification');
+            const streakDays = document.getElementById('streak-days');
+            
+            streakDays.textContent = days;
+            notification.style.display = 'block';
+            
+            // 5秒后自动隐藏
+            setTimeout(() => {
+                hideStreakNotification();
+            }, 5000);
+        }
+        
+        function hideStreakNotification() {
+            document.getElementById('streak-notification').style.display = 'none';
+        }
+        
+        // ===== 成就弹窗 =====
+        function showAchievementPopup(achievement) {
+            const popup = document.getElementById('achievement-popup');
+            const title = document.getElementById('achievement-title');
+            const desc = document.getElementById('achievement-desc');
+            const rewardExp = document.getElementById('reward-exp');
+            
+            title.textContent = achievement.name;
+            desc.textContent = achievement.description;
+            rewardExp.textContent = achievement.expReward || 0;
+            
+            popup.style.display = 'flex';
+            
+            // 播放成就音效
+            if (WordAdventure.gameState.settings.soundEnabled) {
+                playAchievementSound();
+            }
+            
+            // 3秒后自动关闭
+            setTimeout(() => {
+                closeAchievement();
+            }, 3000);
+        }
+        
+        function closeAchievement() {
+            document.getElementById('achievement-popup').style.display = 'none';
+        }
+        
+        // ===== 每日任务 =====
+        document.getElementById('daily-quest-btn').addEventListener('click', function() {
+            showDailyQuestModal();
+        });
+        
+        function showDailyQuestModal() {
+            const modal = document.getElementById('daily-quest-modal');
+            const questList = document.getElementById('quest-list');
+            const questDate = document.getElementById('quest-date');
+            
+            // 更新日期
+            const today = new Date();
+            const options = { month: 'long', day: 'numeric' };
+            questDate.textContent = today.toLocaleDateString('zh-CN', options);
+            
+            // 生成任务列表
+            const quests = generateDailyQuests();
+            questList.innerHTML = quests.map(quest => createQuestHTML(quest)).join('');
+            
+            modal.style.display = 'flex';
+            
+            // 隐藏任务徽章
+            document.getElementById('daily-quest-badge').style.display = 'none';
+        }
+        
+        function generateDailyQuests() {
+            const dailyTasks = WordAdventure.gameState.dailyTasks || {
+                wordsLearned: 0,
+                challengesCompleted: 0,
+                reviewCompleted: 0,
+                timeSpent: 0
+            };
+            
+            return [
+                {
+                    icon: '📚',
+                    name: '学习新单词',
+                    current: dailyTasks.wordsLearned,
+                    target: 10,
+                    reward: '20 EXP'
+                },
+                {
+                    icon: '🎮',
+                    name: '完成挑战',
+                    current: dailyTasks.challengesCompleted,
+                    target: 5,
+                    reward: '30 EXP'
+                },
+                {
+                    icon: '🔄',
+                    name: '复习单词',
+                    current: dailyTasks.reviewCompleted,
+                    target: 3,
+                    reward: '15 EXP'
+                },
+                {
+                    icon: '⏱️',
+                    name: '学习时间',
+                    current: Math.floor(dailyTasks.timeSpent / 60),
+                    target: 20,
+                    reward: '25 EXP'
+                }
+            ];
+        }
+        
+        function createQuestHTML(quest) {
+            const progress = Math.min(quest.current, quest.target);
+            const percentage = (progress / quest.target) * 100;
+            const isCompleted = progress >= quest.target;
+            
+            return `
+                <div class="quest-item ${isCompleted ? 'completed' : ''}">
+                    <div class="quest-info">
+                        <span class="quest-icon">${quest.icon}</span>
+                        <div class="quest-details">
+                            <div class="quest-name">${quest.name}</div>
+                            <div class="quest-progress">${progress}/${quest.target}</div>
+                        </div>
+                    </div>
+                    <div class="quest-status">
+                        <div class="quest-bar">
+                            <div class="quest-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <span class="quest-reward">${quest.reward}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function closeDailyQuest() {
+            document.getElementById('daily-quest-modal').style.display = 'none';
+        }
+        
+        function updateDailyQuestProgress(type, amount) {
+            if (!WordAdventure.gameState.dailyTasks) {
+                WordAdventure.resetDailyTasks();
+            }
+            
+            WordAdventure.gameState.dailyTasks[type] += amount;
+            
+            // 检查是否有任务完成
+            checkQuestCompletion();
+        }
+        
+        function checkQuestCompletion() {
+            const quests = generateDailyQuests();
+            const allCompleted = quests.every(quest => quest.current >= quest.target);
+            
+            if (allCompleted) {
+                // 显示任务徽章
+                document.getElementById('daily-quest-badge').style.display = 'inline-block';
+            }
+        }
+        
+        // ===== 工具函数 =====
+        function showGlobalLoading() {
+            const loading = document.getElementById('global-loading');
+            const tip = document.getElementById('loading-tip');
+            
+            const tips = [
+                '每个单词都有它的魔法故事！',
+                '勇敢的心能战胜一切困难！',
+                '知识就是最强大的魔法！',
+                '和朋友一起学习更有趣！',
+                '坚持就是胜利！'
+            ];
+            
+            tip.textContent = tips[Math.floor(Math.random() * tips.length)];
+            loading.style.display = 'flex';
+        }
+        
+        function hideGlobalLoading() {
+            document.getElementById('global-loading').style.display = 'none';
+        }
+        
+        function showFloatingText(text, type = 'info') {
+            const floatingText = document.createElement('div');
+            floatingText.className = `floating-text floating-${type}`;
+            floatingText.textContent = text;
+            
+            document.body.appendChild(floatingText);
+            
+            // 播放动画
+            setTimeout(() => {
+                floatingText.classList.add('show');
+            }, 10);
+            
+            // 移除元素
+            setTimeout(() => {
+                floatingText.remove();
+            }, 2000);
+        }
+        
+        function showLevelUpEffect(newLevel) {
+            const levelUpDiv = document.createElement('div');
+            levelUpDiv.className = 'level-up-effect';
+            levelUpDiv.innerHTML = `
+                <div class="level-up-content">
+                    <div class="level-up-stars">⭐⭐⭐</div>
+                    <h2>升级了！</h2>
+                    <p>等级 ${newLevel}</p>
+                </div>
+            `;
+            
+            document.body.appendChild(levelUpDiv);
+            
+            setTimeout(() => {
+                levelUpDiv.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                levelUpDiv.remove();
+            }, 3000);
+        }
+        
+        function playAchievementSound() {
+            // 播放成就解锁音效
+            // 这里应该播放音频文件
+            console.log('🎵 成就解锁音效');
+        }
+        
+        function showErrorAndReload() {
+            hideGlobalLoading();
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-screen';
+            errorDiv.innerHTML = `
+                <div class="error-content">
+                    <h2>😔 启动失败</h2>
+                    <p>游戏无法正常启动，请刷新页面重试</p>
+                    <button class="primary-btn" onclick="location.reload()">重新加载</button>
+                </div>
+            `;
+            
+            document.body.appendChild(errorDiv);
+        }
+        
+        // 设置按钮事件
+        document.getElementById('settings-btn').addEventListener('click', function() {
+            // 打开设置页面
+            if (window.parent && window.parent.NavigationManager) {
+                window.parent.NavigationManager.navigateToPage('settings.html');
+            }
+        });
+        
+        // 全局错误处理
+        window.addEventListener('error', function(event) {
+            console.error('全局错误:', event.error);
+        });
+    </script>
+</body>
+</html>

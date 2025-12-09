@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 饮食详情</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <button class="back-btn" onclick="parent.navigateToPage('diet.html')">← 返回</button>
+            <h1>编辑餐食</h1>
+            <button class="save-btn" onclick="saveMeal()">保存</button>
+        </header>
+
+        <!-- 餐食类型选择 -->
+        <section class="meal-type-selector">
+            <h2>选择餐食类型</h2>
+            <div class="meal-types">
+                <button class="meal-type-btn active" data-type="breakfast" onclick="selectMealType('breakfast')">
+                    <span class="meal-icon">🌅</span>
+                    <span>早餐</span>
+                </button>
+                <button class="meal-type-btn" data-type="lunch" onclick="selectMealType('lunch')">
+                    <span class="meal-icon">☀️</span>
+                    <span>午餐</span>
+                </button>
+                <button class="meal-type-btn" data-type="dinner" onclick="selectMealType('dinner')">
+                    <span class="meal-icon">🌙</span>
+                    <span>晚餐</span>
+                </button>
+                <button class="meal-type-btn" data-type="snack" onclick="selectMealType('snack')">
+                    <span class="meal-icon">🍎</span>
+                    <span>加餐</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 时间选择 -->
+        <section class="time-selector">
+            <h2>用餐时间</h2>
+            <div class="time-input-group">
+                <input type="time" id="meal-time" value="12:30" class="time-input">
+                <button class="current-time-btn" onclick="setCurrentTime()">当前时间</button>
+            </div>
+        </section>
+
+        <!-- 食物搜索和添加 -->
+        <section class="food-search-section">
+            <div class="search-header">
+                <h2>添加食物</h2>
+                <div class="search-input-container">
+                    <input type="text" id="food-search" placeholder="搜索食物名称" class="search-input">
+                    <button class="search-btn" onclick="searchFood()">🔍</button>
+                </div>
+                <div class="search-options">
+                    <button class="option-btn" onclick="showBarcodeScan()">
+                        <span class="option-icon">📷</span>
+                        <span>扫码识别</span>
+                    </button>
+                    <button class="option-btn" onclick="showVoiceInput()">
+                        <span class="option-icon">🎤</span>
+                        <span>语音输入</span>
+                    </button>
+                    <button class="option-btn" onclick="showRecentFoods()">
+                        <span class="option-icon">🕐</span>
+                        <span>最近记录</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 搜索结果 -->
+            <div class="search-results" id="search-results" style="display: none;">
+                <div class="result-item" onclick="addFoodToMeal('米饭', 150, 165)">
+                    <img src="assets/images/food/rice.jpg" alt="米饭" class="food-thumb">
+                    <div class="food-details">
+                        <div class="food-name">米饭（熟）</div>
+                        <div class="food-unit-info">每100g: 116千卡</div>
+                    </div>
+                    <button class="add-btn">+</button>
+                </div>
+                <div class="result-item" onclick="addFoodToMeal('鸡胸肉', 100, 165)">
+                    <img src="assets/images/food/chicken-breast.jpg" alt="鸡胸肉" class="food-thumb">
+                    <div class="food-details">
+                        <div class="food-name">鸡胸肉（煮）</div>
+                        <div class="food-unit-info">每100g: 165千卡</div>
+                    </div>
+                    <button class="add-btn">+</button>
+                </div>
+                <div class="result-item" onclick="addFoodToMeal('西兰花', 100, 35)">
+                    <img src="assets/images/food/broccoli.jpg" alt="西兰花" class="food-thumb">
+                    <div class="food-details">
+                        <div class="food-name">西兰花（煮）</div>
+                        <div class="food-unit-info">每100g: 35千卡</div>
+                    </div>
+                    <button class="add-btn">+</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 已选择的食物列表 -->
+        <section class="selected-foods">
+            <div class="section-header">
+                <h2>已添加食物</h2>
+                <span class="total-calories">总计: <span id="total-calories">0</span>千卡</span>
+            </div>
+            
+            <div class="food-list" id="food-list">
+                <!-- 示例食物项 -->
+                <div class="food-list-item">
+                    <img src="assets/images/food/rice.jpg" alt="米饭" class="food-image">
+                    <div class="food-info">
+                        <h3 class="food-name">米饭</h3>
+                        <div class="food-input-group">
+                            <input type="number" value="150" min="0" step="1" class="portion-input" onchange="updateCalories(this)">
+                            <select class="unit-select" onchange="updateCalories(this)">
+                                <option value="g">克(g)</option>
+                                <option value="份">份</option>
+                                <option value="个">个</option>
+                            </select>
+                            <div class="calorie-display">165千卡</div>
+                        </div>
+                    </div>
+                    <button class="remove-btn" onclick="removeFood(this)">×</button>
+                </div>
+
+                <div class="food-list-item">
+                    <img src="assets/images/food/chicken-breast.jpg" alt="鸡胸肉" class="food-image">
+                    <div class="food-info">
+                        <h3 class="food-name">香煎鸡胸肉</h3>
+                        <div class="food-input-group">
+                            <input type="number" value="120" min="0" step="1" class="portion-input" onchange="updateCalories(this)">
+                            <select class="unit-select" onchange="updateCalories(this)">
+                                <option value="g">克(g)</option>
+                                <option value="份">份</option>
+                            </select>
+                            <div class="calorie-display">198千卡</div>
+                        </div>
+                    </div>
+                    <button class="remove-btn" onclick="removeFood(this)">×</button>
+                </div>
+            </div>
+
+            <button class="add-more-foods-btn" onclick="showMoreFoods()">
+                + 添加更多食物
+            </button>
+        </section>
+
+        <!-- 营养成分分析 -->
+        <section class="nutrition-analysis">
+            <h2>营养成分</h2>
+            <div class="nutrition-grid">
+                <div class="nutrition-stat">
+                    <div class="nutrition-label">蛋白质</div>
+                    <div class="nutrition-value"><span id="protein-amount">28</span>g</div>
+                    <div class="nutrition-bar">
+                        <div class="nutrition-fill protein" style="width: 35%"></div>
+                    </div>
+                </div>
+                <div class="nutrition-stat">
+                    <div class="nutrition-label">碳水化合物</div>
+                    <div class="nutrition-value"><span id="carbs-amount">45</span>g</div>
+                    <div class="nutrition-bar">
+                        <div class="nutrition-fill carbs" style="width: 30%"></div>
+                    </div>
+                </div>
+                <div class="nutrition-stat">
+                    <div class="nutrition-label">脂肪</div>
+                    <div class="nutrition-value"><span id="fat-amount">8</span>g</div>
+                    <div class="nutrition-bar">
+                        <div class="nutrition-fill fat" style="width: 20%"></div>
+                    </div>
+                </div>
+                <div class="nutrition-stat">
+                    <div class="nutrition-label">膳食纤维</div>
+                    <div class="nutrition-value"><span id="fiber-amount">3</span>g</div>
+                    <div class="nutrition-bar">
+                        <div class="nutrition-fill fiber" style="width: 25%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 备注 -->
+        <section class="meal-notes">
+            <h2>备注</h2>
+            <textarea id="meal-notes" placeholder="添加备注信息，如烹饪方法、用餐感受等..." class="notes-textarea"></textarea>
+        </section>
+    </div>
+
+    <!-- 自定义食物弹窗 -->
+    <div class="modal-overlay" id="custom-food-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>自定义食物</h3>
+                <button class="close-btn" onclick="closeCustomFood()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>食物名称</label>
+                    <input type="text" id="custom-food-name" placeholder="请输入食物名称">
+                </div>
+                <div class="form-group">
+                    <label>分量</label>
+                    <input type="number" id="custom-food-amount" placeholder="请输入分量">
+                    <select id="custom-food-unit">
+                        <option value="g">克(g)</option>
+                        <option value="ml">毫升(ml)</option>
+                        <option value="份">份</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>热量（千卡）</label>
+                    <input type="number" id="custom-food-calories" placeholder="请输入热量">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="closeCustomFood()">取消</button>
+                <button class="primary-btn" onclick="addCustomFood()">添加</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMealType = 'breakfast';
+
+        function selectMealType(type) {
+            currentMealType = type;
+            document.querySelectorAll('.meal-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+        }
+
+        function setCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('meal-time').value = `${hours}:${minutes}`;
+        }
+
+        function searchFood() {
+            const searchTerm = document.getElementById('food-search').value;
+            if (searchTerm.trim()) {
+                document.getElementById('search-results').style.display = 'block';
+            }
+        }
+
+        function showBarcodeScan() {
+            alert('扫码识别功能：请使用相机扫描食品条形码');
+        }
+
+        function showVoiceInput() {
+            alert('语音输入功能：请说出食物名称');
+        }
+
+        function showRecentFoods() {
+            alert('显示最近记录的食物列表');
+        }
+
+        function addFoodToMeal(name, amount, calories) {
+            const foodList = document.getElementById('food-list');
+            const newFoodItem = document.createElement('div');
+            newFoodItem.className = 'food-list-item';
+            newFoodItem.innerHTML = `
+                <img src="assets/images/food/default.jpg" alt="${name}" class="food-image">
+                <div class="food-info">
+                    <h3 class="food-name">${name}</h3>
+                    <div class="food-input-group">
+                        <input type="number" value="${amount}" min="0" step="1" class="portion-input" onchange="updateCalories(this)">
+                        <select class="unit-select" onchange="updateCalories(this)">
+                            <option value="g">克(g)</option>
+                            <option value="份">份</option>
+                        </select>
+                        <div class="calorie-display">${calories}千卡</div>
+                    </div>
+                </div>
+                <button class="remove-btn" onclick="removeFood(this)">×</button>
+            `;
+            foodList.appendChild(newFoodItem);
+            
+            document.getElementById('search-results').style.display = 'none';
+            document.getElementById('food-search').value = '';
+            updateTotalCalories();
+        }
+
+        function removeFood(btn) {
+            btn.closest('.food-list-item').remove();
+            updateTotalCalories();
+        }
+
+        function updateCalories(input) {
+            // 更新单个食物的卡路里计算
+            const foodItem = input.closest('.food-list-item');
+            const amount = input.value;
+            const unit = foodItem.querySelector('.unit-select').value;
+            // 这里应该根据实际食物数据库计算
+            updateTotalCalories();
+        }
+
+        function updateTotalCalories() {
+            const calorieDisplays = document.querySelectorAll('.calorie-display');
+            let total = 0;
+            calorieDisplays.forEach(display => {
+                const calories = parseInt(display.textContent);
+                total += calories;
+            });
+            document.getElementById('total-calories').textContent = total;
+        }
+
+        function showMoreFoods() {
+            document.querySelector('.food-search-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function saveMeal() {
+            const mealData = {
+                type: currentMealType,
+                time: document.getElementById('meal-time').value,
+                foods: [],
+                notes: document.getElementById('meal-notes').value,
+                totalCalories: document.getElementById('total-calories').textContent
+            };
+
+            // 收集食物数据
+            document.querySelectorAll('.food-list-item').forEach(item => {
+                const foodName = item.querySelector('.food-name').textContent;
+                const amount = item.querySelector('.portion-input').value;
+                const unit = item.querySelector('.unit-select').value;
+                const calories = item.querySelector('.calorie-display').textContent;
+                
+                mealData.foods.push({
+                    name: foodName,
+                    amount: amount,
+                    unit: unit,
+                    calories: calories
+                });
+            });
+
+            console.log('保存餐食数据:', mealData);
+            alert('餐食保存成功！');
+            parent.navigateToPage('diet.html');
+        }
+
+        function closeCustomFood() {
+            document.getElementById('custom-food-modal').style.display = 'none';
+        }
+
+        function addCustomFood() {
+            const name = document.getElementById('custom-food-name').value;
+            const amount = document.getElementById('custom-food-amount').value;
+            const unit = document.getElementById('custom-food-unit').value;
+            const calories = document.getElementById('custom-food-calories').value;
+
+            if (name && amount && calories) {
+                addFoodToMeal(name, amount, calories);
+                closeCustomFood();
+            }
+        }
+
+        // 初始化
+        setCurrentTime();
+        updateTotalCalories();
+    </script>
+</body>
+</html>

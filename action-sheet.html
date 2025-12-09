@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - iOS风格动作菜单</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- 基础动作菜单 -->
+    <div class="action-sheet-overlay" id="action-sheet" style="display: none;">
+        <div class="action-sheet-container">
+            <div class="action-sheet-header" id="action-sheet-title">
+                选择操作
+            </div>
+            <div class="action-sheet-content" id="action-sheet-content">
+                <!-- 动态动作按钮 -->
+            </div>
+            <div class="action-sheet-footer">
+                <button class="action-sheet-cancel" onclick="closeActionSheet()">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分享动作菜单 -->
+    <div class="action-sheet-overlay" id="share-action-sheet" style="display: none;">
+        <div class="action-sheet-container">
+            <div class="action-sheet-header">
+                分享到
+            </div>
+            <div class="action-sheet-content share-content">
+                <button class="action-sheet-item" onclick="shareToWeChat()">
+                    <span class="action-icon wechat">💚</span>
+                    <span class="action-text">微信好友</span>
+                </button>
+                <button class="action-sheet-item" onclick="shareToMoments()">
+                    <span class="action-icon moments">💚</span>
+                    <span class="action-text">朋友圈</span>
+                </button>
+                <button class="action-sheet-item" onclick="shareToQQ()">
+                    <span class="action-icon qq">💙</span>
+                    <span class="action-text">QQ</span>
+                </button>
+                <button class="action-sheet-item" onclick="shareToWeibo()">
+                    <span class="action-icon weibo">🔴</span>
+                    <span class="action-text">微博</span>
+                </button>
+                <button class="action-sheet-item" onclick="copyLink()">
+                    <span class="action-icon copy">📋</span>
+                    <span class="action-text">复制链接</span>
+                </button>
+                <button class="action-sheet-item" onclick="moreShare()">
+                    <span class="action-icon more">⋯</span>
+                    <span class="action-text">更多</span>
+                </button>
+            </div>
+            <div class="action-sheet-footer">
+                <button class="action-sheet-cancel" onclick="closeShareSheet()">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件操作菜单 -->
+    <div class="action-sheet-overlay" id="file-action-sheet" style="display: none;">
+        <div class="action-sheet-container">
+            <div class="action-sheet-header">
+                文件操作
+            </div>
+            <div class="action-sheet-content">
+                <button class="action-sheet-item" onclick="openFile()">
+                    <span class="action-icon">📂</span>
+                    <span class="action-text">打开</span>
+                </button>
+                <button class="action-sheet-item" onclick="editFile()">
+                    <span class="action-icon">✏️</span>
+                    <span class="action-text">编辑</span>
+                </button>
+                <button class="action-sheet-item" onclick="renameFile()">
+                    <span class="action-icon">📝</span>
+                    <span class="action-text">重命名</span>
+                </button>
+                <button class="action-sheet-item" onclick="duplicateFile()">
+                    <span class="action-icon">📋</span>
+                    <span class="action-text">复制</span>
+                </button>
+                <button class="action-sheet-item" onclick="moveFile()">
+                    <span class="action-icon">📁</span>
+                    <span class="action-text">移动</span>
+                </button>
+                <button class="action-sheet-item destructive" onclick="deleteFile()">
+                    <span class="action-icon">🗑️</span>
+                    <span class="action-text">删除</span>
+                </button>
+            </div>
+            <div class="action-sheet-footer">
+                <button class="action-sheet-cancel" onclick="closeFileSheet()">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片操作菜单 -->
+    <div class="action-sheet-overlay" id="image-action-sheet" style="display: none;">
+        <div class="action-sheet-container">
+            <div class="action-sheet-header">
+                图片操作
+            </div>
+            <div class="action-sheet-content">
+                <button class="action-sheet-item" onclick="viewImage()">
+                    <span class="action-icon">👁️</span>
+                    <span class="action-text">查看</span>
+                </button>
+                <button class="action-sheet-item" onclick="editImage()">
+                    <span class="action-icon">🎨</span>
+                    <span class="action-text">编辑</span>
+                </button>
+                <button class="action-sheet-item" onclick="cropImage()">
+                    <span class="action-icon">✂️</span>
+                    <span class="action-text">裁剪</span>
+                </button>
+                <button class="action-sheet-item" onclick="filterImage()">
+                    <span class="action-icon">🎭</span>
+                    <span class="action-text">滤镜</span>
+                </button>
+                <button class="action-sheet-item" onclick="saveImage()">
+                    <span class="action-icon">💾</span>
+                    <span class="action-text">保存到相册</span>
+                </button>
+                <button class="action-sheet-item" onclick="shareImage()">
+                    <span class="action-icon">📤</span>
+                    <span class="action-text">分享</span>
+                </button>
+            </div>
+            <div class="action-sheet-footer">
+                <button class="action-sheet-cancel" onclick="closeImageSheet()">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 排序菜单 -->
+    <div class="action-sheet-overlay" id="sort-action-sheet" style="display: none;">
+        <div class="action-sheet-container">
+            <div class="action-sheet-header">
+                排序方式
+            </div>
+            <div class="action-sheet-content">
+                <button class="action-sheet-item" onclick="sortByDate()">
+                    <span class="action-icon">📅</span>
+                    <span class="action-text">按日期</span>
+                    <span class="check-icon" id="sort-date-check" style="display: none;">✓</span>
+                </button>
+                <button class="action-sheet-item" onclick="sortByName()">
+                    <span class="action-icon">🔤</span>
+                    <span class="action-text">按名称</span>
+                    <span class="check-icon" id="sort-name-check" style="display: none;">✓</span>
+                </button>
+                <button class="action-sheet-item" onclick="sortBySize()">
+                    <span class="action-icon">📏</span>
+                    <span class="action-text">按大小</span>
+                    <span class="check-icon" id="sort-size-check" style="display: none;">✓</span>
+                </button>
+                <button class="action-sheet-item" onclick="sortByType()">
+                    <span class="action-icon">📄</span>
+                    <span class="action-text">按类型</span>
+                    <span class="check-icon" id="sort-type-check" style="display: none;">✓</span>
+                </button>
+                <button class="action-sheet-item" onclick="sortByModified()">
+                    <span class="action-icon">🕒</span>
+                    <span class="action-text">按修改时间</span>
+                    <span class="check-icon" id="sort-modified-check" style="display: none;">✓</span>
+                </button>
+            </div>
+            <div class="action-sheet-footer">
+                <button class="action-sheet-cancel" onclick="closeSortSheet()">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 动作菜单管理器脚本 -->
+    <script>
+        class ActionSheetManager {
+            constructor() {
+                this.currentSheet = null;
+                this.currentCallback = null;
+                this.currentData = null;
+                this.selectedSort = 'date'; // 默认排序方式
+            }
+
+            // 显示基础动作菜单
+            show(options = {}) {
+                const {
+                    title = '选择操作',
+                    actions = [],
+                    cancelable = true,
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentSheet = document.getElementById('action-sheet');
+                    this.currentCallback = (action) => {
+                        if (action) {
+                            resolve({ action, data });
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+
+                    // 设置标题
+                    document.getElementById('action-sheet-title').textContent = title;
+
+                    // 生成动作按钮
+                    const content = document.getElementById('action-sheet-content');
+                    content.innerHTML = actions.map((action, index) => `
+                        <button class="action-sheet-item ${action.destructive ? 'destructive' : ''}" 
+                                data-action="${action.value}"
+                                onclick="selectAction('${action.value}')">
+                            ${action.icon ? `<span class="action-icon">${action.icon}</span>` : ''}
+                            <span class="action-text">${action.label}</span>
+                        </button>
+                    `).join('');
+
+                    // 显示菜单
+                    this.showActionSheet();
+                });
+            }
+
+            // 显示分享菜单
+            showShare(options = {}) {
+                const {
+                    title = '分享到',
+                    content = null,
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentSheet = document.getElementById('share-action-sheet');
+                    this.currentCallback = (platform) => {
+                        if (platform) {
+                            resolve({ platform, data });
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+
+                    // 设置标题
+                    this.currentSheet.querySelector('.action-sheet-header').textContent = title;
+
+                    // 显示菜单
+                    this.showActionSheet();
+                });
+            }
+
+            // 显示文件操作菜单
+            showFile(options = {}) {
+                const {
+                    fileName = '文件',
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentSheet = document.getElementById('file-action-sheet');
+                    this.currentCallback = (action) => {
+                        if (action) {
+                            resolve({ action, data });
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+
+                    // 显示菜单
+                    this.showActionSheet();
+                });
+            }
+
+            // 显示图片操作菜单
+            showImage(options = {}) {
+                const {
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentSheet = document.getElementById('image-action-sheet');
+                    this.currentCallback = (action) => {
+                        if (action) {
+                            resolve({ action, data });
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+
+                    // 显示菜单
+                    this.showActionSheet();
+                });
+            }
+
+            // 显示排序菜单
+            showSort(options = {}) {
+                const {
+                    title = '排序方式',
+                    currentSort = 'date',
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentSheet = document.getElementById('sort-action-sheet');
+                    this.currentCallback = (sortType) => {
+                        if (sortType) {
+                            resolve({ sortType, data });
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+                    this.selectedSort = currentSort;
+
+                    // 设置标题
+                    this.currentSheet.querySelector('.action-sheet-header').textContent = title;
+
+                    // 更新选中状态
+                    this.updateSortSelection(currentSort);
+
+                    // 显示菜单
+                    this.showActionSheet();
+                });
+            }
+
+            // 更新排序选择状态
+            updateSortSelection(sortType) {
+                // 隐藏所有勾选图标
+                const checkIcons = document.querySelectorAll('.check-icon');
+                checkIcons.forEach(icon => icon.style.display = 'none');
+
+                // 显示当前选中项的勾选图标
+                const currentCheck = document.getElementById(`sort-${sortType}-check`);
+                if (currentCheck) {
+                    currentCheck.style.display = 'inline-block';
+                }
+            }
+
+            // 显示动作菜单
+            showActionSheet() {
+                if (this.currentSheet) {
+                    this.currentSheet.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // 添加显示动画
+                    setTimeout(() => {
+                        this.currentSheet.classList.add('show');
+                    }, 10);
+                }
+            }
+
+            // 隐藏动作菜单
+            hideActionSheet() {
+                if (this.currentSheet) {
+                    this.currentSheet.classList.remove('show');
+                    
+                    setTimeout(() => {
+                        this.currentSheet.style.display = 'none';
+                        document.body.style.overflow = '';
+                        this.currentSheet = null;
+                        this.currentCallback = null;
+                        this.currentData = null;
+                    }, 300);
+                }
+            }
+
+            // 选择动作
+            selectAction(action) {
+                if (this.currentCallback) {
+                    this.currentCallback(action);
+                }
+                this.hideActionSheet();
+            }
+
+            // 取消选择
+            cancel() {
+                if (this.currentCallback) {
+                    this.currentCallback(null);
+                }
+                this.hideActionSheet();
+            }
+        }
+
+        // 创建全局动作菜单管理器实例
+        window.ActionSheetManager = new ActionSheetManager();
+
+        // 快捷方法
+        window.showActionSheet = (options) => window.ActionSheetManager.show(options);
+        window.showShareSheet = (options) => window.ActionSheetManager.showShare(options);
+        window.showFileSheet = (options) => window.ActionSheetManager.showFile(options);
+        window.showImageSheet = (options) => window.ActionSheetManager.showImage(options);
+        window.showSortSheet = (options) => window.ActionSheetManager.showSort(options);
+
+        // 基础动作菜单方法
+        function selectAction(action) {
+            window.ActionSheetManager.selectAction(action);
+        }
+
+        function closeActionSheet() {
+            window.ActionSheetManager.cancel();
+        }
+
+        // 分享菜单方法
+        function shareToWeChat() {
+            window.ActionSheetManager.selectAction('wechat');
+        }
+
+        function shareToMoments() {
+            window.ActionSheetManager.selectAction('moments');
+        }
+
+        function shareToQQ() {
+            window.ActionSheetManager.selectAction('qq');
+        }
+
+        function shareToWeibo() {
+            window.ActionSheetManager.selectAction('weibo');
+        }
+
+        function copyLink() {
+            window.ActionSheetManager.selectAction('copy');
+        }
+
+        function moreShare() {
+            window.ActionSheetManager.selectAction('more');
+        }
+
+        function closeShareSheet() {
+            window.ActionSheetManager.cancel();
+        }
+
+        // 文件操作菜单方法
+        function openFile() {
+            window.ActionSheetManager.selectAction('open');
+        }
+
+        function editFile() {
+            window.ActionSheetManager.selectAction('edit');
+        }
+
+        function renameFile() {
+            window.ActionSheetManager.selectAction('rename');
+        }
+
+        function duplicateFile() {
+            window.ActionSheetManager.selectAction('duplicate');
+        }
+
+        function moveFile() {
+            window.ActionSheetManager.selectAction('move');
+        }
+
+        function deleteFile() {
+            // 显示确认对话框
+            window.showConfirm({
+                title: '确认删除',
+                message: '删除后无法恢复，确定要删除这个文件吗？',
+                confirmText: '删除',
+                cancelText: '取消'
+            }).then(() => {
+                window.ActionSheetManager.selectAction('delete');
+            }).catch(() => {
+                // 用户取消删除
+            });
+        }
+
+        function closeFileSheet() {
+            window.ActionSheetManager.cancel();
+        }
+
+        // 图片操作菜单方法
+        function viewImage() {
+            window.ActionSheetManager.selectAction('view');
+        }
+
+        function editImage() {
+            window.ActionSheetManager.selectAction('edit');
+        }
+
+        function cropImage() {
+            window.ActionSheetManager.selectAction('crop');
+        }
+
+        function filterImage() {
+            window.ActionSheetManager.selectAction('filter');
+        }
+
+        function saveImage() {
+            window.ActionSheetManager.selectAction('save');
+        }
+
+        function shareImage() {
+            window.ActionSheetManager.selectAction('share');
+        }
+
+        function closeImageSheet() {
+            window.ActionSheetManager.cancel();
+        }
+
+        // 排序菜单方法
+        function sortByDate() {
+            window.ActionSheetManager.selectAction('date');
+        }
+
+        function sortByName() {
+            window.ActionSheetManager.selectAction('name');
+        }
+
+        function sortBySize() {
+            window.ActionSheetManager.selectAction('size');
+        }
+
+        function sortByType() {
+            window.ActionSheetManager.selectAction('type');
+        }
+
+        function sortByModified() {
+            window.ActionSheetManager.selectAction('modified');
+        }
+
+        function closeSortSheet() {
+            window.ActionSheetManager.cancel();
+        }
+
+        // 点击遮罩层关闭菜单
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('action-sheet-overlay')) {
+                window.ActionSheetManager.cancel();
+            }
+        });
+
+        // ESC键关闭菜单
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const manager = window.ActionSheetManager;
+                if (manager.currentSheet) {
+                    manager.cancel();
+                }
+            }
+        });
+
+        // 导出给其他脚本使用
+        if (typeof module !== 'undefined' && module.exports) {
+            module.exports = ActionSheetManager;
+        }
+    </script>
+
+    <style>
+        /* 动作菜单基础样式 */
+        .action-sheet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: flex-end;
+            align-items: flex-end;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-sheet-overlay.show {
+            opacity: 1;
+        }
+
+        .action-sheet-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 16px 16px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .action-sheet-overlay.show .action-sheet-container {
+            transform: translateY(0);
+        }
+
+        .action-sheet-header {
+            padding: 16px;
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 500;
+        }
+
+        .action-sheet-content {
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .action-sheet-item {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 17px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-sheet-item:hover {
+            background: #f8f8f8;
+        }
+
+        .action-sheet-item:active {
+            background: #f0f0f0;
+        }
+
+        .action-sheet-item.destructive {
+            color: #FF3B30;
+        }
+
+        .action-sheet-item:last-child {
+            border-bottom: none;
+        }
+
+        .action-icon {
+            width: 20px;
+            height: 20px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-text {
+            flex: 1;
+            text-align: left;
+        }
+
+        .check-icon {
+            color: #007AFF;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .action-sheet-footer {
+            background: #f8f8f8;
+            padding: 8px 0;
+        }
+
+        .action-sheet-cancel {
+            width: calc(100% - 16px);
+            margin: 0 8px;
+            padding: 16px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            color: #007AFF;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-sheet-cancel:hover {
+            background: #f0f0f0;
+        }
+
+        .action-sheet-cancel:active {
+            background: #e8e8e8;
+        }
+
+        /* 分享菜单特殊样式 */
+        .share-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .share-content .action-sheet-item {
+            flex-direction: column;
+            border: none;
+            padding: 12px 8px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .share-content .action-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: #f8f8f8;
+        }
+
+        .share-content .action-text {
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .share-content .action-icon.wechat { background: #07C160; color: white; }
+        .share-content .action-icon.moments { background: #07C160; color: white; }
+        .share-content .action-icon.qq { background: #12B7F5; color: white; }
+        .share-content .action-icon.weibo { background: #FF8200; color: white; }
+        .share-content .action-icon.copy { background: #8E8E93; color: white; }
+        .share-content .action-icon.more { background: #8E8E93; color: white; }
+
+        /* 滚动条样式 */
+        .action-sheet-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .action-sheet-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .action-sheet-content::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 2px;
+        }
+    </style>
+</body>
+</html>

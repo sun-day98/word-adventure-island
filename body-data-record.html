@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 身体数据</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <button class="back-btn" onclick="parent.navigateToPage('profile.html')">← 返回</button>
+            <h1>身体数据记录</h1>
+            <button class="history-btn" onclick="showHistory()">📊</button>
+        </header>
+
+        <!-- 数据概览卡片 -->
+        <section class="data-overview">
+            <div class="current-data">
+                <h2>当前数据</h2>
+                <div class="data-grid">
+                    <div class="data-card primary">
+                        <div class="data-label">体重</div>
+                        <div class="data-value">
+                            <span class="value-number">68.5</span>
+                            <span class="value-unit">kg</span>
+                        </div>
+                        <div class="data-change negative">-0.5</div>
+                    </div>
+                    
+                    <div class="data-card secondary">
+                        <div class="data-label">BMI</div>
+                        <div class="data-value">
+                            <span class="value-number">22.4</span>
+                            <span class="value-unit"></span>
+                        </div>
+                        <div class="data-status normal">正常</div>
+                    </div>
+                    
+                    <div class="data-card tertiary">
+                        <div class="data-label">体脂率</div>
+                        <div class="data-value">
+                            <span class="value-number">18.2</span>
+                            <span class="value-unit">%</span>
+                        </div>
+                        <div class="data-change negative">-0.3</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 快速录入 -->
+        <section class="quick-record">
+            <h2>快速记录</h2>
+            <div class="quick-inputs">
+                <div class="input-group">
+                    <label for="weight-input">体重 (kg)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="weight-input" value="68.5" step="0.1" min="30" max="200" class="number-input">
+                        <span class="unit">kg</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="body-fat-input">体脂率 (%)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="body-fat-input" value="18.2" step="0.1" min="5" max="50" class="number-input">
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="muscle-mass-input">肌肉量 (kg)</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="muscle-mass-input" value="52.3" step="0.1" min="20" max="100" class="number-input">
+                        <span class="unit">kg</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="record-btn" onclick="recordData()">记录今日数据</button>
+        </section>
+
+        <!-- 详细数据录入 -->
+        <section class="detailed-record">
+            <h2>详细数据</h2>
+            <div class="toggle-btn" onclick="toggleDetailed()">
+                <span id="toggle-text">展开详细数据</span>
+                <span id="toggle-icon">▼</span>
+            </div>
+            
+            <div class="detailed-form" id="detailed-form" style="display: none;">
+                <div class="form-grid">
+                    <div class="form-item">
+                        <label for="waist">腰围 (cm)</label>
+                        <input type="number" id="waist" step="0.1" min="50" max="150" class="form-input" placeholder="请输入腰围">
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="chest">胸围 (cm)</label>
+                        <input type="number" id="chest" step="0.1" min="60" max="150" class="form-input" placeholder="请输入胸围">
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="arm">臂围 (cm)</label>
+                        <input type="number" id="arm" step="0.1" min="20" max="60" class="form-input" placeholder="请输入臂围">
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="thigh">大腿围 (cm)</label>
+                        <input type="number" id="thigh" step="0.1" min="30" max="80" class="form-input" placeholder="请输入大腿围">
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="hip">臀围 (cm)</label>
+                        <input type="number" id="hip" step="0.1" min="60" max="150" class="form-input" placeholder="请输入臀围">
+                    </div>
+                    
+                    <div class="form-item">
+                        <label for="calf">小腿围 (cm)</label>
+                        <input type="number" id="calf" step="0.1" min="20" max="60" class="form-input" placeholder="请输入小腿围">
+                    </div>
+                </div>
+                
+                <div class="body-composition">
+                    <h3>身体成分分析</h3>
+                    <div class="composition-grid">
+                        <div class="composition-item">
+                            <label for="bone-mass">骨量 (kg)</label>
+                            <input type="number" id="bone-mass" step="0.01" min="1" max="10" class="form-input">
+                        </div>
+                        
+                        <div class="composition-item">
+                            <label for="water-rate">水分率 (%)</label>
+                            <input type="number" id="water-rate" step="0.1" min="30" max="70" class="form-input">
+                        </div>
+                        
+                        <div class="composition-item">
+                            <label for="visceral-fat">内脏脂肪等级</label>
+                            <input type="number" id="visceral-fat" min="1" max="30" class="form-input">
+                        </div>
+                        
+                        <div class="composition-item">
+                            <label for="basal-metabolism">基础代谢 (kcal)</label>
+                            <input type="number" id="basal-metabolism" min="800" max="3000" class="form-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势图表 -->
+        <section class="trend-charts">
+            <h2>数据趋势</h2>
+            <div class="chart-tabs">
+                <button class="tab-btn active" onclick="switchChart('weight')">体重</button>
+                <button class="tab-btn" onclick="switchChart('body-fat')">体脂率</button>
+                <button class="tab-btn" onclick="switchChart('bmi')">BMI</button>
+                <button class="tab-btn" onclick="switchChart('muscle')">肌肉量</button>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="trend-chart" width="300" height="200"></canvas>
+            </div>
+            
+            <div class="chart-period">
+                <button class="period-btn" onclick="changePeriod('7d')">7天</button>
+                <button class="period-btn active" onclick="changePeriod('30d')">30天</button>
+                <button class="period-btn" onclick="changePeriod('90d')">3个月</button>
+                <button class="period-btn" onclick="changePeriod('1y')">1年</button>
+            </div>
+        </section>
+
+        <!-- 目标追踪 -->
+        <section class="goal-tracking">
+            <h2>目标追踪</h2>
+            <div class="goal-progress">
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <span class="goal-name">目标体重</span>
+                        <span class="goal-target">65.0 kg</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                    <div class="goal-status">
+                        <span class="current">当前: 68.5 kg</span>
+                        <span class="remaining">还需减重: 3.5 kg</span>
+                    </div>
+                </div>
+                
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <span class="goal-name">目标体脂率</span>
+                        <span class="goal-target">15.0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%"></div>
+                    </div>
+                    <div class="goal-status">
+                        <span class="current">当前: 18.2%</span>
+                        <span class="remaining">还需降低: 3.2%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="edit-goal-btn" onclick="editGoals()">编辑目标</button>
+        </section>
+
+        <!-- 历史记录 -->
+        <section class="history-records">
+            <h2>历史记录</h2>
+            <div class="record-list">
+                <div class="record-item">
+                    <div class="record-date">
+                        <div class="date">12月5日</div>
+                        <div class="time">08:30</div>
+                    </div>
+                    <div class="record-data">
+                        <div class="data-point">
+                            <span class="label">体重</span>
+                            <span class="value">68.5 kg</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="label">体脂率</span>
+                            <span class="value">18.2%</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="label">肌肉量</span>
+                            <span class="value">52.3 kg</span>
+                        </div>
+                    </div>
+                    <div class="record-actions">
+                        <button class="action-btn" onclick="editRecord(this)">编辑</button>
+                        <button class="action-btn delete" onclick="deleteRecord(this)">删除</button>
+                    </div>
+                </div>
+                
+                <div class="record-item">
+                    <div class="record-date">
+                        <div class="date">12月4日</div>
+                        <div class="time">07:45</div>
+                    </div>
+                    <div class="record-data">
+                        <div class="data-point">
+                            <span class="label">体重</span>
+                            <span class="value">69.0 kg</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="label">体脂率</span>
+                            <span class="value">18.5%</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="label">肌肉量</span>
+                            <span class="value">52.0 kg</span>
+                        </div>
+                    </div>
+                    <div class="record-actions">
+                        <button class="action-btn" onclick="editRecord(this)">编辑</button>
+                        <button class="action-btn delete" onclick="deleteRecord(this)">删除</button>
+                    </div>
+                </div>
+                
+                <div class="record-item">
+                    <div class="record-date">
+                        <div class="date">12月3日</div>
+                        <div class="time">08:15</div>
+                    </div>
+                    <div class="record-data">
+                        <div class="data-point">
+                            <span class="label">体重</span>
+                            <span class="value">68.8 kg</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="label">体脂率</span>
+                            <span class="value">18.3%</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="label">肌肉量</span>
+                            <span class="value">51.8 kg</span>
+                        </div>
+                    </div>
+                    <div class="record-actions">
+                        <button class="action-btn" onclick="editRecord(this)">编辑</button>
+                        <button class="action-btn delete" onclick="deleteRecord(this)">删除</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="load-more-btn" onclick="loadMoreRecords()">加载更多</button>
+        </section>
+    </div>
+
+    <!-- 目标编辑弹窗 -->
+    <div class="modal-overlay" id="goal-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑目标</h3>
+                <button class="close-btn" onclick="closeGoalModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="target-weight">目标体重 (kg)</label>
+                    <input type="number" id="target-weight" value="65.0" step="0.1" min="30" max="200">
+                </div>
+                <div class="form-group">
+                    <label for="target-body-fat">目标体脂率 (%)</label>
+                    <input type="number" id="target-body-fat" value="15.0" step="0.1" min="5" max="50">
+                </div>
+                <div class="form-group">
+                    <label for="target-date">目标日期</label>
+                    <input type="date" id="target-date" value="2025-03-01">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="closeGoalModal()">取消</button>
+                <button class="primary-btn" onclick="saveGoals()">保存目标</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data-charts.js"></script>
+    <script>
+        let currentChartType = 'weight';
+        let currentPeriod = '30d';
+
+        function recordData() {
+            const weight = document.getElementById('weight-input').value;
+            const bodyFat = document.getElementById('body-fat-input').value;
+            const muscleMass = document.getElementById('muscle-mass-input').value;
+            
+            if (!weight || !bodyFat || !muscleMass) {
+                alert('请填写完整的身体数据');
+                return;
+            }
+            
+            // 验证数据范围
+            if (weight < 30 || weight > 200) {
+                alert('请输入有效的体重数据');
+                return;
+            }
+            
+            if (bodyFat < 5 || bodyFat > 50) {
+                alert('请输入有效的体脂率数据');
+                return;
+            }
+            
+            // 模拟保存数据
+            const recordData = {
+                date: new Date().toISOString(),
+                weight: parseFloat(weight),
+                bodyFat: parseFloat(bodyFat),
+                muscleMass: parseFloat(muscleMass),
+                detailedData: {
+                    waist: document.getElementById('waist').value,
+                    chest: document.getElementById('chest').value,
+                    arm: document.getElementById('arm').value,
+                    thigh: document.getElementById('thigh').value,
+                    hip: document.getElementById('hip').value,
+                    calf: document.getElementById('calf').value,
+                    boneMass: document.getElementById('bone-mass').value,
+                    waterRate: document.getElementById('water-rate').value,
+                    visceralFat: document.getElementById('visceral-fat').value,
+                    basalMetabolism: document.getElementById('basal-metabolism').value
+                }
+            };
+            
+            console.log('保存身体数据:', recordData);
+            
+            // 显示保存成功提示
+            const recordBtn = document.querySelector('.record-btn');
+            const originalText = recordBtn.textContent;
+            recordBtn.textContent = '保存中...';
+            recordBtn.disabled = true;
+            
+            setTimeout(() => {
+                recordBtn.textContent = '已保存';
+                setTimeout(() => {
+                    recordBtn.textContent = originalText;
+                    recordBtn.disabled = false;
+                    
+                    // 更新当前数据显示
+                    updateCurrentDisplay(recordData);
+                }, 1000);
+            }, 1000);
+        }
+
+        function updateCurrentDisplay(data) {
+            // 更新首页显示的数据
+            document.querySelector('.data-card.primary .value-number').textContent = data.weight;
+            document.querySelector('.data-card.tertiary .value-number').textContent = data.bodyFat;
+            
+            // 重新计算BMI
+            const height = 175; // 假设身高，实际应该从用户资料获取
+            const bmi = (data.weight / ((height / 100) ** 2)).toFixed(1);
+            document.querySelector('.data-card.secondary .value-number').textContent = bmi;
+        }
+
+        function toggleDetailed() {
+            const form = document.getElementById('detailed-form');
+            const toggleText = document.getElementById('toggle-text');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                toggleText.textContent = '收起详细数据';
+                toggleIcon.textContent = '▲';
+            } else {
+                form.style.display = 'none';
+                toggleText.textContent = '展开详细数据';
+                toggleIcon.textContent = '▼';
+            }
+        }
+
+        function switchChart(type) {
+            currentChartType = type;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 重新绘制图表
+            drawChart(type);
+        }
+
+        function changePeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 重新绘制图表
+            drawChart(currentChartType);
+        }
+
+        function drawChart(type) {
+            const canvas = document.getElementById('trend-chart');
+            if (canvas && window.drawBodyDataChart) {
+                drawBodyDataChart(canvas, type, currentPeriod);
+            }
+        }
+
+        function editGoals() {
+            document.getElementById('goal-modal').style.display = 'block';
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goal-modal').style.display = 'none';
+        }
+
+        function saveGoals() {
+            const targetWeight = document.getElementById('target-weight').value;
+            const targetBodyFat = document.getElementById('target-body-fat').value;
+            const targetDate = document.getElementById('target-date').value;
+            
+            console.log('保存目标:', {
+                weight: targetWeight,
+                bodyFat: targetBodyFat,
+                date: targetDate
+            });
+            
+            alert('目标已更新');
+            closeGoalModal();
+        }
+
+        function editRecord(btn) {
+            const recordItem = btn.closest('.record-item');
+            const data = recordItem.querySelector('.record-data');
+            // 实现编辑逻辑
+            alert('编辑记录功能');
+        }
+
+        function deleteRecord(btn) {
+            if (confirm('确定要删除这条记录吗？')) {
+                const recordItem = btn.closest('.record-item');
+                recordItem.remove();
+            }
+        }
+
+        function loadMoreRecords() {
+            // 模拟加载更多记录
+            alert('加载更多历史记录');
+        }
+
+        function showHistory() {
+            // 显示完整的历史记录页面
+            alert('显示完整历史记录');
+        }
+
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            drawChart('weight');
+        });
+
+        // 实时计算BMI
+        document.getElementById('weight-input').addEventListener('input', function() {
+            const weight = parseFloat(this.value);
+            const height = 175; // 假设身高，实际应该从用户资料获取
+            
+            if (weight && height) {
+                const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
+                console.log('实时BMI:', bmi);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>挑战中心 - 单词冒险岛</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/word-adventure.css">
+</head>
+<body>
+    <div class="page-container challenges-page">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <h1>🎮 挑战中心</h1>
+            <div class="challenge-badges">
+                <span class="badge">连胜: <span id="win-streak">0</span></span>
+                <span class="badge">总分: <span id="total-score">0</span></span>
+            </div>
+        </header>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 每日挑战 -->
+            <section class="daily-challenge-section">
+                <div class="section-header">
+                    <h2>📅 每日挑战</h2>
+                    <button class="refresh-btn" onclick="refreshDailyChallenge()">🔄</button>
+                </div>
+                
+                <div class="daily-challenge-card" id="daily-challenge">
+                    <div class="challenge-header">
+                        <div class="challenge-type">今日主题：动物世界</div>
+                        <div class="challenge-time">剩余时间: <span id="daily-time-left">23:45:30</span></div>
+                    </div>
+                    <div class="challenge-content">
+                        <div class="challenge-description">
+                            完成5个关于动物的单词挑战，获得双倍奖励！
+                        </div>
+                        <div class="challenge-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="daily-progress" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text" id="daily-progress-text">0/5</span>
+                        </div>
+                        <div class="challenge-rewards">
+                            <span class="reward-item">💰 100</span>
+                            <span class="reward-item">⭐ 200 EXP</span>
+                            <span class="reward-item">🎁 神秘宝箱</span>
+                        </div>
+                    </div>
+                    <button class="primary-btn" id="start-daily-btn" onclick="startDailyChallenge()">开始挑战</button>
+                </div>
+            </section>
+
+            <!-- 挑战模式选择 -->
+            <section class="challenge-modes">
+                <h2>🎯 挑战模式</h2>
+                <div class="modes-grid">
+                    <div class="mode-card" onclick="startMode('pronunciation')">
+                        <div class="mode-icon">🎤</div>
+                        <h3>发音挑战</h3>
+                        <p>跟读单词，提升发音准确度</p>
+                        <div class="mode-difficulty">⭐⭐</div>
+                    </div>
+                    
+                    <div class="mode-card" onclick="startMode('spelling')">
+                        <div class="mode-icon">✏️</div>
+                        <h3>拼写大战</h3>
+                        <p>正确拼写单词，击败敌人</p>
+                        <div class="mode-difficulty">⭐⭐⭐</div>
+                    </div>
+                    
+                    <div class="mode-card" onclick="startMode('matching')">
+                        <div class="mode-icon">🎯</div>
+                        <h3>单词配对</h3>
+                        <p>连接单词与释义，训练记忆</p>
+                        <div class="mode-difficulty">⭐⭐</div>
+                    </div>
+                    
+                    <div class="mode-card" onclick="startMode('sentence')">
+                        <div class="mode-icon">📝</div>
+                        <h3>句子构建</h3>
+                        <p>用单词造句，提升应用能力</p>
+                        <div class="mode-difficulty">⭐⭐⭐⭐</div>
+                    </div>
+                    
+                    <div class="mode-card" onclick="startMode('speed')">
+                        <div class="mode-icon">⚡</div>
+                        <h3>极速挑战</h3>
+                        <p>限时答题，考验反应速度</p>
+                        <div class="mode-difficulty">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    
+                    <div class="mode-card" onclick="startMode('master')">
+                        <div class="mode-icon">👑</div>
+                        <h3>综合大师</h3>
+                        <p>全方位挑战，测试综合能力</p>
+                        <div class="mode-difficulty">⭐⭐⭐⭐⭐</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 排行榜 -->
+            <section class="leaderboard-section">
+                <div class="section-header">
+                    <h2>🏆 排行榜</h2>
+                    <div class="leaderboard-tabs">
+                        <button class="tab-btn active" data-type="daily" onclick="switchLeaderboard('daily')">今日</button>
+                        <button class="tab-btn" data-type="weekly" onclick="switchLeaderboard('weekly')">本周</button>
+                        <button class="tab-btn" data-type="all" onclick="switchLeaderboard('all')">总榜</button>
+                    </div>
+                </div>
+                
+                <div class="leaderboard-list" id="leaderboard-list">
+                    <!-- 排行榜将动态生成 -->
+                </div>
+            </section>
+
+            <!-- 成就展示 -->
+            <section class="achievements-section">
+                <h2>🎖️ 最近成就</h2>
+                <div class="achievements-grid" id="achievements-grid">
+                    <!-- 成就将动态生成 -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 挑战设置弹窗 -->
+    <div id="challenge-settings-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>挑战设置</h3>
+            <div class="setting-group">
+                <label>难度等级</label>
+                <select id="difficulty-select">
+                    <option value="easy">简单</option>
+                    <option value="normal" selected>普通</option>
+                    <option value="hard">困难</option>
+                    <option value="expert">专家</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>单词数量</label>
+                <select id="word-count-select">
+                    <option value="5">5个单词</option>
+                    <option value="10" selected>10个单词</option>
+                    <option value="15">15个单词</option>
+                    <option value="20">20个单词</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>时间限制</label>
+                <select id="time-limit-select">
+                    <option value="60">1分钟</option>
+                    <option value="120" selected>2分钟</option>
+                    <option value="180">3分钟</option>
+                    <option value="300">5分钟</option>
+                    <option value="0">无限制</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="secondary-btn" onclick="closeChallengeSettings()">取消</button>
+                <button class="primary-btn" onclick="confirmChallengeSettings()">开始挑战</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前挑战设置
+        let currentChallengeMode = null;
+        let challengeSettings = {
+            difficulty: 'normal',
+            wordCount: 10,
+            timeLimit: 120
+        };
+
+        // ===== 页面初始化 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChallenges();
+        });
+
+        async function initializeChallenges() {
+            // 等待游戏引擎初始化
+            if (typeof WordAdventure === 'undefined') {
+                setTimeout(initializeChallenges, 100);
+                return;
+            }
+
+            updateChallengeStats();
+            loadDailyChallenge();
+            loadLeaderboard('daily');
+            loadRecentAchievements();
+            startDailyChallengeTimer();
+        }
+
+        // ===== 挑战统计更新 =====
+        function updateChallengeStats() {
+            const gameState = WordAdventure.gameState;
+            const history = gameState.learning.challengeHistory;
+            
+            // 计算连胜
+            let winStreak = 0;
+            for (let i = history.length - 1; i >= 0; i--) {
+                if (history[i].success) {
+                    winStreak++;
+                } else {
+                    break;
+                }
+            }
+            
+            // 计算总分
+            const totalScore = history.reduce((sum, challenge) => sum + (challenge.score || 0), 0);
+            
+            document.getElementById('win-streak').textContent = winStreak;
+            document.getElementById('total-score').textContent = totalScore;
+        }
+
+        // ===== 每日挑战 =====
+        function loadDailyChallenge() {
+            const today = new Date().toDateString();
+            const dailyData = localStorage.getItem(`daily_challenge_${today}`);
+            
+            if (dailyData) {
+                const data = JSON.parse(dailyData);
+                updateDailyChallengeProgress(data);
+            } else {
+                // 生成新的每日挑战
+                generateDailyChallenge();
+            }
+        }
+
+        function generateDailyChallenge() {
+            // 根据今日日期生成主题和单词
+            const themes = ['动物世界', '水果乐园', '颜色王国', '运动竞技', '自然风光'];
+            const today = new Date().getDay();
+            const theme = themes[today % themes.length];
+            
+            // 随机选择相关单词
+            const themeWords = selectThemeWords(theme, 5);
+            
+            const dailyData = {
+                theme: theme,
+                words: themeWords,
+                completed: 0,
+                total: 5,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem(`daily_challenge_${new Date().toDateString()}`, JSON.stringify(dailyData));
+            updateDailyChallengeProgress(dailyData);
+        }
+
+        function selectThemeWords(theme, count) {
+            // 简化实现，随机选择单词
+            const allWords = [];
+            for (const difficulty in WordAdventureData.WordDatabase) {
+                allWords.push(...WordAdventureData.WordDatabase[difficulty]);
+            }
+            
+            const selected = [];
+            const shuffled = allWords.sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < count && i < shuffled.length; i++) {
+                selected.push(shuffled[i].id);
+            }
+            
+            return selected;
+        }
+
+        function updateDailyChallengeProgress(data) {
+            const progress = (data.completed / data.total) * 100;
+            
+            document.querySelector('#daily-challenge .challenge-type').textContent = `今日主题：${data.theme}`;
+            document.getElementById('daily-progress').style.width = `${progress}%`;
+            document.getElementById('daily-progress-text').textContent = `${data.completed}/${data.total}`;
+            
+            if (data.completed >= data.total) {
+                document.getElementById('start-daily-btn').textContent = '已完成';
+                document.getElementById('start-daily-btn').disabled = true;
+            }
+        }
+
+        function startDailyChallenge() {
+            const today = new Date().toDateString();
+            const dailyData = JSON.parse(localStorage.getItem(`daily_challenge_${today}`) || '{}');
+            
+            if (dailyData.words && dailyData.words.length > 0) {
+                // 跳转到挑战页面
+                const wordsParam = dailyData.words.join(',');
+                if (window.parent && window.parent.NavigationManager) {
+                    window.parent.NavigationManager.navigateToPage(`challenge.html?words=${wordsParam}&mode=daily`);
+                }
+            }
+        }
+
+        function refreshDailyChallenge() {
+            if (confirm('确定要刷新每日挑战吗？当前进度将丢失。')) {
+                generateDailyChallenge();
+                WordAdventureUI.showToast('每日挑战已刷新', 'success');
+            }
+        }
+
+        function startDailyChallengeTimer() {
+            // 计算到明日午夜的剩余时间
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const timeDiff = tomorrow - now;
+            
+            setInterval(() => {
+                const now = new Date();
+                const timeLeft = tomorrow - now;
+                
+                if (timeLeft > 0) {
+                    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    
+                    document.getElementById('daily-time-left').textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                } else {
+                    // 新的一天，重新生成挑战
+                    generateDailyChallenge();
+                    startDailyChallengeTimer();
+                }
+            }, 1000);
+        }
+
+        // ===== 挑战模式 =====
+        function startMode(mode) {
+            currentChallengeMode = mode;
+            showChallengeSettings();
+        }
+
+        function showChallengeSettings() {
+            document.getElementById('challenge-settings-modal').style.display = 'flex';
+            
+            // 根据模式调整默认设置
+            switch (currentChallengeMode) {
+                case 'pronunciation':
+                    challengeSettings.wordCount = 8;
+                    challengeSettings.timeLimit = 0; // 无时间限制
+                    break;
+                case 'spelling':
+                    challengeSettings.wordCount = 10;
+                    challengeSettings.timeLimit = 180;
+                    break;
+                case 'speed':
+                    challengeSettings.wordCount = 20;
+                    challengeSettings.timeLimit = 60;
+                    challengeSettings.difficulty = 'normal';
+                    break;
+                case 'master':
+                    challengeSettings.wordCount = 15;
+                    challengeSettings.timeLimit = 300;
+                    challengeSettings.difficulty = 'hard';
+                    break;
+            }
+            
+            // 更新设置界面
+            document.getElementById('difficulty-select').value = challengeSettings.difficulty;
+            document.getElementById('word-count-select').value = challengeSettings.wordCount;
+            document.getElementById('time-limit-select').value = challengeSettings.timeLimit;
+        }
+
+        function closeChallengeSettings() {
+            document.getElementById('challenge-settings-modal').style.display = 'none';
+        }
+
+        function confirmChallengeSettings() {
+            challengeSettings.difficulty = document.getElementById('difficulty-select').value;
+            challengeSettings.wordCount = parseInt(document.getElementById('word-count-select').value);
+            challengeSettings.timeLimit = parseInt(document.getElementById('time-limit-select').value);
+            
+            closeChallengeSettings();
+            
+            // 根据设置生成挑战参数
+            const params = new URLSearchParams({
+                mode: currentChallengeMode,
+                difficulty: challengeSettings.difficulty,
+                count: challengeSettings.wordCount,
+                time: challengeSettings.timeLimit
+            });
+            
+            // 跳转到挑战页面
+            if (window.parent && window.parent.NavigationManager) {
+                window.parent.NavigationManager.navigateToPage(`challenge.html?${params.toString()}`);
+            }
+        }
+
+        // ===== 排行榜 =====
+        function loadLeaderboard(type) {
+            // 模拟排行榜数据
+            const leaderboardData = generateLeaderboardData(type);
+            renderLeaderboard(leaderboardData);
+        }
+
+        function generateLeaderboardData(type) {
+            const names = ['小明', '小红', '小华', '小丽', '小强', '小美', '小军', '小芳'];
+            const data = [];
+            
+            // 添加当前玩家
+            const currentScore = WordAdventure.gameState.statistics.totalScore || 0;
+            data.push({
+                rank: 1,
+                name: '我',
+                score: currentScore,
+                avatar: '👤',
+                isPlayer: true
+            });
+            
+            // 添加其他玩家
+            for (let i = 1; i < 10; i++) {
+                data.push({
+                    rank: i + 1,
+                    name: names[i - 1],
+                    score: Math.floor(Math.random() * 1000) + 100,
+                    avatar: ['😀', '😎', '🤓', '😊', '🦄', '🐱', '🐶', '🐼'][i - 1],
+                    isPlayer: false
+                });
+            }
+            
+            // 按分数排序
+            data.sort((a, b) => b.score - a.score);
+            
+            // 更新排名
+            data.forEach((item, index) => {
+                item.rank = index + 1;
+            });
+            
+            return data;
+        }
+
+        function renderLeaderboard(data) {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            
+            let html = '';
+            data.forEach((player, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${player.rank}.`;
+                
+                html += `
+                    <div class="leaderboard-item ${player.isPlayer ? 'current-player' : ''}">
+                        <div class="player-rank">${medal}</div>
+                        <div class="player-avatar">${player.avatar}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}</div>
+                            <div class="player-score">${player.score} 分</div>
+                        </div>
+                        ${player.isPlayer ? '<div class="player-badge">当前</div>' : ''}
+                    </div>
+                `;
+            });
+            
+            leaderboardList.innerHTML = html;
+        }
+
+        function switchLeaderboard(type) {
+            // 更新标签状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            
+            loadLeaderboard(type);
+        }
+
+        // ===== 成就系统 =====
+        function loadRecentAchievements() {
+            const achievements = WordAdventure.gameState.player.unlocked.achievements;
+            const recentAchievements = achievements.slice(-6).reverse();
+            
+            renderRecentAchievements(recentAchievements);
+        }
+
+        function renderRecentAchievements(achievementIds) {
+            const grid = document.getElementById('achievements-grid');
+            
+            if (achievementIds.length === 0) {
+                grid.innerHTML = '<div class="empty-achievements">暂无成就</div>';
+                return;
+            }
+            
+            let html = '';
+            achievementIds.forEach(id => {
+                const achievement = WordAdventureData.Achievements[id];
+                if (achievement) {
+                    html += `
+                        <div class="achievement-item">
+                            <div class="achievement-icon">${achievement.icon}</div>
+                            <div class="achievement-name">${achievement.name}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        // ===== 监听游戏事件 =====
+        function setupEventListeners() {
+            WordAdventure.on('challengeCompleted', function() {
+                updateChallengeStats();
+                loadLeaderboard('daily');
+                loadRecentAchievements();
+            });
+            
+            WordAdventure.on('achievementUnlocked', function() {
+                loadRecentAchievements();
+            });
+        }
+
+        // 页面加载完成后设置事件监听
+        setTimeout(setupEventListeners, 1000);
+    </script>
+
+    <style>
+        /* 挑战中心页面样式 */
+        .challenge-badges {
+            display: flex;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        /* 每日挑战 */
+        .daily-challenge-section {
+            margin: 16px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-header h2 {
+            color: white;
+            font-size: 18px;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .daily-challenge-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .challenge-type {
+            font-weight: bold;
+            color: #6A11CB;
+            font-size: 16px;
+        }
+
+        .challenge-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .challenge-description {
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .challenge-progress {
+            margin-bottom: 15px;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+            display: block;
+            text-align: right;
+        }
+
+        .challenge-rewards {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .reward-item {
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 挑战模式 */
+        .challenge-modes {
+            margin: 16px;
+        }
+
+        .challenge-modes h2 {
+            color: white;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .mode-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .mode-card h3 {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .mode-card p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .mode-difficulty {
+            font-size: 12px;
+            color: #FFA500;
+        }
+
+        /* 排行榜 */
+        .leaderboard-section {
+            margin: 16px;
+        }
+
+        .leaderboard-section h2 {
+            color: white;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #6A11CB;
+        }
+
+        .leaderboard-list {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: #f8f9fa;
+        }
+
+        .leaderboard-item.current-player {
+            background: linear-gradient(135deg, rgba(106, 17, 203, 0.1), rgba(37, 117, 252, 0.1));
+            border: 1px solid #6A11CB;
+        }
+
+        .player-rank {
+            font-weight: bold;
+            color: #6A11CB;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .player-avatar {
+            font-size: 24px;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .player-score {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .player-badge {
+            background: #6A11CB;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+
+        /* 成就展示 */
+        .achievements-section {
+            margin: 16px;
+        }
+
+        .achievements-section h2 {
+            color: white;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .achievement-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .achievement-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .achievement-name {
+            font-size: 10px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .empty-achievements {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 挑战设置弹窗 */
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 350px;
+            margin: 20px;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .setting-group {
+            margin-bottom: 16px;
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .setting-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            .challenge-badges {
+                flex-direction: column;
+                gap: 4px;
+            }
+            
+            .modes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .challenge-rewards {
+                flex-wrap: wrap;
+            }
+            
+            .leaderboard-item {
+                padding: 8px;
+            }
+            
+            .player-avatar {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .modes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

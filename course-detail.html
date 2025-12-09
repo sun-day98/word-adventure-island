@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 课程详情</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 视频播放区域 -->
+        <div class="video-container">
+            <div class="video-thumbnail">
+                <img src="assets/images/courses/yoga-flow.jpg" alt="流瑜伽基础">
+                <div class="play-btn" onclick="playVideo()">▶️</div>
+                <div class="video-duration">25:00</div>
+            </div>
+            <button class="back-btn" onclick="parent.navigateToPage('courses.html')">← 返回课程列表</button>
+        </div>
+
+        <!-- 课程信息 -->
+        <div class="course-detail-header">
+            <div class="course-title-section">
+                <h1>流瑜伽基础</h1>
+                <div class="course-badges">
+                    <span class="difficulty-badge beginner">初级</span>
+                    <span class="category-badge">瑜伽</span>
+                </div>
+            </div>
+            
+            <div class="course-stats">
+                <div class="stat-item">
+                    <span class="stat-value">25分钟</span>
+                    <span class="stat-label">时长</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">120</span>
+                    <span class="stat-label">卡路里</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">2.3k</span>
+                    <span class="stat-label">参与人数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">⭐ 4.8</span>
+                    <span class="stat-label">评分</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 教练信息 -->
+            <section class="instructor-section">
+                <h2>教练介绍</h2>
+                <div class="instructor-card">
+                    <img src="assets/images/courses/instructor-sarah.jpg" alt="Sarah老师" class="instructor-avatar">
+                    <div class="instructor-info">
+                        <h3>Sarah老师</h3>
+                        <p>RYT-200认证瑜伽教练，8年教学经验</p>
+                        <div class="instructor-stats">
+                            <span>课程数：28</span>
+                            <span>学员数：15.6k</span>
+                            <span>好评率：98%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 课程介绍 -->
+            <section class="course-description">
+                <h2>课程介绍</h2>
+                <div class="description-content">
+                    <p>流瑜伽基础课程专为初学者设计，通过流畅的动作串联，帮助您建立正确的瑜伽基础。课程包含拜日式、基础体式练习和放松冥想三个部分。</p>
+                    
+                    <div class="course-features">
+                        <div class="feature-item">
+                            <span class="feature-icon">🧘‍♀️</span>
+                            <span>适合零基础学员</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">💪</span>
+                            <span>提升柔韧性和力量</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🧘</span>
+                            <span>改善身体姿态</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🌸</span>
+                            <span>缓解压力和焦虑</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 课程大纲 -->
+            <section class="course-outline">
+                <h2>课程大纲</h2>
+                <div class="outline-list">
+                    <div class="outline-item">
+                        <div class="outline-time">00:00 - 05:00</div>
+                        <div class="outline-content">
+                            <h4>热身与拜日式</h4>
+                            <p>身体预热，基础拜日式练习</p>
+                        </div>
+                    </div>
+                    <div class="outline-item">
+                        <div class="outline-time">05:00 - 15:00</div>
+                        <div class="outline-content">
+                            <h4>站立体式序列</h4>
+                            <p>战士式、三角式、树式等基础体式</p>
+                        </div>
+                    </div>
+                    <div class="outline-item">
+                        <div class="outline-time">15:00 - 20:00</div>
+                        <div class="outline-content">
+                            <h4>地面体式练习</h4>
+                            <p>猫牛式、下犬式、儿童式等</p>
+                        </div>
+                    </div>
+                    <div class="outline-item">
+                        <div class="outline-time">20:00 - 25:00</div>
+                        <div class="outline-content">
+                            <h4>放松与冥想</h4>
+                            <p>最终放松，简单冥想练习</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 器材准备 -->
+            <section class="equipment-section">
+                <h2>器材准备</h2>
+                <div class="equipment-list">
+                    <div class="equipment-item required">
+                        <span class="equipment-icon">🧘</span>
+                        <span>瑜伽垫（必需）</span>
+                    </div>
+                    <div class="equipment-item optional">
+                        <span class="equipment-icon">🧱</span>
+                        <span>瑜伽砖（可选）</span>
+                    </div>
+                    <div class="equipment-item optional">
+                        <span class="equipment-icon">🧘‍♀️</span>
+                        <span>瑜伽带（可选）</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 用户评价 -->
+            <section class="reviews-section">
+                <h2>用户评价</h2>
+                <div class="review-summary">
+                    <div class="rating-summary">
+                        <div class="rating-large">4.8</div>
+                        <div class="rating-stars">⭐⭐⭐⭐⭐</div>
+                        <div class="rating-count">2,356条评价</div>
+                    </div>
+                    <div class="rating-distribution">
+                        <div class="rating-bar">
+                            <span>5星</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: 78%"></div></div>
+                            <span>78%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>4星</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: 15%"></div></div>
+                            <span>15%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>3星</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: 5%"></div></div>
+                            <span>5%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>2星</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: 1%"></div></div>
+                            <span>1%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span>1星</span>
+                            <div class="bar-container"><div class="bar-fill" style="width: 1%"></div></div>
+                            <span>1%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reviews-list">
+                    <div class="review-item">
+                        <div class="reviewer-info">
+                            <img src="assets/images/ui/avatar-default.png" alt="用户头像" class="reviewer-avatar">
+                            <div class="reviewer-details">
+                                <div class="reviewer-name">小明同学</div>
+                                <div class="reviewer-rating">⭐⭐⭐⭐⭐</div>
+                                <div class="review-date">2025-12-03</div>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <p>非常好的瑜伽入门课程！Sarah老师讲解很细致，动作示范也很标准。作为初学者，我完全能够跟下来。</p>
+                        </div>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="reviewer-info">
+                            <img src="assets/images/ui/avatar-default.png" alt="用户头像" class="reviewer-avatar">
+                            <div class="reviewer-details">
+                                <div class="reviewer-name">瑜伽新手</div>
+                                <div class="reviewer-rating">⭐⭐⭐⭐</div>
+                                <div class="review-date">2025-12-01</div>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <p>课程节奏适中，很适合初学者。希望能增加一些细节讲解，比如每个体式的注意事项。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部操作栏 -->
+        <div class="bottom-actions">
+            <button class="action-btn secondary" onclick="addToFavorites()">
+                <span class="action-icon">❤️</span>
+                <span>收藏</span>
+            </button>
+            <button class="action-btn secondary" onclick="shareCourse()">
+                <span class="action-icon">📤</span>
+                <span>分享</span>
+            </button>
+            <button class="action-btn primary" onclick="startCourse()">
+                <span class="action-icon">▶️</span>
+                <span>开始训练</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function playVideo() {
+            // 模拟视频播放
+            alert('视频播放功能演示：开始播放课程视频');
+        }
+
+        function addToFavorites() {
+            // 模拟收藏功能
+            alert('已添加到收藏列表');
+        }
+
+        function shareCourse() {
+            // 模拟分享功能
+            const shareOptions = `
+                <div class="modal-overlay">
+                    <div class="action-sheet">
+                        <div class="action-sheet-header">分享到</div>
+                        <button class="action-item">微信好友</button>
+                        <button class="action-item">朋友圈</button>
+                        <button class="action-item">QQ</button>
+                        <button class="action-item">微博</button>
+                        <button class="action-item cancel" onclick="closeShare()">取消</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', shareOptions);
+        }
+
+        function closeShare() {
+            document.querySelector('.modal-overlay')?.remove();
+        }
+
+        function startCourse() {
+            // 开始训练
+            alert('开始训练：计时器启动，加油！');
+        }
+    </script>
+</body>
+</html>

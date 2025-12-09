@@ -1,0 +1,192 @@
+version: '3.8'
+
+services:
+  # 后端API服务
+  agricultural-robot-backend:
+    build:
+      context: ../../
+      dockerfile: scripts/deploy/Dockerfile.backend
+    container_name: agricultural-robot-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - AGRI_ROBOT_CONFIG=/app/config/software/config.yaml
+    volumes:
+      - ../../data:/app/data
+      - ../../config:/app/config
+      - ../../logs:/app/logs
+      - ./models:/app/data/models
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - agricultural-robot-network
+
+  # 前端Web服务
+  agricultural-robot-frontend:
+    build:
+      context: ../../software/frontend
+      dockerfile: ../../scripts/deploy/Dockerfile.frontend
+    container_name: agricultural-robot-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - VUE_APP_API_URL=http://localhost:5000/api
+      - VUE_APP_WS_URL=ws://localhost:5000
+    depends_on:
+      - agricultural-robot-backend
+    networks:
+      - agricultural-robot-network
+
+  # Redis缓存服务
+  redis:
+    image: redis:7-alpine
+    container_name: agricultural-robot-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - agricultural-robot-network
+
+  # PostgreSQL数据库服务
+  postgres:
+    image: postgres:15-alpine
+    container_name: agricultural-robot-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=agricultural_robot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=agricultural_robot_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - agricultural-robot-network
+
+  # ROS2节点 (如果需要)
+  agricultural-robot-ros:
+    build:
+      context: ../../
+      dockerfile: scripts/deploy/Dockerfile.ros
+    container_name: agricultural-robot-ros
+    restart: unless-stopped
+    privileged: true  # ROS需要特权模式
+    environment:
+      - ROS_DOMAIN_ID=0
+      - ROS_NAMESPACE=agricultural_robot
+    volumes:
+      - ../../software/embedded:/app/ros_ws
+      - /dev:/dev  # 访问硬件设备
+    networks:
+      - agricultural-robot-network
+    # depends_on:
+    #   - agricultural-robot-backend
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: agricultural-robot-nginx
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+      - ../../software/frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - agricultural-robot-backend
+      - agricultural-robot-frontend
+    networks:
+      - agricultural-robot-network
+
+  # 监控服务
+  agricultural-robot-monitor:
+    build:
+      context: ../../
+      dockerfile: scripts/deploy/Dockerfile.monitor
+    container_name: agricultural-robot-monitor
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GRAFANA_ADMIN_USER=admin
+      - GRAFANA_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - prometheus-data:/prometheus
+    networks:
+      - agricultural-robot-network
+
+volumes:
+  redis-data:
+    driver: local
+  postgres-data:
+    driver: local
+  grafana-data:
+    driver: local
+  prometheus-data:
+    driver: local
+
+networks:
+  agricultural-robot-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# 配置文件
+---
+version: '3.8'
+
+x-common-variables: &common-variables
+  FLASK_ENV: production
+  AGRI_ROBOT_CONFIG: /app/config/software/config.yaml
+
+x-common-volumes: &common-volumes
+  - ./data:/app/data
+  - ./config:/app/config
+  - ./logs:/app/logs
+
+services:
+  agricultural-robot-backend:
+    image: agricultural-robot/backend:latest
+    container_name: agricultural-robot-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      <<: *common-variables
+    volumes: *common-volumes
+    networks:
+      - agricultural-robot-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  agricultural-robot-frontend:
+    image: agricultural-robot/frontend:latest
+    container_name: agricultural-robot-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - VUE_APP_API_URL=http://agricultural-robot-backend:5000/api
+      - VUE_APP_WS_URL=ws://agricultural-robot-backend:5000
+    depends_on:
+      agricultural-robot-backend:
+        condition: service_healthy
+    networks:
+      - agricultural-robot-network

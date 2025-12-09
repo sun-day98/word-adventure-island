@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 健康评估</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <button class="back-btn" onclick="parent.navigateToPage('diet.html')">← 返回</button>
+            <h1>饮食健康评估</h1>
+            <button class="info-btn" onclick="showAssessmentInfo()">ℹ️</button>
+        </header>
+
+        <!-- 评估概览 -->
+        <section class="assessment-overview">
+            <div class="score-circle">
+                <svg width="150" height="150">
+                    <circle cx="75" cy="75" r="65" stroke="#f0f0f0" stroke-width="10" fill="none"/>
+                    <circle cx="75" cy="75" r="65" stroke="#4CAF50" stroke-width="10" fill="none"
+                            stroke-dasharray="408" stroke-dashoffset="102" 
+                            transform="rotate(-90 75 75)"/>
+                </svg>
+                <div class="score-text">
+                    <div class="score-number">75</div>
+                    <div class="score-label">健康分数</div>
+                </div>
+            </div>
+            
+            <div class="assessment-summary">
+                <h3>总体评价：良好</h3>
+                <p>您的饮食习惯较为健康，建议增加蔬菜摄入和饮水量。</p>
+            </div>
+        </section>
+
+        <!-- 评估周期选择 -->
+        <section class="period-selector">
+            <h2>评估周期</h2>
+            <div class="period-buttons">
+                <button class="period-btn" onclick="changePeriod('today')">今日</button>
+                <button class="period-btn active" onclick="changePeriod('week')">本周</button>
+                <button class="period-btn" onclick="changePeriod('month')">本月</button>
+            </div>
+            <div class="period-info">
+                <span>评估时间：12月5日 - 12月11日</span>
+            </div>
+        </section>
+
+        <!-- 营养均衡分析 -->
+        <section class="nutrition-balance">
+            <h2>营养均衡分析</h2>
+            <div class="balance-grid">
+                <div class="balance-item">
+                    <div class="balance-header">
+                        <span class="balance-icon">🥩</span>
+                        <span class="balance-title">蛋白质</span>
+                        <span class="balance-score good">85分</span>
+                    </div>
+                    <div class="balance-bar">
+                        <div class="balance-fill protein" style="width: 85%"></div>
+                    </div>
+                    <div class="balance-desc">蛋白质摄入充足，来源丰富</div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-header">
+                        <span class="balance-icon">🍞</span>
+                        <span class="balance-title">碳水化合物</span>
+                        <span class="balance-score moderate">70分</span>
+                    </div>
+                    <div class="balance-bar">
+                        <div class="balance-fill carbs" style="width: 70%"></div>
+                    </div>
+                    <div class="balance-desc">碳水摄入适中，建议增加全谷物比例</div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-icon">🥑</span>
+                    <span class="balance-title">脂肪</span>
+                        <span class="balance-score good">80分</span>
+                    </div>
+                    <div class="balance-bar">
+                        <div class="balance-fill fat" style="width: 80%"></div>
+                    </div>
+                    <div class="balance-desc">脂肪摄入合理，优质脂肪占比较高</div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-header">
+                        <span class="balance-icon">🥦</span>
+                        <span class="balance-title">膳食纤维</span>
+                        <span class="balance-score poor">55分</span>
+                    </div>
+                    <div class="balance-bar">
+                        <div class="balance-fill fiber" style="width: 55%"></div>
+                    </div>
+                    <div class="balance-desc">膳食纤维摄入不足，建议增加蔬菜水果</div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-header">
+                        <span class="balance-icon">🧂</span>
+                        <span class="balance-title">钠盐摄入</span>
+                        <span class="balance-score moderate">65分</span>
+                    </div>
+                    <div class="balance-bar">
+                        <div class="balance-fill sodium" style="width: 65%"></div>
+                    </div>
+                    <div class="balance-desc">钠盐摄入略高，建议减少加工食品</div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-header">
+                        <span class="balance-icon">💧</span>
+                        <span class="balance-title">水分摄入</span>
+                        <span class="balance-score poor">60分</span>
+                    </div>
+                    <div class="balance-bar">
+                        <div class="balance-fill water" style="width: 60%"></div>
+                    </div>
+                    <div class="balance-desc">饮水量不足，建议每日至少2升</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 进餐规律性 -->
+        <section class="meal-regularity">
+            <h2>进餐规律性</h2>
+            <div class="regularity-chart">
+                <div class="chart-header">
+                    <span>时间</span>
+                    <span>规律度</span>
+                </div>
+                <div class="chart-item">
+                    <span class="meal-type">早餐</span>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill breakfast" style="width: 90%"></div>
+                        </div>
+                        <span class="progress-text">90%</span>
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <span class="meal-type">午餐</span>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill lunch" style="width: 85%"></div>
+                        </div>
+                        <span class="progress-text">85%</span>
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <span class="meal-type">晚餐</span>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill dinner" style="width: 70%"></div>
+                        </div>
+                        <span class="progress-text">70%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 食物多样性 -->
+        <section class="food-diversity">
+            <h2>食物多样性</h2>
+            <div class="diversity-stats">
+                <div class="diversity-item">
+                    <div class="diversity-number">24</div>
+                    <div class="diversity-label">本周食物种类</div>
+                </div>
+                <div class="diversity-item">
+                    <div class="diversity-number">6</div>
+                    <div class="diversity-label">主要食物类别</div>
+                </div>
+                <div class="diversity-item">
+                    <div class="diversity-number">良好</div>
+                    <div class="diversity-label">多样性评价</div>
+                </div>
+            </div>
+            
+            <div class="category-distribution">
+                <h3>食物类别分布</h3>
+                <div class="distribution-chart">
+                    <div class="category-bar">
+                        <span class="category-name">蔬菜</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 25%"></div>
+                        </div>
+                        <span class="category-percent">25%</span>
+                    </div>
+                    <div class="category-bar">
+                        <span class="category-name">主食</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 30%"></div>
+                        </div>
+                        <span class="category-percent">30%</span>
+                    </div>
+                    <div class="category-bar">
+                        <span class="category-name">蛋白质</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 20%"></div>
+                        </div>
+                        <span class="category-percent">20%</span>
+                    </div>
+                    <div class="category-bar">
+                        <span class="category-name">水果</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 10%"></div>
+                        </div>
+                        <span class="category-percent">10%</span>
+                    </div>
+                    <div class="category-bar">
+                        <span class="category-name">乳制品</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 8%"></div>
+                        </div>
+                        <span class="category-percent">8%</span>
+                    </div>
+                    <div class="category-bar">
+                        <span class="category-name">其他</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 7%"></div>
+                        </div>
+                        <span class="category-percent">7%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 改进建议 -->
+        <section class="improvement-suggestions">
+            <h2>改进建议</h2>
+            <div class="suggestions-list">
+                <div class="suggestion-item priority-high">
+                    <div class="suggestion-icon">⚠️</div>
+                    <div class="suggestion-content">
+                        <h4>增加饮水量</h4>
+                        <p>您本周的饮水量仅为1.5L/天，建议增至2.0L以上。可以设置定时提醒，养成规律饮水习惯。</p>
+                    </div>
+                </div>
+
+                <div class="suggestion-item priority-medium">
+                    <div class="suggestion-icon">💡</div>
+                    <div class="suggestion-content">
+                        <h4>丰富蔬菜种类</h4>
+                        <p>建议每日摄入至少3-5种不同颜色的蔬菜，以确保维生素和矿物质的充足摄入。</p>
+                    </div>
+                </div>
+
+                <div class="suggestion-item priority-medium">
+                    <div class="suggestion-icon">🌾</div>
+                    <div class="suggestion-content">
+                        <h4>增加全谷物比例</h4>
+                        <p>将部分精制主食替换为全谷物，如糙米、燕麦、全麦面包，增加膳食纤维摄入。</p>
+                    </div>
+                </div>
+
+                <div class="suggestion-item priority-low">
+                    <div class="suggestion-icon">🥜</div>
+                    <div class="suggestion-content">
+                        <h4>适量摄入坚果</h4>
+                        <p>每日适量摄入坚果（20-30g），可获得优质脂肪和维生素E。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 历史趋势 -->
+        <section class="trend-analysis">
+            <h2>健康趋势</h2>
+            <div class="trend-chart">
+                <canvas id="health-trend-chart" width="300" height="200"></canvas>
+            </div>
+            <div class="trend-summary">
+                <div class="trend-item improving">
+                    <span class="trend-icon">📈</span>
+                    <span>蛋白质摄入持续改善</span>
+                </div>
+                <div class="trend-item stable">
+                    <span class="trend-icon">➡️</span>
+                    <span>热量摄入保持稳定</span>
+                </div>
+                <div class="trend-item declining">
+                    <span class="trend-icon">📉</span>
+                    <span>饮水量需要关注</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 分享与导出 -->
+        <section class="share-export">
+            <h2>分享报告</h2>
+            <div class="share-options">
+                <button class="share-btn" onclick="shareAssessment()">
+                    <span class="share-icon">📤</span>
+                    <span>分享健康报告</span>
+                </button>
+                <button class="export-btn" onclick="exportReport()">
+                    <span class="export-icon">📄</span>
+                    <span>导出PDF报告</span>
+                </button>
+                <button class="consult-btn" onclick="consultNutritionist()">
+                    <span class="consult-icon">👩‍⚕️</span>
+                    <span>咨询营养师</span>
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/data-charts.js"></script>
+    <script>
+        function showAssessmentInfo() {
+            alert('饮食健康评估基于营养学原理，分析您的饮食习惯和营养摄入情况，为您提供个性化的健康建议。');
+        }
+
+        function changePeriod(period) {
+            // 切换评估周期
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 重新加载数据
+            loadAssessmentData(period);
+        }
+
+        function loadAssessmentData(period) {
+            // 模拟加载不同周期的数据
+            console.log('Loading assessment data for period:', period);
+            // 这里应该调用API获取相应周期的数据
+        }
+
+        function shareAssessment() {
+            const shareOptions = `
+                <div class="modal-overlay">
+                    <div class="action-sheet">
+                        <div class="action-sheet-header">分享健康评估报告</div>
+                        <button class="action-item">微信好友</button>
+                        <button class="action-item">朋友圈</button>
+                        <button class="action-item">QQ</button>
+                        <button class="action-item">微博</button>
+                        <button class="action-item cancel" onclick="closeShare()">取消</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', shareOptions);
+        }
+
+        function closeShare() {
+            document.querySelector('.modal-overlay')?.remove();
+        }
+
+        function exportReport() {
+            alert('正在生成PDF健康评估报告...');
+            // 模拟生成PDF
+            setTimeout(() => {
+                alert('健康评估报告已生成并保存！');
+            }, 2000);
+        }
+
+        function consultNutritionist() {
+            alert('营养师咨询功能：您将连接到专业营养师进行一对一咨询。');
+        }
+
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绘制健康趋势图
+            const canvas = document.getElementById('health-trend-chart');
+            if (canvas && window.drawHealthTrendChart) {
+                drawHealthTrendChart(canvas);
+            }
+        });
+    </script>
+</body>
+</html>

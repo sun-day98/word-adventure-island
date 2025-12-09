@@ -1,0 +1,58 @@
+{
+  "name": "agricultural-robot-frontend",
+  "version": "1.0.0",
+  "description": "农业巡检机器人Web可视化前端",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e"
+  },
+  "dependencies": {
+    "vue": "^3.3.0",
+    "vue-router": "^4.2.0",
+    "vuex": "^4.1.0",
+    "axios": "^1.5.0",
+    "element-plus": "^2.4.0",
+    "@element-plus/icons-vue": "^2.1.0",
+    "echarts": "^5.4.0",
+    "vue-echarts": "^6.6.0",
+    "socket.io-client": "^4.7.0",
+    "video.js": "^8.5.0",
+    "videojs-contrib-hls": "^5.15.0",
+    "@videojs/themes": "^1.0.1",
+    "ol": "^7.5.0",
+    "vue3-openlayers": "^7.0.0",
+    "date-fns": "^2.30.0",
+    "lodash-es": "^4.17.21"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-e2e-cypress": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-unit-jest": "~5.0.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "@vue/test-utils": "^2.4.0",
+    "@vue/vue3-jest": "^29.2.0",
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
+    "@types/jest": "^29.5.0",
+    "babel-jest": "^29.5.0",
+    "cypress": "^13.0.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-vue": "^9.15.0",
+    "jest": "^29.5.0",
+    "sass": "^1.64.0",
+    "sass-loader": "^13.3.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}

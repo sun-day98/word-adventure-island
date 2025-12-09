@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词挑战 - 单词冒险岛</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/word-adventure.css">
+</head>
+<body>
+    <div class="page-container challenge-page">
+        <!-- 页面头部 -->
+        <header class="page-header challenge-header">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h1 id="challenge-title">单词挑战</h1>
+            <div class="challenge-info">
+                <span class="score-display">得分: <span id="current-score">0</span></span>
+                <span class="lives-display">生命: <span id="current-lives">❤️❤️❤️</span></span>
+            </div>
+        </header>
+
+        <!-- 主内容区域 -->
+        <main class="main-content challenge-content">
+            <!-- 挑战准备阶段 -->
+            <section id="challenge-prep" class="challenge-preparation">
+                <div class="prep-content">
+                    <div class="word-preview">
+                        <h2>学习新单词</h2>
+                        <div class="word-card">
+                            <div class="word-main" id="preview-word">Loading...</div>
+                            <div class="word-phonetic" id="preview-phonetic">Loading...</div>
+                            <div class="word-chinese" id="preview-chinese">Loading...</div>
+                            <div class="word-mnemonic" id="preview-mnemonic">Loading...</div>
+                            <div class="word-association" id="preview-association">Loading...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="prep-actions">
+                        <button class="primary-btn" id="play-pronunciation" onclick="playWordPronunciation()">
+                            🔊 播放发音
+                        </button>
+                        <button class="secondary-btn" id="start-practice" onclick="startPractice()">
+                            开始练习
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 挑战进行阶段 -->
+            <section id="challenge-active" class="challenge-active" style="display: none;">
+                <div class="challenge-header">
+                    <div class="challenge-type" id="challenge-type">发音挑战</div>
+                    <div class="challenge-timer">
+                        <span id="timer-display">⏱️ 60</span>
+                        <div class="timer-bar">
+                            <div class="timer-fill" id="timer-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="challenge-area" id="challenge-area">
+                    <!-- 挑战内容将动态生成 -->
+                </div>
+
+                <div class="challenge-tools">
+                    <button class="tool-btn" id="hint-btn" onclick="useHint()" title="使用提示">
+                        💡 提示
+                        <span class="tool-count" id="hint-count">3</span>
+                    </button>
+                    <button class="tool-btn" id="time-btn" onclick="useTimeExtension()" title="延长时间">
+                        ⏰ 加时
+                        <span class="tool-count" id="time-count">1</span>
+                    </button>
+                    <button class="tool-btn" id="life-btn" onclick="useExtraLife()" title="额外生命">
+                        ❤️ 加命
+                        <span class="tool-count" id="life-count">2</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 挑战结果阶段 -->
+            <section id="challenge-result" class="challenge-result" style="display: none;">
+                <div class="result-content">
+                    <div class="result-stars" id="result-stars">
+                        <!-- 星级评价将动态生成 -->
+                    </div>
+                    
+                    <div class="result-stats">
+                        <h3 id="result-title">挑战完成！</h3>
+                        <div class="score-breakdown">
+                            <div class="stat-item">
+                                <span class="stat-label">最终得分</span>
+                                <span class="stat-value" id="final-score">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">正确率</span>
+                                <span class="stat-value" id="accuracy-rate">0%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">用时</span>
+                                <span class="stat-value" id="time-used">0秒</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="word-review" id="word-review">
+                        <h4>单词学习总结</h4>
+                        <div class="review-list" id="review-list">
+                            <!-- 单词复习列表将动态生成 -->
+                        </div>
+                    </div>
+
+                    <div class="result-actions">
+                        <button class="secondary-btn" onclick="retryChallenge()">重新挑战</button>
+                        <button class="primary-btn" onclick="continueAdventure()">继续冒险</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 音频录制指示器 -->
+    <div id="recording-indicator" class="recording-indicator" style="display: none;">
+        <div class="recording-pulse"></div>
+        <span>正在录音...</span>
+    </div>
+
+    <!-- 道具使用确认 -->
+    <div id="item-use-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>确认使用道具</h3>
+            <div class="item-info" id="item-info">
+                <!-- 道具信息将动态生成 -->
+            </div>
+            <div class="modal-actions">
+                <button class="secondary-btn" onclick="cancelItemUse()">取消</button>
+                <button class="primary-btn" id="confirm-item-use">使用</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 挑战状态管理
+        class ChallengeManager {
+            constructor() {
+                this.currentChallenge = null;
+                this.currentWordIndex = 0;
+                this.words = [];
+                this.score = 0;
+                this.lives = 3;
+                this.timeLeft = 60;
+                this.timer = null;
+                this.isRecording = false;
+                this.challengeType = null;
+                this.startTime = null;
+                this.correctAnswers = 0;
+                this.totalAnswers = 0;
+            }
+
+            // 初始化挑战
+            async initChallenge(levelId) {
+                try {
+                    // 获取关卡信息
+                    const level = this.getLevelInfo(levelId);
+                    if (!level) {
+                        throw new Error('关卡不存在');
+                    }
+
+                    this.challengeType = level.challenges[0]; // 选择第一个挑战类型
+                    this.words = level.words.map(wordId => WordAdventure.findWord(wordId));
+                    this.currentWordIndex = 0;
+                    this.score = 0;
+                    this.lives = 3;
+
+                    // 显示第一个单词进行预习
+                    await this.showWordPreview();
+
+                } catch (error) {
+                    console.error('挑战初始化失败:', error);
+                    WordAdventureUI.showToast('挑战加载失败', 'error');
+                }
+            }
+
+            getLevelInfo(levelId) {
+                for (const islandId in WordAdventureData.LevelConfig) {
+                    const island = WordAdventureData.LevelConfig[islandId];
+                    const level = island.levels.find(l => l.id === levelId);
+                    if (level) {
+                        return { ...level, islandId, island };
+                    }
+                }
+                return null;
+            }
+
+            // 显示单词预习
+            async showWordPreview() {
+                const word = this.words[this.currentWordIndex];
+                if (!word) return;
+
+                document.getElementById('preview-word').textContent = word.word;
+                document.getElementById('preview-phonetic').textContent = word.pronunciation;
+                document.getElementById('preview-chinese').textContent = word.chinese;
+                document.getElementById('preview-mnemonic').textContent = `记忆口诀: ${word.mnemonic}`;
+                document.getElementById('preview-association').textContent = `联想场景: ${word.联想}`;
+
+                // 显示准备阶段
+                document.getElementById('challenge-prep').style.display = 'block';
+                document.getElementById('challenge-active').style.display = 'none';
+                document.getElementById('challenge-result').style.display = 'none';
+
+                // 播放发音
+                setTimeout(() => this.playWordSound(word), 500);
+            }
+
+            // 开始练习
+            startPractice() {
+                this.startChallenge();
+            }
+
+            // 开始挑战
+            async startChallenge() {
+                const word = this.words[this.currentWordIndex];
+                if (!word) {
+                    this.completeChallenge();
+                    return;
+                }
+
+                this.startTime = Date.now();
+                
+                // 切换到挑战界面
+                document.getElementById('challenge-prep').style.display = 'none';
+                document.getElementById('challenge-active').style.display = 'block';
+                document.getElementById('challenge-result').style.display = 'none';
+
+                // 更新挑战类型显示
+                const challengeTypeData = WordAdventureData.ChallengeTypes[this.challengeType];
+                document.getElementById('challenge-type').textContent = challengeTypeData.name;
+                
+                // 设置时间
+                this.timeLeft = challengeTypeData.duration;
+                this.updateTimer();
+
+                // 根据挑战类型渲染挑战内容
+                await this.renderChallengeContent(word);
+
+                // 开始计时
+                this.startTimer();
+            }
+
+            // 渲染挑战内容
+            async renderChallengeContent(word) {
+                const challengeArea = document.getElementById('challenge-area');
+                let content = '';
+
+                switch (this.challengeType) {
+                    case 'pronunciation':
+                        content = this.renderPronunciationChallenge(word);
+                        break;
+                    case 'spelling':
+                        content = this.renderSpellingChallenge(word);
+                        break;
+                    case 'matching':
+                        content = this.renderMatchingChallenge(word);
+                        break;
+                    case 'memory':
+                        content = this.renderMemoryChallenge(word);
+                        break;
+                    case 'sentence':
+                        content = this.renderSentenceChallenge(word);
+                        break;
+                    default:
+                        content = this.renderDefaultChallenge(word);
+                }
+
+                challengeArea.innerHTML = content;
+
+                // 添加动画效果
+                WordAdventureUI.animate(challengeArea, 'fade-in');
+            }
+
+            // 发音挑战
+            renderPronunciationChallenge(word) {
+                return `
+                    <div class="pronunciation-challenge">
+                        <div class="target-word">
+                            <h3>请朗读这个单词</h3>
+                            <div class="word-display">${word.word}</div>
+                            <div class="word-meaning">${word.chinese}</div>
+                        </div>
+                        <div class="recording-area">
+                            <button class="record-btn" id="record-btn" onclick="challengeManager.toggleRecording()">
+                                <span class="record-icon">🎤</span>
+                                <span class="record-text">按住录音</span>
+                            </button>
+                            <div class="recording-feedback" id="recording-feedback"></div>
+                        </div>
+                        <div class="pronunciation-tips">
+                            <p>💡 提示：发音要清晰，注意重音位置</p>
+                            <p>${word.pronunciation}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 拼写挑战
+            renderSpellingChallenge(word) {
+                return `
+                    <div class="spelling-challenge">
+                        <div class="target-word">
+                            <h3>拼写这个单词</h3>
+                            <div class="word-meaning">${word.chinese}</div>
+                            <div class="word-hint">${word.pronunciation}</div>
+                        </div>
+                        <div class="spelling-input-area">
+                            <input type="text" 
+                                   id="spelling-input" 
+                                   class="spelling-input" 
+                                   placeholder="请输入单词拼写"
+                                   onkeyup="challengeManager.checkSpelling(event)">
+                            <button class="submit-btn" onclick="challengeManager.submitSpelling()">提交</button>
+                        </div>
+                        <div class="spelling-feedback" id="spelling-feedback"></div>
+                    </div>
+                `;
+            }
+
+            // 匹配挑战
+            renderMatchingChallenge(word) {
+                const options = this.generateMatchingOptions(word);
+                return `
+                    <div class="matching-challenge">
+                        <div class="target-word">
+                            <h3>选择正确的中文意思</h3>
+                            <div class="word-display">${word.word}</div>
+                        </div>
+                        <div class="matching-options">
+                            ${options.map((option, index) => `
+                                <button class="option-btn" onclick="challengeManager.selectMatchingOption('${option.word}', '${word.chinese}')">
+                                    ${option.chinese}
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div class="matching-feedback" id="matching-feedback"></div>
+                    </div>
+                `;
+            }
+
+            // 记忆挑战
+            renderMemoryChallenge(word) {
+                return `
+                    <div class="memory-challenge">
+                        <div class="memory-cards" id="memory-cards">
+                            <!-- 记忆卡片将动态生成 -->
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 句子挑战
+            renderSentenceChallenge(word) {
+                return `
+                    <div class="sentence-challenge">
+                        <div class="target-word">
+                            <h3>用这个单词造句</h3>
+                            <div class="word-display">${word.word} - ${word.chinese}</div>
+                        </div>
+                        <div class="sentence-input-area">
+                            <textarea id="sentence-input" 
+                                     class="sentence-input" 
+                                     placeholder="请输入一个句子..."
+                                     rows="3"></textarea>
+                            <button class="submit-btn" onclick="challengeManager.submitSentence()">提交句子</button>
+                        </div>
+                        <div class="sentence-feedback" id="sentence-feedback"></div>
+                    </div>
+                `;
+            }
+
+            // 默认挑战
+            renderDefaultChallenge(word) {
+                return `
+                    <div class="default-challenge">
+                        <div class="target-word">
+                            <h3>学习这个单词</h3>
+                            <div class="word-display">${word.word}</div>
+                            <div class="word-meaning">${word.chinese}</div>
+                            <div class="word-mnemonic">${word.mnemonic}</div>
+                        </div>
+                        <div class="default-actions">
+                            <button class="primary-btn" onclick="challengeManager.markAsLearned()">标记为已学会</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 录音控制
+            toggleRecording() {
+                const btn = document.getElementById('record-btn');
+                const feedback = document.getElementById('recording-feedback');
+                const indicator = document.getElementById('recording-indicator');
+
+                if (this.isRecording) {
+                    // 停止录音
+                    this.stopRecording();
+                    btn.classList.remove('recording');
+                    btn.querySelector('.record-text').textContent = '按住录音';
+                    indicator.style.display = 'none';
+                } else {
+                    // 开始录音
+                    this.startRecording();
+                    btn.classList.add('recording');
+                    btn.querySelector('.record-text').textContent = '录音中...';
+                    indicator.style.display = 'flex';
+                    feedback.textContent = '请清晰地读出单词';
+                }
+            }
+
+            async startRecording() {
+                this.isRecording = true;
+                
+                try {
+                    // 这里应该启动实际的录音
+                    // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    
+                    // 模拟录音过程
+                    setTimeout(() => {
+                        if (this.isRecording) {
+                            this.stopRecording();
+                            this.evaluatePronunciation();
+                        }
+                    }, 3000);
+                    
+                } catch (error) {
+                    console.error('录音失败:', error);
+                    this.isRecording = false;
+                    WordAdventureUI.showToast('无法访问麦克风', 'error');
+                }
+            }
+
+            stopRecording() {
+                this.isRecording = false;
+                // 停止录音流
+            }
+
+            evaluatePronunciation() {
+                const word = this.words[this.currentWordIndex];
+                const feedback = document.getElementById('recording-feedback');
+                
+                // 模拟发音评分
+                const score = Math.random() * 40 + 60; // 60-100分
+                
+                if (score >= 80) {
+                    feedback.textContent = `发音很好！得分: ${score.toFixed(1)}`;
+                    feedback.className = 'recording-feedback success';
+                    this.handleCorrectAnswer();
+                } else {
+                    feedback.textContent = `继续努力！得分: ${score.toFixed(1)}`;
+                    feedback.className = 'recording-feedback error';
+                    this.handleWrongAnswer();
+                }
+            }
+
+            // 拼写检查
+            checkSpelling(event) {
+                if (event.key === 'Enter') {
+                    this.submitSpelling();
+                }
+            }
+
+            submitSpelling() {
+                const input = document.getElementById('spelling-input');
+                const feedback = document.getElementById('spelling-feedback');
+                const word = this.words[this.currentWordIndex];
+                
+                const userSpelling = input.value.trim().toLowerCase();
+                const correctSpelling = word.word.toLowerCase();
+                
+                if (userSpelling === correctSpelling) {
+                    feedback.textContent = '拼写正确！';
+                    feedback.className = 'spelling-feedback success';
+                    this.handleCorrectAnswer();
+                } else {
+                    feedback.textContent = `拼写错误，正确答案是: ${word.word}`;
+                    feedback.className = 'spelling-feedback error';
+                    this.handleWrongAnswer();
+                }
+            }
+
+            // 匹配选项
+            generateMatchingOptions(correctWord) {
+                const options = [correctWord];
+                
+                // 添加干扰项
+                while (options.length < 4) {
+                    const randomIndex = Math.floor(Math.random() * WordAdventureData.WordDatabase.beginner.length);
+                    const randomWord = WordAdventureData.WordDatabase.beginner[randomIndex];
+                    
+                    if (!options.find(opt => opt.id === randomWord.id)) {
+                        options.push(randomWord);
+                    }
+                }
+                
+                // 随机排序
+                return options.sort(() => Math.random() - 0.5);
+            }
+
+            selectMatchingOption(selectedChinese, correctChinese) {
+                const feedback = document.getElementById('matching-feedback');
+                
+                if (selectedChinese === correctChinese) {
+                    feedback.textContent = '回答正确！';
+                    feedback.className = 'matching-feedback success';
+                    this.handleCorrectAnswer();
+                } else {
+                    feedback.textContent = `回答错误，正确答案是: ${correctChinese}`;
+                    feedback.className = 'matching-feedback error';
+                    this.handleWrongAnswer();
+                }
+            }
+
+            // 句子提交
+            submitSentence() {
+                const input = document.getElementById('sentence-input');
+                const feedback = document.getElementById('sentence-feedback');
+                const sentence = input.value.trim();
+                
+                if (!sentence) {
+                    feedback.textContent = '请输入一个句子';
+                    feedback.className = 'sentence-feedback error';
+                    return;
+                }
+                
+                // 简单的句子评估
+                const word = this.words[this.currentWordIndex];
+                const containsWord = sentence.toLowerCase().includes(word.word.toLowerCase());
+                
+                if (containsWord) {
+                    feedback.textContent = '句子包含了目标单词，很好！';
+                    feedback.className = 'sentence-feedback success';
+                    this.handleCorrectAnswer();
+                } else {
+                    feedback.textContent = `句子中没有包含单词: ${word.word}`;
+                    feedback.className = 'sentence-feedback error';
+                    this.handleWrongAnswer();
+                }
+            }
+
+            // 标记为已学会
+            markAsLearned() {
+                const word = this.words[this.currentWordIndex];
+                this.handleCorrectAnswer();
+            }
+
+            // 处理正确答案
+            handleCorrectAnswer() {
+                this.correctAnswers++;
+                this.totalAnswers++;
+                
+                // 加分
+                const points = 100;
+                this.score += points;
+                this.updateScore();
+                
+                // 播放成功音效
+                WordAdventureUI.playSound('success');
+                
+                // 显示成功动画
+                WordAdventureUI.showToast(`+${points}分！`, 'success');
+                
+                // 学习单词
+                const word = this.words[this.currentWordIndex];
+                WordAdventure.learnWord(word.id, 100);
+                
+                // 延迟后进入下一个单词
+                setTimeout(() => {
+                    this.nextWord();
+                }, 1500);
+            }
+
+            // 处理错误答案
+            handleWrongAnswer() {
+                this.totalAnswers++;
+                this.lives--;
+                
+                // 播放错误音效
+                WordAdventureUI.playSound('error');
+                
+                // 更新生命显示
+                this.updateLives();
+                
+                if (this.lives <= 0) {
+                    this.endChallenge(false);
+                } else {
+                    WordAdventureUI.showToast(`答错了！剩余生命: ${this.lives}`, 'error');
+                }
+            }
+
+            // 下一个单词
+            nextWord() {
+                this.currentWordIndex++;
+                
+                if (this.currentWordIndex >= this.words.length) {
+                    this.completeChallenge();
+                } else {
+                    this.showWordPreview();
+                }
+            }
+
+            // 完成挑战
+            completeChallenge() {
+                this.endChallenge(true);
+            }
+
+            // 结束挑战
+            endChallenge(success) {
+                // 停止计时器
+                if (this.timer) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+
+                // 计算统计数据
+                const timeUsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const accuracy = this.totalAnswers > 0 ? Math.round((this.correctAnswers / this.totalAnswers) * 100) : 0;
+                const stars = this.calculateStars(accuracy, success);
+
+                // 显示结果
+                this.showChallengeResult(stars, timeUsed, accuracy, success);
+
+                // 保存挑战记录
+                this.saveChallengeRecord(success, timeUsed, accuracy);
+            }
+
+            // 计算星级
+            calculateStars(accuracy, success) {
+                if (!success) return 0;
+                if (accuracy >= 90) return 3;
+                if (accuracy >= 75) return 2;
+                if (accuracy >= 60) return 1;
+                return 1;
+            }
+
+            // 显示挑战结果
+            showChallengeResult(stars, timeUsed, accuracy, success) {
+                // 切换到结果界面
+                document.getElementById('challenge-prep').style.display = 'none';
+                document.getElementById('challenge-active').style.display = 'none';
+                document.getElementById('challenge-result').style.display = 'block';
+
+                // 更新结果标题
+                const title = document.getElementById('result-title');
+                title.textContent = success ? '挑战完成！' : '挑战失败！';
+
+                // 显示星级
+                const starsDiv = document.getElementById('result-stars');
+                starsDiv.innerHTML = this.generateStarsHTML(stars);
+
+                // 更新统计数据
+                document.getElementById('final-score').textContent = this.score;
+                document.getElementById('accuracy-rate').textContent = `${accuracy}%`;
+                document.getElementById('time-used').textContent = `${timeUsed}秒`;
+
+                // 生成单词复习列表
+                this.generateWordReview();
+            }
+
+            generateStarsHTML(stars) {
+                let html = '';
+                for (let i = 1; i <= 3; i++) {
+                    html += `<span class="star ${i <= stars ? 'filled' : 'empty'}">⭐</span>`;
+                }
+                return html;
+            }
+
+            generateWordReview() {
+                const reviewList = document.getElementById('review-list');
+                let html = '';
+
+                this.words.forEach((word, index) => {
+                    const isLearned = index < this.correctAnswers;
+                    html += `
+                        <div class="review-item ${isLearned ? 'learned' : 'not-learned'}">
+                            <div class="review-word">${word.word}</div>
+                            <div class="review-meaning">${word.chinese}</div>
+                            <div class="review-status">${isLearned ? '✅ 已学会' : '❌ 需要复习'}</div>
+                        </div>
+                    `;
+                });
+
+                reviewList.innerHTML = html;
+            }
+
+            // 保存挑战记录
+            saveChallengeRecord(success, timeUsed, accuracy) {
+                const record = {
+                    challengeType: this.challengeType,
+                    wordsCount: this.words.length,
+                    correctAnswers: this.correctAnswers,
+                    totalAnswers: this.totalAnswers,
+                    score: this.score,
+                    timeUsed: timeUsed,
+                    accuracy: accuracy,
+                    success: success,
+                    timestamp: Date.now()
+                };
+
+                WordAdventure.gameState.learning.challengeHistory.push(record);
+
+                // 完成关卡
+                if (success) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const levelId = urlParams.get('level');
+                    if (levelId) {
+                        WordAdventure.completeLevel(levelId, this.score, this.calculateStars(accuracy, true));
+                    }
+                }
+            }
+
+            // 计时器管理
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    this.updateTimer();
+
+                    if (this.timeLeft <= 0) {
+                        this.endChallenge(false);
+                    }
+                }, 1000);
+            }
+
+            updateTimer() {
+                const timerDisplay = document.getElementById('timer-display');
+                const timerFill = document.getElementById('timer-fill');
+                
+                timerDisplay.textContent = `⏱️ ${this.timeLeft}`;
+                
+                const totalTime = WordAdventureData.ChallengeTypes[this.challengeType].duration;
+                const percentage = (this.timeLeft / totalTime) * 100;
+                timerFill.style.width = `${percentage}%`;
+
+                // 时间不足时变红
+                if (this.timeLeft <= 10) {
+                    timerDisplay.classList.add('warning');
+                }
+            }
+
+            // 更新分数显示
+            updateScore() {
+                document.getElementById('current-score').textContent = this.score;
+            }
+
+            // 更新生命显示
+            updateLives() {
+                const livesDisplay = document.getElementById('current-lives');
+                livesDisplay.textContent = '❤️'.repeat(Math.max(0, this.lives));
+                
+                if (this.lives <= 1) {
+                    livesDisplay.classList.add('warning');
+                }
+            }
+
+            // 播放单词发音
+            playWordSound(word) {
+                // 这里应该使用 TTS 播放单词发音
+                // 暂时使用占位符
+                console.log(`播放发音: ${word.word}`);
+                WordAdventureUI.playSound('click');
+            }
+
+            // 重新挑战
+            retry() {
+                this.currentWordIndex = 0;
+                this.score = 0;
+                this.lives = 3;
+                this.correctAnswers = 0;
+                this.totalAnswers = 0;
+                
+                this.showWordPreview();
+            }
+
+            // 继续冒险
+            continueAdventure() {
+                if (window.parent && window.parent.NavigationManager) {
+                    window.parent.NavigationManager.navigateToPage('adventure-home.html');
+                }
+            }
+        }
+
+        // 全局挑战管理器实例
+        let challengeManager;
+
+        // ===== 页面初始化 =====
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 等待游戏引擎初始化
+            if (typeof WordAdventure === 'undefined') {
+                setTimeout(() => location.reload(), 1000);
+                return;
+            }
+
+            // 初始化挑战管理器
+            challengeManager = new ChallengeManager();
+
+            // 获取URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const levelId = urlParams.get('level');
+
+            if (levelId) {
+                document.getElementById('challenge-title').textContent = `关卡挑战 - ${levelId}`;
+                await challengeManager.initChallenge(levelId);
+            } else {
+                WordAdventureUI.showToast('缺少关卡参数', 'error');
+                goBack();
+            }
+
+            // 设置道具数量
+            updateToolCounts();
+        });
+
+        // ===== 全局函数 =====
+        function goBack() {
+            if (window.parent && window.parent.NavigationManager) {
+                window.parent.NavigationManager.navigateToPage('adventure-home.html');
+            } else {
+                history.back();
+            }
+        }
+
+        function playWordPronunciation() {
+            if (challengeManager && challengeManager.words[challengeManager.currentWordIndex]) {
+                const word = challengeManager.words[challengeManager.currentWordIndex];
+                challengeManager.playWordSound(word);
+            }
+        }
+
+        function startPractice() {
+            if (challengeManager) {
+                challengeManager.startChallenge();
+            }
+        }
+
+        function useHint() {
+            const count = parseInt(document.getElementById('hint-count').textContent);
+            if (count > 0) {
+                document.getElementById('hint-count').textContent = count - 1;
+                
+                // 实现提示逻辑
+                const currentWord = challengeManager.words[challengeManager.currentWordIndex];
+                WordAdventureUI.showToast(`提示: ${currentWord.mnemonic}`, 'info');
+                
+                WordAdventureUI.playSound('click');
+            } else {
+                WordAdventureUI.showToast('提示已用完', 'warning');
+            }
+        }
+
+        function useTimeExtension() {
+            const count = parseInt(document.getElementById('time-count').textContent);
+            if (count > 0) {
+                document.getElementById('time-count').textContent = count - 1;
+                
+                // 延长时间
+                challengeManager.timeLeft += 30;
+                challengeManager.updateTimer();
+                
+                WordAdventureUI.showToast('时间增加了30秒！', 'success');
+                WordAdventureUI.playSound('success');
+            } else {
+                WordAdventureUI.showToast('加时道具已用完', 'warning');
+            }
+        }
+
+        function useExtraLife() {
+            const count = parseInt(document.getElementById('life-count').textContent);
+            if (count > 0 && challengeManager.lives < 3) {
+                document.getElementById('life-count').textContent = count - 1;
+                
+                // 增加生命
+                challengeManager.lives++;
+                challengeManager.updateLives();
+                
+                WordAdventureUI.showToast('生命值恢复了！', 'success');
+                WordAdventureUI.playSound('success');
+            } else {
+                WordAdventureUI.showToast('无法使用额外生命', 'warning');
+            }
+        }
+
+        function updateToolCounts() {
+            if (typeof WordAdventure !== 'undefined') {
+                const inventory = WordAdventure.gameState.player.inventory.items;
+                
+                document.getElementById('hint-count').textContent = inventory.hint_scroll || 0;
+                document.getElementById('time-count').textContent = inventory.time_crystal || 0;
+                document.getElementById('life-count').textContent = inventory.heart_potion || 0;
+            }
+        }
+
+        function retryChallenge() {
+            if (challengeManager) {
+                challengeManager.retry();
+            }
+        }
+
+        function continueAdventure() {
+            if (challengeManager) {
+                challengeManager.continueAdventure();
+            }
+        }
+
+        // 监听页面卸载，保存进度
+        window.addEventListener('beforeunload', function() {
+            if (typeof WordAdventure !== 'undefined') {
+                WordAdventure.saveGame();
+            }
+        });
+    </script>
+
+    <style>
+        /* 挑战页面专属样式 */
+        .challenge-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+        }
+
+        .challenge-info {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .score-display {
+            font-weight: bold;
+        }
+
+        .lives-display.warning {
+            color: #ff6b6b;
+        }
+
+        /* 挑战准备阶段 */
+        .challenge-preparation {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .word-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .word-main {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .word-phonetic {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .word-chinese {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .word-mnemonic, .word-association {
+            font-size: 14px;
+            color: #666;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(106, 17, 203, 0.1);
+            border-radius: 6px;
+        }
+
+        .prep-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* 挑战进行阶段 */
+        .challenge-active {
+            padding: 16px;
+        }
+
+        .challenge-header {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .challenge-type {
+            font-size: 18px;
+            font-weight: bold;
+            color: #6A11CB;
+        }
+
+        .challenge-timer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #timer-display {
+            font-weight: bold;
+            color: #333;
+        }
+
+        #timer-display.warning {
+            color: #ff6b6b;
+        }
+
+        .timer-bar {
+            width: 100px;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 1s linear;
+        }
+
+        /* 挑战区域 */
+        .challenge-area {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            min-height: 300px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 发音挑战 */
+        .pronunciation-challenge {
+            text-align: center;
+        }
+
+        .target-word h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .word-display {
+            font-size: 36px;
+            font-weight: bold;
+            color: #6A11CB;
+            margin-bottom: 10px;
+        }
+
+        .word-meaning {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .record-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #6A11CB;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto 20px;
+            transition: all 0.2s ease;
+        }
+
+        .record-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .record-btn.recording {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        .record-icon {
+            font-size: 32px;
+        }
+
+        .recording-feedback {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .recording-feedback.success {
+            color: #4CAF50;
+        }
+
+        .recording-feedback.error {
+            color: #f44336;
+        }
+
+        /* 拼写挑战 */
+        .spelling-challenge {
+            text-align: center;
+        }
+
+        .word-hint {
+            font-size: 16px;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .spelling-input-area {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .spelling-input {
+            font-size: 18px;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            width: 250px;
+            text-align: center;
+        }
+
+        .spelling-input:focus {
+            border-color: #6A11CB;
+            outline: none;
+        }
+
+        .spelling-feedback {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .spelling-feedback.success {
+            color: #4CAF50;
+        }
+
+        .spelling-feedback.error {
+            color: #f44336;
+        }
+
+        /* 匹配挑战 */
+        .matching-challenge {
+            text-align: center;
+        }
+
+        .matching-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .option-btn:hover {
+            border-color: #6A11CB;
+            transform: translateY(-2px);
+        }
+
+        .matching-feedback {
+            font-size: 14px;
+        }
+
+        .matching-feedback.success {
+            color: #4CAF50;
+        }
+
+        .matching-feedback.error {
+            color: #f44336;
+        }
+
+        /* 句子挑战 */
+        .sentence-challenge {
+            text-align: center;
+        }
+
+        .sentence-input-area {
+            margin-bottom: 20px;
+        }
+
+        .sentence-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        .sentence-input:focus {
+            border-color: #6A11CB;
+            outline: none;
+        }
+
+        .sentence-feedback {
+            font-size: 14px;
+        }
+
+        .sentence-feedback.success {
+            color: #4CAF50;
+        }
+
+        .sentence-feedback.error {
+            color: #f44336;
+        }
+
+        /* 挑战工具 */
+        .challenge-tools {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tool-btn {
+            position: relative;
+            padding: 8px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+        }
+
+        .tool-btn:hover {
+            border-color: #6A11CB;
+            transform: translateY(-2px);
+        }
+
+        .tool-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #6A11CB;
+            color: white;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 8px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        /* 挑战结果 */
+        .challenge-result {
+            padding: 16px;
+        }
+
+        .result-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-stars {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .star.filled {
+            color: #FFD700;
+        }
+
+        .star.empty {
+            color: #e9ecef;
+        }
+
+        .result-stats h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .score-breakdown {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #6A11CB;
+        }
+
+        .word-review {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .word-review h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .review-item.learned {
+            background: linear-gradient(135deg, #e8f5e8, #f0fff0);
+            border-color: #4CAF50;
+        }
+
+        .review-item.not-learned {
+            background: linear-gradient(135deg, #ffeaea, #fff5f5);
+            border-color: #f44336;
+        }
+
+        .review-word {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .review-meaning {
+            color: #666;
+            margin: 0 10px;
+        }
+
+        .review-status {
+            font-size: 12px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* 录音指示器 */
+        .recording-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 107, 107, 0.9);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .recording-pulse {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            animation: recordingPulse 1s infinite;
+        }
+
+        @keyframes recordingPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            .challenge-info {
+                font-size: 12px;
+                gap: 10px;
+            }
+
+            .word-main {
+                font-size: 28px;
+            }
+
+            .word-display {
+                font-size: 28px;
+            }
+
+            .matching-options {
+                grid-template-columns: 1fr;
+            }
+
+            .score-breakdown {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .review-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</body>
+</html>

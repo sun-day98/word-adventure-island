@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 模态确认对话框</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- 基础确认对话框 -->
+    <div class="modal-overlay" id="confirm-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="confirm-title">确认操作</h3>
+                <button class="close-btn" onclick="closeConfirmModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message" id="confirm-message">您确定要执行此操作吗？</p>
+                <div class="modal-details" id="confirm-details" style="display: none;">
+                    <!-- 详细信息区域 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" id="confirm-cancel" onclick="cancelConfirm()">取消</button>
+                <button class="primary-btn" id="confirm-ok" onclick="confirmAction()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 警告对话框 -->
+    <div class="modal-overlay" id="warning-modal" style="display: none;">
+        <div class="modal-content warning-modal">
+            <div class="modal-header warning-header">
+                <div class="warning-icon">⚠️</div>
+                <h3 class="modal-title" id="warning-title">警告</h3>
+                <button class="close-btn" onclick="closeWarningModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message" id="warning-message">此操作可能会导致不可逆的后果。</p>
+                <div class="warning-checkbox">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="warning-confirm">
+                        <span class="checkbox-custom"></span>
+                        <span>我已了解风险并确认继续</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="cancelWarning()">取消</button>
+                <button class="danger-btn" id="warning-confirm-btn" onclick="confirmWarning()" disabled>确认操作</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 信息对话框 -->
+    <div class="modal-overlay" id="info-modal" style="display: none;">
+        <div class="modal-content info-modal">
+            <div class="modal-header info-header">
+                <div class="info-icon">ℹ️</div>
+                <h3 class="modal-title" id="info-title">提示</h3>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message" id="info-message">操作提示信息</p>
+                <div class="info-details" id="info-details" style="display: none;">
+                    <!-- 详细信息 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="primary-btn" onclick="closeInfoModal()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功对话框 -->
+    <div class="modal-overlay" id="success-modal" style="display: none;">
+        <div class="modal-content success-modal">
+            <div class="modal-header success-header">
+                <div class="success-icon">✅</div>
+                <h3 class="modal-title" id="success-title">操作成功</h3>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message" id="success-message">操作已成功完成</p>
+                <div class="success-actions" id="success-actions" style="display: none;">
+                    <!-- 成功后的操作按钮 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="primary-btn" onclick="closeSuccessModal()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 错误对话框 -->
+    <div class="modal-overlay" id="error-modal" style="display: none;">
+        <div class="modal-content error-modal">
+            <div class="modal-header error-header">
+                <div class="error-icon">❌</div>
+                <h3 class="modal-title" id="error-title">操作失败</h3>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message" id="error-message">操作执行失败，请重试</p>
+                <div class="error-details" id="error-details" style="display: none;">
+                    <!-- 错误详细信息 -->
+                </div>
+                <div class="error-actions">
+                    <button class="secondary-btn" onclick="retryAction()">重试</button>
+                    <button class="link-btn" onclick="contactSupport()">联系客服</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="closeErrorModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 输入对话框 -->
+    <div class="modal-overlay" id="input-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="input-title">输入信息</h3>
+                <button class="close-btn" onclick="closeInputModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message" id="input-message">请输入相关信息</p>
+                <div class="input-fields" id="input-fields">
+                    <!-- 动态输入字段 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="cancelInput()">取消</button>
+                <button class="primary-btn" id="input-confirm" onclick="confirmInput()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 选择对话框 -->
+    <div class="modal-overlay" id="select-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="select-title">选择选项</h3>
+                <button class="close-btn" onclick="closeSelectModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message" id="select-message">请选择一个选项</p>
+                <div class="select-options" id="select-options">
+                    <!-- 动态选项列表 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="cancelSelect()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框管理器脚本 -->
+    <script>
+        class ModalManager {
+            constructor() {
+                this.currentModal = null;
+                this.currentCallback = null;
+                this.currentData = null;
+            }
+
+            // 基础确认对话框
+            confirm(options = {}) {
+                const {
+                    title = '确认操作',
+                    message = '您确定要执行此操作吗？',
+                    details = null,
+                    confirmText = '确认',
+                    cancelText = '取消',
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentModal = document.getElementById('confirm-modal');
+                    this.currentCallback = (result) => {
+                        if (result) {
+                            resolve(data);
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+
+                    // 设置内容
+                    document.getElementById('confirm-title').textContent = title;
+                    document.getElementById('confirm-message').textContent = message;
+                    document.getElementById('confirm-ok').textContent = confirmText;
+                    document.getElementById('confirm-cancel').textContent = cancelText;
+
+                    // 设置详细信息
+                    const detailsElement = document.getElementById('confirm-details');
+                    if (details) {
+                        detailsElement.innerHTML = details;
+                        detailsElement.style.display = 'block';
+                    } else {
+                        detailsElement.style.display = 'none';
+                    }
+
+                    // 显示模态框
+                    this.showModal();
+                });
+            }
+
+            // 警告对话框
+            warning(options = {}) {
+                const {
+                    title = '警告',
+                    message = '此操作可能会导致不可逆的后果。',
+                    confirmText = '确认操作',
+                    cancelText = '取消',
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentModal = document.getElementById('warning-modal');
+                    this.currentCallback = (result) => {
+                        if (result) {
+                            resolve(data);
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+
+                    // 设置内容
+                    document.getElementById('warning-title').textContent = title;
+                    document.getElementById('warning-message').textContent = message;
+                    document.getElementById('warning-confirm-btn').textContent = confirmText;
+                    
+                    const cancelBtn = document.querySelector('#warning-modal .secondary-btn');
+                    if (cancelBtn) cancelBtn.textContent = cancelText;
+
+                    // 重置复选框
+                    const checkbox = document.getElementById('warning-confirm');
+                    checkbox.checked = false;
+                    document.getElementById('warning-confirm-btn').disabled = true;
+
+                    // 显示模态框
+                    this.showModal();
+                });
+            }
+
+            // 信息对话框
+            info(options = {}) {
+                const {
+                    title = '提示',
+                    message = '操作提示信息',
+                    details = null,
+                    buttonText = '确定',
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve) => {
+                    this.currentModal = document.getElementById('info-modal');
+                    this.currentCallback = () => resolve(data);
+                    this.currentData = data;
+
+                    // 设置内容
+                    document.getElementById('info-title').textContent = title;
+                    document.getElementById('info-message').textContent = message;
+                    const confirmBtn = document.querySelector('#info-modal .primary-btn');
+                    if (confirmBtn) confirmBtn.textContent = buttonText;
+
+                    // 设置详细信息
+                    const detailsElement = document.getElementById('info-details');
+                    if (details) {
+                        detailsElement.innerHTML = details;
+                        detailsElement.style.display = 'block';
+                    } else {
+                        detailsElement.style.display = 'none';
+                    }
+
+                    // 显示模态框
+                    this.showModal();
+                });
+            }
+
+            // 成功对话框
+            success(options = {}) {
+                const {
+                    title = '操作成功',
+                    message = '操作已成功完成',
+                    actions = null,
+                    buttonText = '确定',
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve) => {
+                    this.currentModal = document.getElementById('success-modal');
+                    this.currentCallback = () => resolve(data);
+                    this.currentData = data;
+
+                    // 设置内容
+                    document.getElementById('success-title').textContent = title;
+                    document.getElementById('success-message').textContent = message;
+                    const confirmBtn = document.querySelector('#success-modal .primary-btn');
+                    if (confirmBtn) confirmBtn.textContent = buttonText;
+
+                    // 设置操作按钮
+                    const actionsElement = document.getElementById('success-actions');
+                    if (actions) {
+                        actionsElement.innerHTML = actions;
+                        actionsElement.style.display = 'block';
+                    } else {
+                        actionsElement.style.display = 'none';
+                    }
+
+                    // 显示模态框
+                    this.showModal();
+                });
+            }
+
+            // 错误对话框
+            error(options = {}) {
+                const {
+                    title = '操作失败',
+                    message = '操作执行失败，请重试',
+                    details = null,
+                    retryCallback = null,
+                    supportCallback = null,
+                    buttonText = '关闭',
+                    data = null
+                } = options;
+
+                return new Promise((resolve) => {
+                    this.currentModal = document.getElementById('error-modal');
+                    this.currentCallback = () => resolve(data);
+                    this.currentData = data;
+
+                    // 设置内容
+                    document.getElementById('error-title').textContent = title;
+                    document.getElementById('error-message').textContent = message;
+                    const confirmBtn = document.querySelector('#error-modal .secondary-btn');
+                    if (confirmBtn) confirmBtn.textContent = buttonText;
+
+                    // 设置详细信息
+                    const detailsElement = document.getElementById('error-details');
+                    if (details) {
+                        detailsElement.innerHTML = details;
+                        detailsElement.style.display = 'block';
+                    } else {
+                        detailsElement.style.display = 'none';
+                    }
+
+                    // 保存回调函数
+                    window.currentRetryCallback = retryCallback;
+                    window.currentSupportCallback = supportCallback;
+
+                    // 显示模态框
+                    this.showModal();
+                });
+            }
+
+            // 输入对话框
+            input(options = {}) {
+                const {
+                    title = '输入信息',
+                    message = '请输入相关信息',
+                    fields = [
+                        { type: 'text', label: '输入', placeholder: '请输入...', required: true }
+                    ],
+                    confirmText = '确定',
+                    cancelText = '取消',
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentModal = document.getElementById('input-modal');
+                    this.currentCallback = (result) => {
+                        if (result) {
+                            resolve(result);
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+
+                    // 设置内容
+                    document.getElementById('input-title').textContent = title;
+                    document.getElementById('input-message').textContent = message;
+                    document.getElementById('input-confirm').textContent = confirmText;
+                    const cancelBtn = document.querySelector('#input-modal .secondary-btn');
+                    if (cancelBtn) cancelBtn.textContent = cancelText;
+
+                    // 生成输入字段
+                    const fieldsContainer = document.getElementById('input-fields');
+                    fieldsContainer.innerHTML = fields.map((field, index) => `
+                        <div class="input-group">
+                            <label for="input-field-${index}">${field.label}</label>
+                            <input type="${field.type}" 
+                                   id="input-field-${index}" 
+                                   placeholder="${field.placeholder || ''}"
+                                   ${field.required ? 'required' : ''}
+                                   ${field.maxlength ? `maxlength="${field.maxlength}"` : ''}
+                                   class="form-input">
+                        </div>
+                    `).join('');
+
+                    // 显示模态框
+                    this.showModal();
+                });
+            }
+
+            // 选择对话框
+            select(options = {}) {
+                const {
+                    title = '选择选项',
+                    message = '请选择一个选项',
+                    options = [],
+                    multiple = false,
+                    cancelText = '取消',
+                    callback = null,
+                    data = null
+                } = options;
+
+                return new Promise((resolve, reject) => {
+                    this.currentModal = document.getElementById('select-modal');
+                    this.currentCallback = (result) => {
+                        if (result !== null) {
+                            resolve(result);
+                        } else {
+                            reject(new Error('User cancelled'));
+                        }
+                    };
+                    this.currentData = data;
+
+                    // 设置内容
+                    document.getElementById('select-title').textContent = title;
+                    document.getElementById('select-message').textContent = message;
+                    const cancelBtn = document.querySelector('#select-modal .secondary-btn');
+                    if (cancelBtn) cancelBtn.textContent = cancelText;
+
+                    // 生成选项列表
+                    const optionsContainer = document.getElementById('select-options');
+                    const inputType = multiple ? 'checkbox' : 'radio';
+                    
+                    optionsContainer.innerHTML = options.map((option, index) => `
+                        <label class="select-option">
+                            <input type="${inputType}" 
+                                   name="modal-select" 
+                                   value="${option.value}"
+                                   data-index="${index}">
+                            <span class="select-label">${option.label}</span>
+                            ${option.description ? `<span class="select-description">${option.description}</span>` : ''}
+                        </label>
+                    `).join('');
+
+                    // 显示模态框
+                    this.showModal();
+                });
+            }
+
+            // 显示模态框
+            showModal() {
+                if (this.currentModal) {
+                    this.currentModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            // 隐藏当前模态框
+            hideModal() {
+                if (this.currentModal) {
+                    this.currentModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                    this.currentModal = null;
+                    this.currentCallback = null;
+                    this.currentData = null;
+                }
+            }
+
+            // 通用确认方法
+            confirmAction() {
+                if (this.currentCallback) {
+                    this.currentCallback(true);
+                }
+                this.hideModal();
+            }
+
+            // 通用取消方法
+            cancelAction() {
+                if (this.currentCallback) {
+                    this.currentCallback(false);
+                }
+                this.hideModal();
+            }
+        }
+
+        // 创建全局模态框管理器实例
+        window.ModalManager = new ModalManager();
+
+        // 快捷方法
+        window.showConfirm = (options) => window.ModalManager.confirm(options);
+        window.showWarning = (options) => window.ModalManager.warning(options);
+        window.showInfo = (options) => window.ModalManager.info(options);
+        window.showSuccess = (options) => window.ModalManager.success(options);
+        window.showError = (options) => window.ModalManager.error(options);
+        window.showInput = (options) => window.ModalManager.input(options);
+        window.showSelect = (options) => window.ModalManager.select(options);
+
+        // 各个模态框的具体操作方法
+        function closeConfirmModal() {
+            window.ModalManager.cancelAction();
+        }
+
+        function confirmAction() {
+            window.ModalManager.confirmAction();
+        }
+
+        function cancelConfirm() {
+            window.ModalManager.cancelAction();
+        }
+
+        // 警告模态框方法
+        function closeWarningModal() {
+            window.ModalManager.cancelAction();
+        }
+
+        function cancelWarning() {
+            window.ModalManager.cancelAction();
+        }
+
+        function confirmWarning() {
+            window.ModalManager.confirmAction();
+        }
+
+        // 警告复选框事件
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'warning-confirm') {
+                const confirmBtn = document.getElementById('warning-confirm-btn');
+                confirmBtn.disabled = !e.target.checked;
+            }
+        });
+
+        // 信息模态框方法
+        function closeInfoModal() {
+            window.ModalManager.hideModal();
+        }
+
+        // 成功模态框方法
+        function closeSuccessModal() {
+            window.ModalManager.hideModal();
+        }
+
+        // 错误模态框方法
+        function closeErrorModal() {
+            window.ModalManager.hideModal();
+        }
+
+        function retryAction() {
+            if (window.currentRetryCallback) {
+                window.currentRetryCallback();
+            }
+            window.ModalManager.hideModal();
+        }
+
+        function contactSupport() {
+            if (window.currentSupportCallback) {
+                window.currentSupportCallback();
+            }
+            window.ModalManager.hideModal();
+        }
+
+        // 输入模态框方法
+        function closeInputModal() {
+            window.ModalManager.cancelAction();
+        }
+
+        function cancelInput() {
+            window.ModalManager.cancelAction();
+        }
+
+        function confirmInput() {
+            // 收集输入数据
+            const inputs = document.querySelectorAll('#input-fields .form-input');
+            const values = Array.from(inputs).map(input => input.value);
+            
+            window.ModalManager.currentCallback(values);
+            window.ModalManager.hideModal();
+        }
+
+        // 选择模态框方法
+        function closeSelectModal() {
+            window.ModalManager.cancelAction();
+        }
+
+        function cancelSelect() {
+            window.ModalManager.cancelAction();
+        }
+
+        function confirmSelect() {
+            // 收集选择结果
+            const selected = document.querySelectorAll('#select-options input:checked');
+            const values = Array.from(selected).map(input => ({
+                value: input.value,
+                index: input.dataset.index
+            }));
+            
+            window.ModalManager.currentCallback(values.length > 0 ? values : null);
+            window.ModalManager.hideModal();
+        }
+
+        // 点击遮罩层关闭模态框
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                const modalManager = window.ModalManager;
+                if (modalManager.currentModal && modalManager.currentCallback) {
+                    // 对于确认类模态框，点击遮罩等于取消
+                    modalManager.cancelAction();
+                } else {
+                    modalManager.hideModal();
+                }
+            }
+        });
+
+        // 导出给其他脚本使用
+        if (typeof module !== 'undefined' && module.exports) {
+            module.exports = ModalManager;
+        }
+    </script>
+</body>
+</html>

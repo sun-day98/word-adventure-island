@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - VIP会员</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <button class="back-btn" onclick="parent.navigateToPage('profile.html')">← 返回</button>
+            <h1>VIP会员中心</h1>
+        </header>
+
+        <!-- VIP状态展示 -->
+        <section class="vip-status">
+            <div class="vip-banner">
+                <div class="crown-icon">👑</div>
+                <h2 class="vip-title">黄金会员</h2>
+                <p class="vip-subtitle">享受专属特权，提升健身体验</p>
+                <div class="vip-expiry">
+                    <span>有效期至：2025年6月5日</span>
+                    <button class="renew-btn" onclick="scrollToPlans()">续费</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 会员特权 -->
+        <section class="vip-benefits">
+            <h2>会员特权</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item active">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>个性化训练计划</h3>
+                    <p>AI智能定制专属训练方案</p>
+                </div>
+                
+                <div class="benefit-item active">
+                    <div class="benefit-icon">🍽️</div>
+                    <h3>营养膳食指导</h3>
+                    <p>专业营养师一对一指导</p>
+                </div>
+                
+                <div class="benefit-item active">
+                    <div class="benefit-icon">📊</div>
+                    <h3>高级数据分析</h3>
+                    <p>深度分析身体数据变化</p>
+                </div>
+                
+                <div class="benefit-item active">
+                    <div class="benefit-icon">🎬</div>
+                    <h3>独家课程内容</h3>
+                    <p>解锁所有付费课程</p>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">👥</div>
+                    <h3>专属社群</h3>
+                    <p>加入VIP专属社群交流</p>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">🏆</div>
+                    <h3>专属徽章</h3>
+                    <p>获得VIP专属成就徽章</p>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">💬</div>
+                    <h3>优先客服</h3>
+                    <p>7×24小时优先客服支持</p>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎁</div>
+                    <h3>专属优惠</h3>
+                    <p>健身装备购物折扣</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 会员套餐选择 -->
+        <section class="membership-plans" id="membership-plans">
+            <h2>选择套餐</h2>
+            <div class="plans-container">
+                <!-- 月度会员 -->
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="plan-name">月度会员</h3>
+                        <div class="plan-price">
+                            <span class="price-currency">¥</span>
+                            <span class="price-amount">29</span>
+                            <span class="price-period">/月</span>
+                        </div>
+                        <div class="plan-original">原价 ¥39</div>
+                    </div>
+                    <div class="plan-features">
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>解锁所有基础特权</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>访问500+训练课程</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>基础营养指导</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>标准数据分析</span>
+                        </div>
+                    </div>
+                    <button class="plan-btn" onclick="selectPlan('monthly', 29)">选择月度会员</button>
+                </div>
+
+                <!-- 季度会员（推荐） -->
+                <div class="plan-card featured">
+                    <div class="recommended-badge">最受欢迎</div>
+                    <div class="plan-header">
+                        <h3 class="plan-name">季度会员</h3>
+                        <div class="plan-price">
+                            <span class="price-currency">¥</span>
+                            <span class="price-amount">69</span>
+                            <span class="price-period">/3个月</span>
+                        </div>
+                        <div class="plan-original">原价 ¥117</div>
+                        <div class="plan-discount">节省 ¥48</div>
+                    </div>
+                    <div class="plan-features">
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>包含月度会员所有特权</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>专属训练计划定制</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>营养师在线咨询</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>高级数据分析报告</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>VIP专属社群</span>
+                        </div>
+                    </div>
+                    <button class="plan-btn featured-btn" onclick="selectPlan('quarterly', 69)">选择季度会员</button>
+                </div>
+
+                <!-- 年度会员 -->
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="plan-name">年度会员</h3>
+                        <div class="plan-price">
+                            <span class="price-currency">¥</span>
+                            <span class="price-amount">259</span>
+                            <span class="price-period">/年</span>
+                        </div>
+                        <div class="plan-original">原价 ¥468</div>
+                        <div class="plan-discount">节省 ¥209</div>
+                    </div>
+                    <div class="plan-features">
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>包含季度会员所有特权</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>1对1专属教练指导</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>无限次营养师咨询</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>深度身体成分分析</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>线下健身房合作优惠</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="check-icon">✓</span>
+                            <span>专属健身装备礼包</span>
+                        </div>
+                    </div>
+                    <button class="plan-btn" onclick="selectPlan('yearly', 259)">选择年度会员</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 支付方式 -->
+        <section class="payment-methods">
+            <h2>支付方式</h2>
+            <div class="payment-options">
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="wechat" checked>
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon">💚</span>
+                    <span>微信支付</span>
+                </label>
+                
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="alipay">
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon">💙</span>
+                    <span>支付宝</span>
+                </label>
+                
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="apple">
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon">🍎</span>
+                    <span>Apple Pay</span>
+                </label>
+                
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="card">
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon">💳</span>
+                    <span>银行卡/信用卡</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- 优惠码 -->
+        <section class="promo-code">
+            <h2>优惠码</h2>
+            <div class="promo-input-group">
+                <input type="text" id="promo-code" placeholder="请输入优惠码" class="promo-input">
+                <button class="apply-btn" onclick="applyPromoCode()">应用</button>
+            </div>
+            <div class="promo-tips">
+                <p>💡 新用户专享：输入 "FITLIFE2025" 享8折优惠</p>
+            </div>
+        </section>
+
+        <!-- 服务条款 -->
+        <section class="service-terms">
+            <div class="terms-checkbox">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="agree-terms">
+                    <span class="checkbox-custom"></span>
+                    <span>我已阅读并同意<a href="#" onclick="showTerms()">《VIP会员服务协议》</a>和<a href="#" onclick="showPrivacy()">《自动续费协议》</a></span>
+                </label>
+            </div>
+            
+            <div class="auto-renewal-info">
+                <h3>自动续费说明</h3>
+                <ul>
+                    <li>自动续费将在当前订阅期结束前24小时自动扣款</li>
+                    <li>您可以随时在设置中关闭自动续费</li>
+                    <li>关闭后仍可使用至当前订阅期结束</li>
+                    <li>支持7天无理由退款</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 底部操作栏 -->
+        <div class="bottom-action-bar">
+            <div class="selected-plan-info">
+                <span class="plan-name" id="selected-plan-name">季度会员</span>
+                <span class="plan-price" id="selected-plan-price">¥69</span>
+            </div>
+            <button class="purchase-btn" onclick="purchaseMembership()">
+                立即购买
+            </button>
+        </div>
+    </div>
+
+    <!-- 支付确认弹窗 -->
+    <div class="modal-overlay" id="payment-modal" style="display: none;">
+        <div class="modal-content payment-modal">
+            <div class="modal-header">
+                <h3>确认支付</h3>
+                <button class="close-btn" onclick="closePaymentModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="payment-summary">
+                    <div class="payment-item">
+                        <span class="payment-label">套餐名称：</span>
+                        <span class="payment-value" id="payment-plan-name">季度会员</span>
+                    </div>
+                    <div class="payment-item">
+                        <span class="payment-label">支付金额：</span>
+                        <span class="payment-value payment-amount" id="payment-amount">¥69</span>
+                    </div>
+                    <div class="payment-item">
+                        <span class="payment-label">支付方式：</span>
+                        <span class="payment-value" id="payment-method">微信支付</span>
+                    </div>
+                </div>
+                
+                <div class="discount-info" id="discount-info" style="display: none;">
+                    <div class="payment-item">
+                        <span class="payment-label">优惠金额：</span>
+                        <span class="payment-value discount-amount" id="discount-amount">-¥13.8</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="closePaymentModal()">取消</button>
+                <button class="primary-btn" onclick="confirmPayment()">确认支付</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlan = {
+            type: 'quarterly',
+            price: 69,
+            name: '季度会员'
+        };
+
+        function selectPlan(type, price) {
+            selectedPlan = {
+                type: type,
+                price: price,
+                name: getPlanName(type)
+            };
+            
+            // 更新UI显示
+            document.getElementById('selected-plan-name').textContent = selectedPlan.name;
+            document.getElementById('selected-plan-price').textContent = `¥${selectedPlan.price}`;
+            
+            // 滚动到支付区域
+            document.querySelector('.payment-methods').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getPlanName(type) {
+            const names = {
+                'monthly': '月度会员',
+                'quarterly': '季度会员',
+                'yearly': '年度会员'
+            };
+            return names[type] || '季度会员';
+        }
+
+        function scrollToPlans() {
+            document.getElementById('membership-plans').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function applyPromoCode() {
+            const promoCode = document.getElementById('promo-code').value.toUpperCase();
+            
+            if (promoCode === 'FITLIFE2025') {
+                // 应用8折优惠
+                const discount = selectedPlan.price * 0.2;
+                const finalPrice = selectedPlan.price - discount;
+                
+                alert(`优惠码应用成功！节省 ¥${discount.toFixed(2)}`);
+                
+                // 更新显示
+                document.getElementById('selected-plan-price').textContent = `¥${finalPrice.toFixed(2)}`;
+                
+                // 禁用优惠码输入
+                document.getElementById('promo-code').disabled = true;
+                document.querySelector('.apply-btn').disabled = true;
+                document.querySelector('.apply-btn').textContent = '已应用';
+            } else if (promoCode) {
+                alert('优惠码无效，请检查后重试');
+            }
+        }
+
+        function purchaseMembership() {
+            const agreeTerms = document.getElementById('agree-terms').checked;
+            
+            if (!agreeTerms) {
+                alert('请先阅读并同意服务协议');
+                return;
+            }
+            
+            // 显示支付确认弹窗
+            showPaymentModal();
+        }
+
+        function showPaymentModal() {
+            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+            const paymentMethodNames = {
+                'wechat': '微信支付',
+                'alipay': '支付宝',
+                'apple': 'Apple Pay',
+                'card': '银行卡/信用卡'
+            };
+            
+            document.getElementById('payment-plan-name').textContent = selectedPlan.name;
+            document.getElementById('payment-amount').textContent = `¥${selectedPlan.price}`;
+            document.getElementById('payment-method').textContent = paymentMethodNames[paymentMethod];
+            
+            document.getElementById('payment-modal').style.display = 'block';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+        }
+
+        function confirmPayment() {
+            const purchaseBtn = document.querySelector('.purchase-btn');
+            purchaseBtn.textContent = '支付中...';
+            purchaseBtn.disabled = true;
+            
+            // 模拟支付处理
+            setTimeout(() => {
+                closePaymentModal();
+                alert('支付成功！恭喜您成为VIP会员！');
+                
+                // 更新会员状态
+                updateVIPStatus();
+                
+                purchaseBtn.textContent = '立即购买';
+                purchaseBtn.disabled = false;
+            }, 2000);
+        }
+
+        function updateVIPStatus() {
+            // 更新页面显示为VIP状态
+            const vipBanner = document.querySelector('.vip-banner');
+            vipBanner.innerHTML = `
+                <div class="crown-icon">👑</div>
+                <h2 class="vip-title">${selectedPlan.name}</h2>
+                <p class="vip-subtitle">享受专属特权，提升健身体验</p>
+                <div class="vip-expiry">
+                    <span>有效期至：${calculateExpiryDate()}</span>
+                    <button class="renew-btn" onclick="scrollToPlans()">续费</button>
+                </div>
+            `;
+            
+            // 激活所有特权
+            document.querySelectorAll('.benefit-item').forEach(item => {
+                item.classList.add('active');
+            });
+        }
+
+        function calculateExpiryDate() {
+            const now = new Date();
+            let expiryDate;
+            
+            switch (selectedPlan.type) {
+                case 'monthly':
+                    expiryDate = new Date(now.setMonth(now.getMonth() + 1));
+                    break;
+                case 'quarterly':
+                    expiryDate = new Date(now.setMonth(now.getMonth() + 3));
+                    break;
+                case 'yearly':
+                    expiryDate = new Date(now.setFullYear(now.getFullYear() + 1));
+                    break;
+            }
+            
+            return expiryDate.toLocaleDateString('zh-CN');
+        }
+
+        function showTerms() {
+            alert('VIP会员服务协议\n\n1. 服务内容\n2. 权利义务\n3. 退款政策\n4. 隐私保护');
+        }
+
+        function showPrivacy() {
+            alert('自动续费协议\n\n1. 自动续费规则\n2. 取消续费流程\n3. 费用说明\n4. 争议解决');
+        }
+    </script>
+</body>
+</html>

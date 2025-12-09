@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>FitLife - 运动健身APP</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/ios-status-bar.css">
+    
+    <!-- Cordova CSS加载优化 -->
+    <style>
+        /* 预加载样式，避免闪烁 */
+        .cordova-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #007AFF 0%, #00C6FF 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+        
+        .cordova-loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .cordova-loading-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Cordova特有样式 */
+        body.cordova-device {
+            /* 禁用默认的触摸高亮 */
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        body.cordova-device * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .bottom-nav {
+            /* Cordova中底部导航适配 */
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: constant(safe-area-inset-bottom);
+        }
+        
+        .app-container {
+            /* 全屏显示 */
+            height: 100vh;
+            height: 100dvh; /* 动态视口高度 */
+        }
+        
+        /* iOS刘海屏适配 */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .app-container {
+                padding-top: env(safe-area-inset-top);
+                padding-top: constant(safe-area-inset-top);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cordova启动屏占位 -->
+    <div id="cordova-loading" class="cordova-loading">
+        <div class="cordova-loading-spinner"></div>
+        <div class="cordova-loading-text">FitLife启动中...</div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="app-container">
+        <!-- iOS状态栏模拟（仅在Web端显示） -->
+        <div class="ios-status-bar web-only" style="display: none;">
+            <div class="status-left">
+                <span class="time">9:41</span>
+            </div>
+            <div class="status-center"></div>
+            <div class="status-right">
+                <span class="signal"></span>
+                <span class="wifi"></span>
+                <span class="battery">100%</span>
+            </div>
+        </div>
+
+        <!-- iframe容器，用于加载各个页面 -->
+        <iframe id="page-frame" src="home.html" frameborder="0"></iframe>
+        
+        <!-- 底部导航栏 -->
+        <nav class="bottom-nav">
+            <a href="home.html" class="nav-item active" data-page="home">
+                <div class="nav-icon">🏠</div>
+                <span>首页</span>
+            </a>
+            <a href="courses.html" class="nav-item" data-page="courses">
+                <div class="nav-icon">💪</div>
+                <span>课程</span>
+            </a>
+            <a href="diet.html" class="nav-item" data-page="diet">
+                <div class="nav-icon">🥗</div>
+                <span>饮食</span>
+            </a>
+            <a href="profile.html" class="nav-item" data-page="profile">
+                <div class="nav-icon">👤</div>
+                <span>我的</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- 全局加载提示 -->
+    <div id="global-loading" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>加载中...</p>
+    </div>
+
+    <!-- Cordova脚本 -->
+    <script src="cordova.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/data-charts.js"></script>
+    <script src="js/mock-data.js"></script>
+    
+    <!-- Cordova初始化脚本 -->
+    <script>
+        // 等待设备就绪
+        document.addEventListener('deviceready', function() {
+            console.log('Cordova设备就绪');
+            
+            // 设置设备标识
+            document.body.classList.add('cordova-device');
+            
+            // 隐藏状态栏模拟（使用原生状态栏）
+            const statusBar = document.querySelector('.ios-status-bar.web-only');
+            if (statusBar) {
+                statusBar.style.display = 'none';
+            }
+            
+            // 配置状态栏
+            if (window.StatusBar) {
+                StatusBar.backgroundColorByHexString('#007AFF');
+                StatusBar.styleLightContent();
+            }
+            
+            // 配置屏幕方向
+            if (window.screen && window.screen.orientation) {
+                screen.orientation.lock('portrait');
+            }
+            
+            // 配置启动屏
+            if (navigator.splashscreen) {
+                setTimeout(function() {
+                    navigator.splashscreen.hide();
+                }, 2000);
+            }
+            
+            // 隐藏加载动画
+            setTimeout(function() {
+                const loadingEl = document.getElementById('cordova-loading');
+                if (loadingEl) {
+                    loadingEl.style.opacity = '0';
+                    loadingEl.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => loadingEl.remove(), 500);
+                }
+            }, 1500);
+            
+            // 初始化应用
+            if (typeof initApp === 'function') {
+                initApp();
+            }
+            
+            // 注册网络状态监听
+            if (navigator.connection) {
+                document.addEventListener('online', function() {
+                    console.log('网络已连接');
+                });
+                
+                document.addEventListener('offline', function() {
+                    console.log('网络已断开');
+                    showToast('网络连接已断开，请检查网络设置');
+                });
+            }
+            
+        }, false);
+        
+        // Web端初始化（用于开发测试）
+        if (!window.cordova) {
+            console.log('Web端模式');
+            document.querySelector('.ios-status-bar.web-only').style.display = 'block';
+            
+            // 隐藏加载动画
+            setTimeout(function() {
+                const loadingEl = document.getElementById('cordova-loading');
+                if (loadingEl) {
+                    loadingEl.style.opacity = '0';
+                    loadingEl.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => loadingEl.remove(), 500);
+                }
+            }, 1000);
+            
+            // 初始化应用
+            if (typeof initApp === 'function') {
+                setTimeout(initApp, 100);
+            }
+        }
+        
+        // Cordova特有功能增强
+        document.addEventListener('deviceready', function() {
+            // 添加震动反馈
+            if (navigator.vibrate) {
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.nav-item, .btn, .card')) {
+                        navigator.vibrate(50); // 50ms轻微震动
+                    }
+                });
+            }
+            
+            // 添加返回键监听
+            document.addEventListener('backbutton', function(e) {
+                e.preventDefault();
+                
+                // 如果在首页，显示退出确认
+                if (document.querySelector('#page-frame').contentWindow.location.pathname.endsWith('home.html')) {
+                    if (window.confirm('确定要退出FitLife吗？')) {
+                        navigator.app.exitApp();
+                    }
+                } else {
+                    // 否则返回上一页
+                    history.back();
+                }
+            });
+            
+            // 防止双击缩放
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(e) {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+        });
+        
+        // 网络错误处理
+        window.addEventListener('error', function(e) {
+            if (e.target && e.target.tagName === 'IMG') {
+                console.log('图片加载失败:', e.target.src);
+                // 设置默认图片
+                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMlM2LjQ4IDIyIDEyIDIyUzIyIDE3LjUyIDIyIDEyUzE3LjUyIDIgMTIgMloiIGZpbGw9IiNDQ0MiIi8+CjxwYXRoIGQ9Ik0xMiAxNkMxNC4yMSAxNiAxNiAxNC4yMSAxNiAxMkMxNiA5Ljc5IDE0LjIxIDggMTIgOEM5Ljc5IDggOCA5Ljc5IDggMTJDOCAxNC4yMSA5Ljc5IDE2IDEyIDE2WiIgZmlsbD0iI0NDQyIi8+Cjwvc3ZnPgo=';
+            }
+        }, true);
+    </script>
+</body>
+</html>

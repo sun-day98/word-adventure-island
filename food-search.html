@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 食物查询</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <button class="back-btn" onclick="parent.navigateToPage('diet.html')">← 返回</button>
+            <h1>食物查询</h1>
+        </header>
+
+        <!-- 搜索区域 -->
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <input type="text" id="food-search-input" placeholder="搜索食物名称或扫描条形码" class="search-input-large">
+                    <button class="search-btn-large" onclick="performSearch()">🔍</button>
+                </div>
+                <div class="search-actions">
+                    <button class="action-btn" onclick="scanBarcode()">
+                        <span class="action-icon">📷</span>
+                        <span>扫码</span>
+                    </button>
+                    <button class="action-btn" onclick="voiceSearch()">
+                        <span class="action-icon">🎤</span>
+                        <span>语音</span>
+                    </button>
+                    <button class="action-btn" onclick="cameraSearch()">
+                        <span class="action-icon">🍽️</span>
+                        <span>拍照识别</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 快捷分类 -->
+        <section class="food-categories">
+            <h2>食物分类</h2>
+            <div class="category-grid">
+                <button class="category-item" onclick="browseCategory('grains')">
+                    <div class="category-icon">🌾</div>
+                    <span>主食</span>
+                </button>
+                <button class="category-item" onclick="browseCategory('meat')">
+                    <div class="category-icon">🥩</div>
+                    <span>肉类</span>
+                </button>
+                <button class="category-item" onclick="browseCategory('vegetables')">
+                    <div class="category-icon">🥬</div>
+                    <span>蔬菜</span>
+                </button>
+                <button class="category-item" onclick="browseCategory('fruits')">
+                    <div class="category-icon">🍎</div>
+                    <span>水果</span>
+                </button>
+                <button class="category-item" onclick="browseCategory('dairy')">
+                    <div class="category-icon">🥛</div>
+                    <span>乳制品</span>
+                </button>
+                <button class="category-item" onclick="browseCategory('nuts')">
+                    <div class="category-icon">🌰</div>
+                    <span>坚果</span>
+                </button>
+                <button class="category-item" onclick="browseCategory('beverages')">
+                    <div class="category-icon">☕</div>
+                    <span>饮品</span>
+                </button>
+                <button class="category-item" onclick="browseCategory('snacks')">
+                    <div class="category-icon">🍿</div>
+                    <span>零食</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 热门食物 -->
+        <section class="popular-foods">
+            <div class="section-header">
+                <h2>热门食物</h2>
+                <button class="view-more-btn" onclick="viewMorePopular()">更多 →</button>
+            </div>
+            <div class="popular-list">
+                <div class="popular-item" onclick="selectFood('米饭', 116, 100)">
+                    <img src="assets/images/food/rice.jpg" alt="米饭" class="food-thumb">
+                    <div class="food-info">
+                        <div class="food-name">米饭</div>
+                        <div class="food-calories">116千卡/100g</div>
+                    </div>
+                    <button class="quick-add-btn">+</button>
+                </div>
+                <div class="popular-item" onclick="selectFood('鸡蛋', 155, 100)">
+                    <img src="assets/images/food/egg.jpg" alt="鸡蛋" class="food-thumb">
+                    <div class="food-info">
+                        <div class="food-name">鸡蛋</div>
+                        <div class="food-calories">155千卡/100g</div>
+                    </div>
+                    <button class="quick-add-btn">+</button>
+                </div>
+                <div class="popular-item" onclick="selectFood('苹果', 52, 100)">
+                    <img src="assets/images/food/apple.jpg" alt="苹果" class="food-thumb">
+                    <div class="food-info">
+                        <div class="food-name">苹果</div>
+                        <div class="food-calories">52千卡/100g</div>
+                    </div>
+                    <button class="quick-add-btn">+</button>
+                </div>
+                <div class="popular-item" onclick="selectFood('鸡胸肉', 165, 100)">
+                    <img src="assets/images/food/chicken-breast.jpg" alt="鸡胸肉" class="food-thumb">
+                    <div class="food-info">
+                        <div class="food-name">鸡胸肉</div>
+                        <div class="food-calories">165千卡/100g</div>
+                    </div>
+                    <button class="quick-add-btn">+</button>
+                </div>
+                <div class="popular-item" onclick="selectFood('牛奶', 54, 100)">
+                    <img src="assets/images/food/milk.jpg" alt="牛奶" class="food-thumb">
+                    <div class="food-info">
+                        <div class="food-name">牛奶</div>
+                        <div class="food-calories">54千卡/100ml</div>
+                    </div>
+                    <button class="quick-add-btn">+</button>
+                </div>
+                <div class="popular-item" onclick="selectFood('香蕉', 89, 100)">
+                    <img src="assets/images/food/banana.jpg" alt="香蕉" class="food-thumb">
+                    <div class="food-info">
+                        <div class="food-name">香蕉</div>
+                        <div class="food-calories">89千卡/100g</div>
+                    </div>
+                    <button class="quick-add-btn">+</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 搜索历史 -->
+        <section class="search-history">
+            <div class="section-header">
+                <h2>搜索历史</h2>
+                <button class="clear-history-btn" onclick="clearHistory()">清除</button>
+            </div>
+            <div class="history-list">
+                <div class="history-item" onclick="searchFromHistory('西兰花')">
+                    <span class="history-icon">🕐</span>
+                    <span class="history-text">西兰花</span>
+                    <button class="history-remove" onclick="removeHistoryItem(this, event)">×</button>
+                </div>
+                <div class="history-item" onclick="searchFromHistory('酸奶')">
+                    <span class="history-icon">🕐</span>
+                    <span class="history-text">酸奶</span>
+                    <button class="history-remove" onclick="removeHistoryItem(this, event)">×</button>
+                </div>
+                <div class="history-item" onclick="searchFromHistory('全麦面包')">
+                    <span class="history-icon">🕐</span>
+                    <span class="history-text">全麦面包</span>
+                    <button class="history-remove" onclick="removeHistoryItem(this, event)">×</button>
+                </div>
+                <div class="history-item" onclick="searchFromHistory('三文鱼')">
+                    <span class="history-icon">🕐</span>
+                    <span class="history-text">三文鱼</span>
+                    <button class="history-remove" onclick="removeHistoryItem(this, event)">×</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 搜索结果区域 -->
+        <section class="search-results-section" id="search-results-section" style="display: none;">
+            <div class="results-header">
+                <h2>搜索结果</h2>
+                <span class="results-count">找到 <span id="results-count">0</span> 个结果</span>
+            </div>
+            <div class="results-list" id="results-list">
+                <!-- 动态加载搜索结果 -->
+            </div>
+        </section>
+
+        <!-- 常用品牌 -->
+        <section class="popular-brands">
+            <div class="section-header">
+                <h2>常用品牌</h2>
+                <button class="view-all-brands" onclick="viewAllBrands()">全部 →</button>
+            </div>
+            <div class="brands-grid">
+                <div class="brand-item" onclick="searchByBrand('康师傅')">
+                    <img src="assets/images/brands/kangshifu.jpg" alt="康师傅" class="brand-logo">
+                    <span>康师傅</span>
+                </div>
+                <div class="brand-item" onclick="searchByBrand('伊利')">
+                    <img src="assets/images/brands/yili.jpg" alt="伊利" class="brand-logo">
+                    <span>伊利</span>
+                </div>
+                <div class="brand-item" onclick="searchByBrand('蒙牛')">
+                    <img src="assets/images/brands/mengniu.jpg" alt="蒙牛" class="brand-logo">
+                    <span>蒙牛</span>
+                </div>
+                <div class="brand-item" onclick="searchByBrand('农夫山泉')">
+                    <img src="assets/images/brands/nongfu.jpg" alt="农夫山泉" class="brand-logo">
+                    <span>农夫山泉</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 食物详情弹窗 -->
+    <div class="modal-overlay" id="food-detail-modal" style="display: none;">
+        <div class="modal-content food-detail-modal">
+            <div class="modal-header">
+                <h3 id="food-detail-title">食物详情</h3>
+                <button class="close-btn" onclick="closeFoodDetail()">×</button>
+            </div>
+            <div class="modal-body">
+                <img id="food-detail-image" src="" alt="" class="food-detail-image">
+                <div class="nutrition-info">
+                    <div class="nutrition-row">
+                        <span class="nutrition-label">热量</span>
+                        <span class="nutrition-value" id="food-detail-calories">0千卡/100g</span>
+                    </div>
+                    <div class="nutrition-row">
+                        <span class="nutrition-label">蛋白质</span>
+                        <span class="nutrition-value" id="food-detail-protein">0g/100g</span>
+                    </div>
+                    <div class="nutrition-row">
+                        <span class="nutrition-label">碳水化合物</span>
+                        <span class="nutrition-value" id="food-detail-carbs">0g/100g</span>
+                    </div>
+                    <div class="nutrition-row">
+                        <span class="nutrition-label">脂肪</span>
+                        <span class="nutrition-value" id="food-detail-fat">0g/100g</span>
+                    </div>
+                </div>
+                
+                <div class="add-food-form">
+                    <div class="form-row">
+                        <label>分量</label>
+                        <input type="number" id="food-amount" value="100" min="0" step="1">
+                        <select id="food-unit">
+                            <option value="g">克</option>
+                            <option value="份">份</option>
+                            <option value="个">个</option>
+                            <option value="ml">毫升</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>用餐时间</label>
+                        <select id="meal-time-type">
+                            <option value="breakfast">早餐</option>
+                            <option value="lunch">午餐</option>
+                            <option value="dinner">晚餐</option>
+                            <option value="snack">加餐</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="closeFoodDetail()">取消</button>
+                <button class="primary-btn" onclick="confirmAddFood()">添加到饮食记录</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFoodData = null;
+
+        function performSearch() {
+            const searchTerm = document.getElementById('food-search-input').value;
+            if (!searchTerm.trim()) return;
+
+            // 显示加载状态
+            showLoading();
+            
+            // 模拟搜索API调用
+            setTimeout(() => {
+                const results = mockSearchResults(searchTerm);
+                displaySearchResults(results);
+                hideLoading();
+            }, 500);
+        }
+
+        function mockSearchResults(searchTerm) {
+            // 模拟搜索结果
+            return [
+                {
+                    name: `${searchTerm} 相关食物1`,
+                    calories: 120,
+                    protein: 8,
+                    carbs: 15,
+                    fat: 4,
+                    unit: 'g',
+                    image: 'assets/images/food/default.jpg'
+                },
+                {
+                    name: `${searchTerm} 相关食物2`,
+                    calories: 85,
+                    protein: 6,
+                    carbs: 12,
+                    fat: 2,
+                    unit: 'g',
+                    image: 'assets/images/food/default.jpg'
+                }
+            ];
+        }
+
+        function displaySearchResults(results) {
+            const resultsSection = document.getElementById('search-results-section');
+            const resultsList = document.getElementById('results-list');
+            const resultsCount = document.getElementById('results-count');
+            
+            resultsSection.style.display = 'block';
+            resultsCount.textContent = results.length;
+            
+            resultsList.innerHTML = results.map(food => `
+                <div class="result-item" onclick="showFoodDetail('${food.name}', ${food.calories}, ${food.protein}, ${food.carbs}, ${food.fat}, '${food.unit}', '${food.image}')">
+                    <img src="${food.image}" alt="${food.name}" class="result-image">
+                    <div class="result-info">
+                        <div class="result-name">${food.name}</div>
+                        <div class="result-calories">${food.calories}千卡/100${food.unit}</div>
+                        <div class="result-nutrition">
+                            蛋白质: ${food.protein}g | 碳水: ${food.carbs}g | 脂肪: ${food.fat}g
+                        </div>
+                    </div>
+                    <button class="quick-add-result" onclick="quickAddResult(event, '${food.name}', ${food.calories})">+</button>
+                </div>
+            `).join('');
+        }
+
+        function scanBarcode() {
+            alert('扫码功能：请使用相机扫描食品条形码');
+        }
+
+        function voiceSearch() {
+            alert('语音搜索：请说出食物名称');
+        }
+
+        function cameraSearch() {
+            alert('拍照识别：请拍摄食物照片');
+        }
+
+        function browseCategory(category) {
+            alert(`浏览分类：${getCategoryName(category)}`);
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'grains': '主食',
+                'meat': '肉类',
+                'vegetables': '蔬菜',
+                'fruits': '水果',
+                'dairy': '乳制品',
+                'nuts': '坚果',
+                'beverages': '饮品',
+                'snacks': '零食'
+            };
+            return names[category] || category;
+        }
+
+        function selectFood(name, calories, amount) {
+            // 直接选择热门食物
+            addToMealRecord(name, calories, amount);
+        }
+
+        function showFoodDetail(name, calories, protein, carbs, fat, unit, image) {
+            currentFoodData = { name, calories, protein, carbs, fat, unit, image };
+            
+            document.getElementById('food-detail-title').textContent = name;
+            document.getElementById('food-detail-image').src = image;
+            document.getElementById('food-detail-calories').textContent = `${calories}千卡/100${unit}`;
+            document.getElementById('food-detail-protein').textContent = `${protein}g/100${unit}`;
+            document.getElementById('food-detail-carbs').textContent = `${carbs}g/100${unit}`;
+            document.getElementById('food-detail-fat').textContent = `${fat}g/100${unit}`;
+            
+            document.getElementById('food-detail-modal').style.display = 'block';
+        }
+
+        function closeFoodDetail() {
+            document.getElementById('food-detail-modal').style.display = 'none';
+            currentFoodData = null;
+        }
+
+        function confirmAddFood() {
+            if (!currentFoodData) return;
+            
+            const amount = document.getElementById('food-amount').value;
+            const unit = document.getElementById('food-unit').value;
+            const mealType = document.getElementById('meal-time-type').value;
+            
+            addToMealRecord(currentFoodData.name, currentFoodData.calories, amount, unit, mealType);
+            closeFoodDetail();
+        }
+
+        function addToMealRecord(name, caloriesPer100g, amount, unit = 'g', mealType = 'lunch') {
+            const totalCalories = Math.round((caloriesPer100g / 100) * amount);
+            
+            alert(`已添加到${getMealTypeName(mealType)}：\n${name} ${amount}${unit}\n约${totalCalories}千卡`);
+            
+            // 返回饮食页面
+            setTimeout(() => {
+                parent.navigateToPage('diet.html');
+            }, 1000);
+        }
+
+        function getMealTypeName(mealType) {
+            const names = {
+                'breakfast': '早餐',
+                'lunch': '午餐',
+                'dinner': '晚餐',
+                'snack': '加餐'
+            };
+            return names[mealType] || '餐食';
+        }
+
+        function quickAddResult(event, name, calories) {
+            event.stopPropagation();
+            addToMealRecord(name, calories, 100);
+        }
+
+        function searchFromHistory(term) {
+            document.getElementById('food-search-input').value = term;
+            performSearch();
+        }
+
+        function removeHistoryItem(btn, event) {
+            event.stopPropagation();
+            btn.parentElement.remove();
+        }
+
+        function clearHistory() {
+            if (confirm('确定要清除所有搜索历史吗？')) {
+                document.querySelector('.history-list').innerHTML = '';
+            }
+        }
+
+        function viewMorePopular() {
+            alert('显示更多热门食物');
+        }
+
+        function viewAllBrands() {
+            alert('显示所有品牌列表');
+        }
+
+        function searchByBrand(brand) {
+            document.getElementById('food-search-input').value = brand;
+            performSearch();
+        }
+
+        function showLoading() {
+            // 显示加载状态
+            console.log('Loading...');
+        }
+
+        function hideLoading() {
+            // 隐藏加载状态
+            console.log('Load complete');
+        }
+
+        // 监听回车键搜索
+        document.getElementById('food-search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>

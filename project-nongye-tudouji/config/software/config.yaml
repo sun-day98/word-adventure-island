@@ -1,0 +1,389 @@
+# 农业巡检机器人 - 软件配置文件
+# 版本: 1.0.0
+
+# 系统基础配置
+system:
+  name: "agricultural-robot"
+  version: "1.0.0"
+  environment: "development"  # development, production, testing
+  debug: true
+  log_level: "INFO"
+  timezone: "Asia/Shanghai"
+
+# 数据库配置
+database:
+  type: "sqlite"
+  path: "data/agricultural_robot.db"
+  backup_enabled: true
+  backup_interval: 3600  # 秒
+  max_connections: 10
+  
+  # PostgreSQL配置 (可选)
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "agricultural_robot"
+    username: "postgres"
+    password: "password"
+    pool_size: 5
+
+# ROS2配置
+ros2:
+  domain_id: 0
+  namespace: "agricultural_robot"
+  node_name_prefix: "robot_"
+  
+  # 话题配置
+  topics:
+    cmd_vel: "/cmd_vel"
+    robot_status: "/status"
+    detections: "/detections"
+    camera_image: "/camera/image"
+    environment_data: "/environment"
+    
+  # 服务配置
+  services:
+    control_actuator: "/control_actuator"
+    get_status: "/get_status"
+    emergency_stop: "/emergency_stop"
+    
+  # 动作配置
+  actions:
+    navigate_to_target: "/navigate_to_target"
+    execute_task: "/execute_task"
+
+# 硬件配置
+hardware:
+  # 底盘配置
+  chassis:
+    type: "differential_drive"
+    wheel_base: 0.5          # 轴距 (米)
+    wheel_radius: 0.1        # 轮径 (米)
+    max_speed: 1.0          # 最大速度 (米/秒)
+    max_angular_velocity: 1.5 # 最大角速度 (弧度/秒)
+    
+    # PID控制参数
+    pid:
+      linear:
+        kp: 2.0
+        ki: 0.1
+        kd: 0.05
+      angular:
+        kp: 3.0
+        ki: 0.2
+        kd: 0.1
+    
+    # 安全参数
+    safety:
+      emergency_stop_enabled: true
+      obstacle_detection_distance: 2.0
+      low_battery_threshold: 20.0  # 电压阈值
+  
+  # 摄像头配置
+  camera:
+    type: "usb"              # usb, rtsp, csi, ip
+    device_id: 0             # USB设备号
+    resolution: [1920, 1080]  # 分辨率
+    fps: 30                 # 帧率
+    auto_exposure: true
+    
+    # 图像处理参数
+    processing:
+      gaussian_blur: false
+      edge_detection: false
+      histogram_equalization: true
+      color_space: "BGR"
+    
+    # RTSP配置 (如适用)
+    rtsp:
+      url: ""
+      username: ""
+      password: ""
+  
+  # 执行机构配置
+  actuators:
+    water_pump:
+      enabled: true
+      max_flow_rate: 2.0     # 升/分钟
+      has_valve: true
+      pwm_pin: 18
+      sensor_pin: 4
+    
+    sliding_rail:
+      enabled: true
+      max_length: 1000       # 毫米
+      max_speed: 100         # 毫米/秒
+      step_per_mm: 100
+      enable_pin: 27
+      direction_pin: 17
+      step_pin: 22
+      limit_switch_pin: 23
+    
+    # 通用配置
+    auto_shutdown: true
+    max_total_power: 1000     # 瓦
+    auto_shutdown_time: 300    # 秒
+
+# 目标检测配置
+detection:
+  # 模型配置
+  model:
+    type: "yolo11"
+    model_path: "data/models/yolov11.pt"
+    input_size: [640, 640]
+    confidence_threshold: 0.5
+    nms_threshold: 0.4
+    device: "auto"            # auto, cpu, cuda
+    
+  # 类别配置
+  classes:
+    names: [
+      "potato", "sweet_potato", "weed", "disease", "insect",
+      "healthy_leaf", "yellow_leaf", "dry_soil", "wet_soil"
+    ]
+    target_classes: ["potato", "sweet_potato", "weed", "disease"]
+  
+  # 性能优化
+  optimization:
+    enable_tensorrt: false    # TensorRT加速
+    batch_size: 1
+    max_detections: 100
+    
+  # 数据增强 (训练时使用)
+  augmentation:
+    enabled: true
+    rotation_range: 10       # 度
+    brightness_range: 0.2
+    contrast_range: 0.2
+    saturation_range: 0.2
+    horizontal_flip: true
+    vertical_flip: false
+
+# 路径规划配置
+planning:
+  # 默认算法
+  default_algorithm: "astar"  # astar, dijkstra, rrt, rrt_star, theta_star
+  
+  # 地图配置
+  map:
+    resolution: 0.1          # 米/像素
+    width: 1000              # 像素
+    height: 1000             # 像素
+    inflate_radius: 2         # 机器人半径膨胀
+    
+  # 算法参数
+  algorithms:
+    astar:
+      heuristic: "euclidean"  # manhattan, euclidean, diagonal
+      
+    rrt:
+      max_iterations: 5000
+      step_size: 10
+      goal_bias: 0.1
+      
+    rrt_star:
+      max_iterations: 5000
+      step_size: 10
+      search_radius: 20.0
+      
+  # 农业专用规划
+  agricultural:
+    field_width: 50.0       # 米
+    field_height: 100.0      # 米
+    row_spacing: 0.8         # 米
+    plant_spacing: 0.3       # 米
+    robot_width: 0.5         # 米
+    turn_radius: 1.0         # 米
+    coverage_overlap: 0.1
+
+# Web服务配置
+web:
+  # Flask配置
+  flask:
+    host: "0.0.0.0"
+    port: 5000
+    debug: true
+    secret_key: "agricultural-robot-secret-key"
+    
+  # JWT配置
+  jwt:
+    secret_key: "agricultural-robot-jwt-secret"
+    access_token_expires: 86400  # 秒 (24小时)
+    
+  # 文件上传配置
+  upload:
+    max_size: 16777216       # 16MB
+    allowed_extensions: [".jpg", ".jpeg", ".png", ".mp4", ".avi"]
+    upload_folder: "uploads"
+    
+  # CORS配置
+  cors:
+    origins: ["*"]
+    methods: ["GET", "POST", "PUT", "DELETE"]
+    headers: ["Content-Type", "Authorization"]
+    
+  # WebSocket配置
+  websocket:
+    async_mode: "threading"
+    ping_timeout: 60
+    ping_interval: 25
+
+# 数据存储配置
+storage:
+  # 本地存储
+  local:
+    data_dir: "data"
+    models_dir: "data/models"
+    logs_dir: "logs"
+    backups_dir: "backups"
+    
+  # 图像存储
+  images:
+    save_detections: true
+    save_interval: 100      # 每100次检测保存一次
+    max_storage_days: 30    # 最大保存天数
+    compression_quality: 85   # JPEG质量
+    
+  # 数据库备份
+  backup:
+    enabled: true
+    interval: 3600         # 秒
+    max_backups: 10
+    compression: true
+
+# 监控配置
+monitoring:
+  # 系统监控
+  system:
+    cpu_threshold: 80.0     # CPU使用率阈值 (%)
+    memory_threshold: 80.0  # 内存使用率阈值 (%)
+    disk_threshold: 85.0   # 磁盘使用率阈值 (%)
+    
+  # 性能监控
+  performance:
+    enable_profiling: false
+    slow_query_threshold: 1.0  # 秒
+    
+  # 日志配置
+  logging:
+    level: "INFO"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    file: "logs/agricultural_robot.log"
+    max_size: 10485760      # 10MB
+    backup_count: 5
+    console: true
+    
+  # 健康检查
+  health_check:
+    enabled: true
+    endpoint: "/api/health"
+    interval: 60            # 秒
+
+# 安全配置
+security:
+  # 认证配置
+  authentication:
+    enabled: true
+    session_timeout: 3600   # 秒
+    max_login_attempts: 5
+    lockout_duration: 900    # 秒
+    
+  # API限流
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    
+  # 数据加密
+  encryption:
+    enabled: false
+    algorithm: "AES-256-GCM"
+    key_file: "config/encryption.key"
+    
+  # SSL/TLS配置
+  ssl:
+    enabled: false
+    cert_file: "ssl/cert.pem"
+    key_file: "ssl/key.pem"
+
+# 通知配置
+notifications:
+  # 邮件通知
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    username: "your-email@gmail.com"
+    password: "your-password"
+    from_address: "agricultural-robot@example.com"
+    
+  # 短信通知
+  sms:
+    enabled: false
+    provider: "aliyun"     # aliyun, tencent
+    access_key: "your-access-key"
+    secret_key: "your-secret-key"
+    
+  # Webhook通知
+  webhook:
+    enabled: false
+    url: "https://your-webhook-url.com/notify"
+    timeout: 10
+
+# 开发配置
+development:
+  # 测试数据
+  test_data:
+    enabled: true
+    generate_mock_detections: true
+    mock_detection_interval: 5  # 秒
+    
+  # 调试配置
+  debug:
+    verbose_logging: true
+    save_intermediate_results: true
+    enable_debug_endpoints: true
+    
+  # 热重载
+  hot_reload:
+    enabled: true
+    watch_folders: ["src", "config"]
+
+# 生产配置
+production:
+  # 性能优化
+  performance:
+    enable_cache: true
+    cache_type: "redis"      # memory, redis
+    redis_url: "redis://localhost:6379"
+    
+  # 集群配置
+  cluster:
+    enabled: false
+    nodes: ["node1", "node2"]
+    load_balancer: "nginx"
+    
+  # 容器化
+  docker:
+    enabled: false
+    image_name: "agricultural-robot"
+    tag: "latest"
+
+# 实验性功能
+experimental:
+  # 机器学习
+  ml:
+    auto_model_update: false
+    federated_learning: false
+    online_learning: false
+    
+  # 多机器人协作
+  multi_robot:
+    coordination: false
+    task_allocation: "auction"
+    communication_protocol: "websocket"
+    
+  # 边缘计算
+  edge_computing:
+    enabled: false
+    offload_detection: false
+    compression_algorithm: "lz4"

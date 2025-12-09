@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 个人中心</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 个人信息头部 -->
+        <header class="profile-header">
+            <div class="profile-bg">
+                <div class="profile-info">
+                    <div class="avatar-section">
+                        <img src="assets/images/ui/avatar-default.png" alt="用户头像" class="user-avatar">
+                        <button class="edit-avatar-btn" onclick="editAvatar()">📷</button>
+                    </div>
+                    <div class="user-info">
+                        <h2 class="username">Alex Chen</h2>
+                        <p class="user-bio">健身爱好者 | 坚持就是胜利 💪</p>
+                        <div class="user-level">
+                            <span class="level-badge gold">黄金会员</span>
+                            <span class="level-exp">LV.12 经验值: 2,450/3,000</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">42</div>
+                        <div class="stat-label">训练天数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">18.5</div>
+                        <div class="stat-label">总时长(h)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3,280</div>
+                        <div class="stat-label">消耗卡路里</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 快速功能入口 -->
+        <section class="quick-actions">
+            <div class="action-grid">
+                <button class="action-item" onclick="parent.navigateToPage('body-data-record.html')">
+                    <span class="action-icon">📊</span>
+                    <span>身体数据</span>
+                </button>
+                <button class="action-item" onclick="showAchievements()">
+                    <span class="action-icon">🏆</span>
+                    <span>我的成就</span>
+                </button>
+                <button class="action-item" onclick="showGoals()">
+                    <span class="action-icon">🎯</span>
+                    <span>目标设定</span>
+                </button>
+                <button class="action-item" onclick="showHistory()">
+                    <span class="action-icon">📈</span>
+                    <span>历史记录</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 功能菜单 -->
+        <main class="main-content">
+            <section class="menu-sections">
+                <!-- 账户管理 -->
+                <div class="menu-section">
+                    <h3>账户管理</h3>
+                    <div class="menu-list">
+                        <button class="menu-item" onclick="parent.navigateToPage('profile-edit.html')">
+                            <span class="menu-icon">👤</span>
+                            <span class="menu-text">编辑资料</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="parent.navigateToPage('body-data-record.html')">
+                            <span class="menu-icon">📏</span>
+                            <span class="menu-text">身体数据记录</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showMembership()">
+                            <span class="menu-icon">👑</span>
+                            <span class="menu-text">会员中心</span>
+                            <span class="menu-badge">VIP</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 数据统计 -->
+                <div class="menu-section">
+                    <h3>数据统计</h3>
+                    <div class="menu-list">
+                        <button class="menu-item" onclick="showWorkoutStats()">
+                            <span class="menu-icon">💪</span>
+                            <span class="menu-text">运动统计</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showDietStats()">
+                            <span class="menu-icon">🥗</span>
+                            <span class="menu-text">饮食统计</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showProgress()">
+                            <span class="menu-icon">📊</span>
+                            <span class="menu-text">进步轨迹</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 社交功能 -->
+                <div class="menu-section">
+                    <h3>社交互动</h3>
+                    <div class="menu-list">
+                        <button class="menu-item" onclick="showFriends()">
+                            <span class="menu-icon">👥</span>
+                            <span class="menu-text">健身好友</span>
+                            <span class="menu-badge">12</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showChallenges()">
+                            <span class="menu-icon">🏆</span>
+                            <span class="menu-text">挑战赛</span>
+                            <span class="menu-badge">进行中: 2</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showShare()">
+                            <span class="menu-icon">📤</span>
+                            <span class="menu-text">分享成就</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 设置选项 -->
+                <div class="menu-section">
+                    <h3>设置</h3>
+                    <div class="menu-list">
+                        <button class="menu-item" onclick="parent.navigateToPage('settings.html')">
+                            <span class="menu-icon">⚙️</span>
+                            <span class="menu-text">通用设置</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showNotifications()">
+                            <span class="menu-icon">🔔</span>
+                            <span class="menu-text">通知设置</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showPrivacy()">
+                            <span class="menu-icon">🔒</span>
+                            <span class="menu-text">隐私设置</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showHelp()">
+                            <span class="menu-icon">❓</span>
+                            <span class="menu-text">帮助与反馈</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 其他 -->
+                <div class="menu-section">
+                    <h3>其他</h3>
+                    <div class="menu-list">
+                        <button class="menu-item" onclick="parent.navigateToPage('privacy-policy.html')">
+                            <span class="menu-icon">📄</span>
+                            <span class="menu-text">用户协议</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                        <button class="menu-item" onclick="showAbout()">
+                            <span class="menu-icon">ℹ️</span>
+                            <span class="menu-text">关于我们</span>
+                            <span class="menu-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 成就徽章展示 -->
+        <section class="achievements-preview">
+            <div class="section-header">
+                <h3>最近获得</h3>
+                <button class="view-all" onclick="showAllAchievements()">查看全部 →</button>
+            </div>
+            <div class="badge-list">
+                <div class="badge-item">
+                    <img src="assets/images/badges/7day-streak.png" alt="连续7天" class="badge-image">
+                    <span class="badge-name">连续7天</span>
+                </div>
+                <div class="badge-item">
+                    <img src="assets/images/badges/first-workout.png" alt="首次训练" class="badge-image">
+                    <span class="badge-name">首次训练</span>
+                </div>
+                <div class="badge-item">
+                    <img src="assets/images/badges/calorie-warrior.png" alt="燃脂战士" class="badge-image">
+                    <span class="badge-name">燃脂战士</span>
+                </div>
+                <div class="badge-item">
+                    <img src="assets/images/badges/early-bird.png" alt="早起鸟" class="badge-image">
+                    <span class="badge-name">早起鸟</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function editAvatar() {
+            const options = `
+                <div class="modal-overlay">
+                    <div class="action-sheet">
+                        <div class="action-sheet-header">更换头像</div>
+                        <button class="action-item">拍照</button>
+                        <button class="action-item">从相册选择</button>
+                        <button class="action-item cancel" onclick="closeAvatarModal()">取消</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', options);
+        }
+
+        function closeAvatarModal() {
+            document.querySelector('.modal-overlay')?.remove();
+        }
+
+        function showAchievements() {
+            alert('显示所有成就徽章页面');
+        }
+
+        function showGoals() {
+            alert('显示目标设定页面');
+        }
+
+        function showHistory() {
+            alert('显示历史记录页面');
+        }
+
+        function showMembership() {
+            parent.navigateToPage('vip-membership.html');
+        }
+
+        function showWorkoutStats() {
+            alert('显示运动统计详情');
+        }
+
+        function showDietStats() {
+            alert('显示饮食统计详情');
+        }
+
+        function showProgress() {
+            alert('显示进步轨迹图表');
+        }
+
+        function showFriends() {
+            alert('显示健身好友列表');
+        }
+
+        function showChallenges() {
+            alert('显示挑战赛列表');
+        }
+
+        function showShare() {
+            const shareOptions = `
+                <div class="modal-overlay">
+                    <div class="action-sheet">
+                        <div class="action-sheet-header">分享成就</div>
+                        <button class="action-item">微信好友</button>
+                        <button class="action-item">朋友圈</button>
+                        <button class="action-item">QQ</button>
+                        <button class="action-item">微博</button>
+                        <button class="action-item cancel" onclick="closeShareModal()">取消</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', shareOptions);
+        }
+
+        function closeShareModal() {
+            document.querySelector('.modal-overlay')?.remove();
+        }
+
+        function showNotifications() {
+            alert('显示通知设置页面');
+        }
+
+        function showPrivacy() {
+            alert('显示隐私设置页面');
+        }
+
+        function showHelp() {
+            alert('显示帮助与反馈页面');
+        }
+
+        function showAbout() {
+            alert('FitLife v2.0.1\n让健身成为生活的一部分\n© 2025 FitLife Team');
+        }
+
+        function showAllAchievements() {
+            alert('显示所有成就徽章详情页面');
+        }
+    </script>
+</body>
+</html>

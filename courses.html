@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 课程</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <h1>健身课程</h1>
+            <div class="header-actions">
+                <button class="search-btn" onclick="showSearch()">🔍</button>
+                <button class="filter-btn" onclick="showFilter()">⚙️</button>
+            </div>
+        </header>
+
+        <!-- 筛选标签 -->
+        <div class="filter-tags">
+            <button class="tag active" data-category="all">全部</button>
+            <button class="tag" data-category="yoga">瑜伽</button>
+            <button class="tag" data-category="hiit">HIIT</button>
+            <button class="tag" data-category="strength">力量训练</button>
+            <button class="tag" data-category="cardio">有氧运动</button>
+            <button class="tag" data-category="stretch">拉伸放松</button>
+        </div>
+
+        <!-- 课程统计 -->
+        <div class="course-stats">
+            <div class="stat-item">
+                <span class="stat-number">156</span>
+                <span class="stat-label">总课程</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">12</span>
+                <span class="stat-label">已完成</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">8.5</span>
+                <span class="stat-label">总小时</span>
+            </div>
+        </div>
+
+        <!-- 课程列表 -->
+        <main class="main-content">
+            <div class="course-grid" id="course-grid">
+                <!-- 瑜伽课程 -->
+                <div class="course-card" data-category="yoga" onclick="parent.navigateToPage('course-detail.html')">
+                    <div class="course-thumbnail">
+                        <img src="assets/images/courses/yoga-flow.jpg" alt="流瑜伽">
+                        <span class="difficulty beginner">初级</span>
+                        <div class="course-duration">25分钟</div>
+                    </div>
+                    <div class="course-content">
+                        <h3>流瑜伽基础</h3>
+                        <p class="instructor">教练：Sarah老师</p>
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.8</span>
+                            <span class="participants">2.3k人参与</span>
+                            <span class="calories">120卡路里</span>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 30%"></div>
+                            </div>
+                            <span>30%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HIIT课程 -->
+                <div class="course-card" data-category="hiit" onclick="parent.navigateToPage('course-detail.html')">
+                    <div class="course-thumbnail">
+                        <img src="assets/images/courses/hiit-explosive.jpg" alt="爆发力HIIT">
+                        <span class="difficulty advanced">高级</span>
+                        <div class="course-duration">40分钟</div>
+                    </div>
+                    <div class="course-content">
+                        <h3>爆发力HIIT训练</h3>
+                        <p class="instructor">教练：Mike教练</p>
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.9</span>
+                            <span class="participants">1.8k人参与</span>
+                            <span class="calories">450卡路里</span>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span>未开始</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 力量训练 -->
+                <div class="course-card" data-category="strength" onclick="parent.navigateToPage('course-detail.html')">
+                    <div class="course-thumbnail">
+                        <img src="assets/images/courses/strength-upper.jpg" alt="上肢力量训练">
+                        <span class="difficulty intermediate">中级</span>
+                        <div class="course-duration">35分钟</div>
+                    </div>
+                    <div class="course-content">
+                        <h3>上肢力量塑造</h3>
+                        <p class="instructor">教练：David教练</p>
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.7</span>
+                            <span class="participants">3.1k人参与</span>
+                            <span class="calories">280卡路里</span>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                            <span>60%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 有氧运动 -->
+                <div class="course-card" data-category="cardio" onclick="parent.navigateToPage('course-detail.html')">
+                    <div class="course-thumbnail">
+                        <img src="assets/images/courses/cardio-dance.jpg" alt="有氧舞蹈">
+                        <span class="difficulty beginner">初级</span>
+                        <div class="course-duration">30分钟</div>
+                    </div>
+                    <div class="course-content">
+                        <h3>有氧舞蹈派对</h3>
+                        <p class="instructor">教练：Lily老师</p>
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.6</span>
+                            <span class="participants">2.7k人参与</span>
+                            <span class="calories">320卡路里</span>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%"></div>
+                            </div>
+                            <span>已完成</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 拉伸放松 -->
+                <div class="course-card" data-category="stretch" onclick="parent.navigateToPage('course-detail.html')">
+                    <div class="course-thumbnail">
+                        <img src="assets/images/courses/stretch-full.jpg" alt="全身拉伸">
+                        <span class="difficulty beginner">初级</span>
+                        <div class="course-duration">15分钟</div>
+                    </div>
+                    <div class="course-content">
+                        <h3>全身深度拉伸</h3>
+                        <p class="instructor">教练：Emma老师</p>
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.9</span>
+                            <span class="participants">4.2k人参与</span>
+                            <span class="calories">50卡路里</span>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                            <span>45%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 更多课程... -->
+                <div class="course-card" data-category="yoga" onclick="parent.navigateToPage('course-detail.html')">
+                    <div class="course-thumbnail">
+                        <img src="assets/images/courses/yoga-power.jpg" alt="力量瑜伽">
+                        <span class="difficulty intermediate">中级</span>
+                        <div class="course-duration">45分钟</div>
+                    </div>
+                    <div class="course-content">
+                        <h3>力量瑜伽进阶</h3>
+                        <p class="instructor">教练：Alex教练</p>
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.8</span>
+                            <span class="participants">1.9k人参与</span>
+                            <span class="calories">200卡路里</span>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span>未开始</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 下拉刷新提示 -->
+        <div class="pull-refresh" id="pull-refresh">
+            <div class="refresh-icon">🔄</div>
+            <span>下拉刷新课程</span>
+        </div>
+    </div>
+
+    <script>
+        // 筛选标签点击事件
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+                // 添加active类到当前标签
+                this.classList.add('active');
+                
+                // 筛选课程
+                const category = this.dataset.category;
+                filterCourses(category);
+            });
+        });
+
+        function filterCourses(category) {
+            const courses = document.querySelectorAll('.course-card');
+            
+            courses.forEach(course => {
+                if (category === 'all' || course.dataset.category === category) {
+                    course.style.display = 'block';
+                } else {
+                    course.style.display = 'none';
+                }
+            });
+        }
+
+        function showSearch() {
+            // 显示搜索框
+            const searchHtml = `
+                <div class="search-overlay">
+                    <div class="search-header">
+                        <button class="back-btn" onclick="closeSearch()">←</button>
+                        <input type="text" placeholder="搜索课程名称或教练" id="search-input">
+                        <button class="search-submit">搜索</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', searchHtml);
+            document.getElementById('search-input').focus();
+        }
+
+        function closeSearch() {
+            document.querySelector('.search-overlay')?.remove();
+        }
+
+        function showFilter() {
+            // 显示筛选弹窗
+            const filterHtml = `
+                <div class="modal-overlay">
+                    <div class="modal-content filter-modal">
+                        <div class="modal-header">
+                            <h3>筛选条件</h3>
+                            <button class="close-btn" onclick="closeFilter()">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="filter-section">
+                                <h4>难度</h4>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="difficulty" value="beginner"> 初级</label>
+                                    <label><input type="checkbox" name="difficulty" value="intermediate"> 中级</label>
+                                    <label><input type="checkbox" name="difficulty" value="advanced"> 高级</label>
+                                </div>
+                            </div>
+                            <div class="filter-section">
+                                <h4>时长</h4>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="duration" value="15"> 15分钟内</label>
+                                    <label><input type="checkbox" name="duration" value="30"> 30分钟内</label>
+                                    <label><input type="checkbox" name="duration" value="45"> 45分钟内</label>
+                                    <label><input type="checkbox" name="duration" value="60"> 60分钟内</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="secondary-btn" onclick="resetFilter()">重置</button>
+                            <button class="primary-btn" onclick="applyFilter()">应用</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', filterHtml);
+        }
+
+        function closeFilter() {
+            document.querySelector('.modal-overlay')?.remove();
+        }
+
+        function resetFilter() {
+            document.querySelectorAll('.filter-modal input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+
+        function applyFilter() {
+            // 应用筛选逻辑
+            closeFilter();
+        }
+    </script>
+</body>
+</html>

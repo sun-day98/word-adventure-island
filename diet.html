@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife - 饮食计划</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <h1>饮食计划</h1>
+            <div class="header-actions">
+                <button class="calendar-btn" onclick="showCalendar()">📅</button>
+                <button class="add-btn" onclick="addMeal()">+ 记录</button>
+            </div>
+        </header>
+
+        <!-- 日期选择器 -->
+        <div class="date-selector">
+            <button class="date-nav prev" onclick="changeDate(-1)">←</button>
+            <div class="current-date">
+                <div class="date-text">今天</div>
+                <div class="date-number">12月5日</div>
+            </div>
+            <button class="date-nav next" onclick="changeDate(1)">→</button>
+        </div>
+
+        <!-- 营养摄入总览 -->
+        <section class="nutrition-overview">
+            <div class="calorie-circle">
+                <svg width="120" height="120">
+                    <circle cx="60" cy="60" r="50" stroke="#f0f0f0" stroke-width="8" fill="none"/>
+                    <circle cx="60" cy="60" r="50" stroke="#4CAF50" stroke-width="8" fill="none"
+                            stroke-dasharray="314" stroke-dashoffset="125" 
+                            transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="calorie-text">
+                    <div class="current">1,650</div>
+                    <div class="target">/ 2,000</div>
+                    <div class="unit">千卡</div>
+                </div>
+            </div>
+            
+            <div class="nutrition-breakdown">
+                <div class="nutrition-item">
+                    <div class="nutrition-icon">🥩</div>
+                    <div class="nutrition-info">
+                        <div class="nutrition-value">82g</div>
+                        <div class="nutrition-label">蛋白质</div>
+                        <div class="nutrition-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill protein" style="width: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nutrition-item">
+                    <div class="nutrition-icon">🍞</div>
+                    <div class="nutrition-info">
+                        <div class="nutrition-value">245g</div>
+                        <div class="nutrition-label">碳水化合物</div>
+                        <div class="nutrition-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill carbs" style="width: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nutrition-item">
+                    <div class="nutrition-icon">🥑</div>
+                    <div class="nutrition-info">
+                        <div class="nutrition-value">55g</div>
+                        <div class="nutrition-label">脂肪</div>
+                        <div class="nutrition-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill fat" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 饮水记录 -->
+        <section class="water-tracker">
+            <div class="section-header">
+                <h2>饮水记录</h2>
+                <span class="water-amount">1.6L / 2.0L</span>
+            </div>
+            <div class="water-cups">
+                <div class="water-cup filled"></div>
+                <div class="water-cup filled"></div>
+                <div class="water-cup filled"></div>
+                <div class="water-cup filled"></div>
+                <div class="water-cup"></div>
+                <div class="water-cup"></div>
+                <div class="water-cup"></div>
+                <div class="water-cup"></div>
+            </div>
+            <button class="add-water-btn" onclick="addWater()">+ 250ml</button>
+        </section>
+
+        <!-- 今日餐食记录 -->
+        <main class="main-content">
+            <section class="meal-records">
+                <h2>今日餐食</h2>
+                
+                <!-- 早餐 -->
+                <div class="meal-card">
+                    <div class="meal-header">
+                        <div class="meal-info">
+                            <h3>🌅 早餐</h3>
+                            <span class="meal-time">08:30</span>
+                        </div>
+                        <div class="meal-calories">420千卡</div>
+                    </div>
+                    <div class="meal-items">
+                        <div class="food-item">
+                            <img src="assets/images/food/oatmeal.jpg" alt="燕麦粥" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">燕麦粥</div>
+                                <div class="food-portion">200g</div>
+                                <div class="food-calories">150千卡</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="assets/images/food/boiled-egg.jpg" alt="煮鸡蛋" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">煮鸡蛋</div>
+                                <div class="food-portion">2个</div>
+                                <div class="food-calories">140千卡</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="assets/images/food/milk.jpg" alt="牛奶" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">纯牛奶</div>
+                                <div class="food-portion">250ml</div>
+                                <div class="food-calories">130千卡</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="meal-actions">
+                        <button class="action-btn" onclick="editMeal('breakfast')">编辑</button>
+                        <button class="action-btn" onclick="deleteMeal('breakfast')">删除</button>
+                    </div>
+                </div>
+
+                <!-- 午餐 -->
+                <div class="meal-card">
+                    <div class="meal-header">
+                        <div class="meal-info">
+                            <h3>☀️ 午餐</h3>
+                            <span class="meal-time">12:15</span>
+                        </div>
+                        <div class="meal-calories">680千卡</div>
+                    </div>
+                    <div class="meal-items">
+                        <div class="food-item">
+                            <img src="assets/images/food/rice.jpg" alt="米饭" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">糙米饭</div>
+                                <div class="food-portion">150g</div>
+                                <div class="food-calories">165千卡</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="assets/images/food/chicken-breast.jpg" alt="鸡胸肉" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">香煎鸡胸肉</div>
+                                <div class="food-portion">120g</div>
+                                <div class="food-calories">195千卡</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="assets/images/food/broccoli.jpg" alt="西兰花" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">清炒西兰花</div>
+                                <div class="food-portion">200g</div>
+                                <div class="food-calories">55千卡</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="assets/images/food/salad.jpg" alt="沙拉" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">蔬菜沙拉</div>
+                                <div class="food-portion">100g</div>
+                                <div class="food-calories">45千卡</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="meal-actions">
+                        <button class="action-btn" onclick="editMeal('lunch')">编辑</button>
+                        <button class="action-btn" onclick="deleteMeal('lunch')">删除</button>
+                    </div>
+                </div>
+
+                <!-- 加餐 -->
+                <div class="meal-card">
+                    <div class="meal-header">
+                        <div class="meal-info">
+                            <h3>🍎 加餐</h3>
+                            <span class="meal-time">15:30</span>
+                        </div>
+                        <div class="meal-calories">150千卡</div>
+                    </div>
+                    <div class="meal-items">
+                        <div class="food-item">
+                            <img src="assets/images/food/apple.jpg" alt="苹果" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">苹果</div>
+                                <div class="food-portion">1个中等</div>
+                                <div class="food-calories">95千卡</div>
+                            </div>
+                        </div>
+                        <div class="food-item">
+                            <img src="assets/images/food/almonds.jpg" alt="杏仁" class="food-image">
+                            <div class="food-info">
+                                <div class="food-name">杏仁</div>
+                                <div class="food-portion">10颗</div>
+                                <div class="food-calories">55千卡</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="meal-actions">
+                        <button class="action-btn" onclick="editMeal('snack')">编辑</button>
+                        <button class="action-btn" onclick="deleteMeal('snack')">删除</button>
+                    </div>
+                </div>
+
+                <!-- 晚餐（未记录） -->
+                <div class="meal-card empty" onclick="addMeal('dinner')">
+                    <div class="meal-header">
+                        <div class="meal-info">
+                            <h3>🌙 晚餐</h3>
+                            <span class="meal-placeholder">点击记录晚餐</span>
+                        </div>
+                        <div class="add-meal-icon">+</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 营养建议 -->
+            <section class="nutrition-tips">
+                <h2>营养建议</h2>
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <div class="tip-icon">💡</div>
+                        <div class="tip-content">
+                            <h4>增加蛋白质摄入</h4>
+                            <p>建议晚餐增加优质蛋白质，如鱼肉或豆制品。</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">🥦</div>
+                        <div class="tip-content">
+                            <h4>补充膳食纤维</h4>
+                            <p>今日膳食纤维摄入略低，建议多吃蔬菜水果。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 快速添加悬浮按钮 -->
+        <button class="fab" onclick="quickAddFood()">+ 食物</button>
+    </div>
+
+    <script>
+        function changeDate(direction) {
+            // 切换日期
+            console.log('Change date:', direction);
+        }
+
+        function showCalendar() {
+            // 显示日历
+            alert('日历选择功能演示');
+        }
+
+        function addMeal(mealType) {
+            // 添加餐食
+            parent.navigateToPage('diet-detail.html');
+        }
+
+        function editMeal(mealType) {
+            // 编辑餐食
+            parent.navigateToPage('diet-detail.html');
+        }
+
+        function deleteMeal(mealType) {
+            // 删除餐食
+            if (confirm('确定要删除这餐记录吗？')) {
+                alert('删除成功');
+            }
+        }
+
+        function addWater() {
+            // 添加饮水记录
+            const cups = document.querySelectorAll('.water-cup');
+            const filledCups = document.querySelectorAll('.water-cup.filled');
+            
+            if (filledCups.length < cups.length) {
+                cups[filledCups.length].classList.add('filled');
+                updateWaterAmount();
+            }
+        }
+
+        function updateWaterAmount() {
+            const filledCups = document.querySelectorAll('.water-cup.filled').length;
+            const totalAmount = filledCups * 0.25; // 每杯250ml
+            document.querySelector('.water-amount').textContent = `${totalAmount.toFixed(1)}L / 2.0L`;
+        }
+
+        function quickAddFood() {
+            // 快速添加食物
+            parent.navigateToPage('food-search.html');
+        }
+    </script>
+</body>
+</html>
