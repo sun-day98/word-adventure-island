@@ -207,12 +207,26 @@
                 console.log('冒险主页初始化完成');
             } catch (error) {
                 console.error('冒险主页初始化失败:', error);
+                
+                // 如果初始化失败，显示错误信息
+                const container = document.getElementById('islands-container');
+                if (container) {
+                    container.innerHTML = '<p style="text-align: center; color: #ff6b6b;">内容加载失败，请刷新页面重试</p>';
+                }
             }
         }
 
         // ===== 岛屿地图渲染 =====
         function renderIslandMap() {
+            console.log('开始渲染岛屿地图...');
             const container = document.getElementById('islands-container');
+            
+            if (!container) {
+                console.error('找不到islands-container元素');
+                return;
+            }
+            
+            console.log('找到islands-container，开始生成内容...');
             
             // 简化的岛屿数据
             const islands = [
@@ -276,7 +290,9 @@
                 `;
             });
             
+            console.log('生成的HTML:', html);
             container.innerHTML = html;
+            console.log('岛屿地图渲染完成，内容已插入');
         }
 
         function getIslandProgress(island) {
@@ -356,7 +372,9 @@
                 `;
             });
             
+            console.log('生成的HTML:', html);
             container.innerHTML = html;
+            console.log('岛屿地图渲染完成，内容已插入');
         }
 
         // ===== 剧情检查 =====
@@ -510,7 +528,9 @@
                 `;
             });
             
+            console.log('生成的HTML:', html);
             container.innerHTML = html;
+            console.log('岛屿地图渲染完成，内容已插入');
         }
 
         function calculateStars(levelId, isCompleted) {
@@ -718,6 +738,45 @@
     </script>
     
     <style>
+        /* 基础页面样式 */
+        .page-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 28px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .main-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .info-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .info-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
         @keyframes fadeInOut {
             0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
