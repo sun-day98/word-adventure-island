@@ -4,6 +4,14 @@
 
 ## 🌟 游戏特色
 
+### 🤖 智能机器人助手
+- **小智助手**：AI驱动的智能学习伙伴，提供个性化指导
+- **语音合成**：标准英语发音朗读，练习听力和发音
+- **情感交互**：丰富的表情和动画，让学习更有温度
+- **学习建议**：基于学习进度提供专业的学习方法指导
+- **游戏化互动**：通过有趣的小游戏巩固单词记忆
+- **智能帮助**：根据当前学习情境提供及时的帮助和提示
+
 ### 📚 核心理念
 - **ARCS动机模型**：从注意、相关性、自信心、满足四个维度激发学习动机
 - **情境记忆法**：每个单词都有生动的记忆口诀和联想场景
@@ -42,15 +50,19 @@
 ├── challenge.html            # 挑战页面
 ├── word-book.html            # 单词图鉴
 ├── challenges.html          # 挑战中心
+├── robot-demo.html          # 机器人助手演示
 ├── css/
 │   ├── styles.css           # 基础样式
 │   ├── ios-status-bar.css   # iOS状态栏样式
-│   └── word-adventure.css   # 游戏专属样式
+│   ├── word-adventure.css   # 游戏专属样式
+│   └── word-book.css        # 单词学习应用样式
 ├── js/
 │   ├── main.js              # 主逻辑文件
 │   ├── word-adventure-data.js    # 游戏数据模型
 │   ├── word-adventure-engine.js  # 游戏核心引擎
-│   └── word-adventure-ui.js      # UI交互管理
+│   ├── word-adventure-ui.js      # UI交互管理
+│   ├── word-book.js         # 单词学习应用主逻辑
+│   └── word-database.js     # 完整单词数据库
 └── assets/
     ├── images/              # 游戏图片资源
     ├── icons/               # 图标资源

@@ -3,834 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>单词图鉴 - 单词冒险岛</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/word-adventure.css">
+    <title>小学英语单词学习</title>
+    <link rel="stylesheet" href="css/word-book.css">
 </head>
 <body>
-    <div class="page-container word-book-page">
-        <!-- 页面头部 -->
-        <header class="page-header">
-            <h1>📖 单词图鉴</h1>
-            <div class="header-stats">
-                <span class="stat-item">已学: <span id="learned-count">0</span></span>
-                <span class="stat-item">掌握: <span id="mastered-count">0</span></span>
+    <div class="container">
+        <header class="header">
+            <h1>🌟 小学英语单词学习</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">已学习</span>
+                    <span class="stat-value" id="learnedCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">总单词</span>
+                    <span class="stat-value" id="totalCount">0</span>
+                </div>
             </div>
         </header>
 
-        <!-- 主内容区域 -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="categories">分类浏览</button>
+            <button class="tab-btn" data-tab="study">学习模式</button>
+            <button class="tab-btn" data-tab="test">单词测试</button>
+            <button class="tab-btn" data-tab="review">复习模式</button>
+        </nav>
+
         <main class="main-content">
-            <!-- 搜索和筛选 -->
-            <section class="search-filter-section">
-                <div class="search-bar">
-                    <input type="text" 
-                           id="word-search" 
-                           placeholder="搜索单词..." 
-                           onkeyup="searchWords()">
-                    <button class="search-btn" onclick="searchWords()">🔍</button>
-                </div>
-                
-                <div class="filter-tabs">
-                    <button class="filter-tab active" data-filter="all" onclick="filterWords('all')">全部</button>
-                    <button class="filter-tab" data-filter="learning" onclick="filterWords('learning')">学习中</button>
-                    <button class="filter-tab" data-filter="reviewing" onclick="filterWords('reviewing')">需要复习</button>
-                    <button class="filter-tab" data-filter="mastered" onclick="filterWords('mastered')">已掌握</button>
-                </div>
-                
-                <div class="difficulty-filter">
-                    <select id="difficulty-select" onchange="filterByDifficulty()">
-                        <option value="all">所有难度</option>
-                        <option value="beginner">初级 (1-2年级)</option>
-                        <option value="intermediate">中级 (3-4年级)</option>
-                        <option value="advanced">高级 (5-6年级)</option>
-                    </select>
+            <!-- 分类浏览 -->
+            <section id="categories" class="tab-content active">
+                <div class="category-grid" id="categoryGrid">
+                    <!-- 动态生成分类卡片 -->
                 </div>
             </section>
 
-            <!-- 单词列表 -->
-            <section class="word-list-section">
-                <div class="word-stats-summary">
-                    <div class="summary-card">
-                        <div class="summary-icon">📚</div>
-                        <div class="summary-info">
-                            <div class="summary-number" id="total-words">0</div>
-                            <div class="summary-label">总单词数</div>
-                        </div>
+            <!-- 学习模式 -->
+            <section id="study" class="tab-content">
+                <div class="study-controls">
+                    <select id="categorySelect" class="category-select">
+                        <option value="">选择分类</option>
+                    </select>
+                    <button id="startStudyBtn" class="btn primary">开始学习</button>
+                </div>
+                <div class="word-card-container" id="wordCardContainer" style="display: none;">
+                    <div class="word-card" id="wordCard">
+                        <div class="word-english" id="wordEnglish"></div>
+                        <div class="word-phonetic" id="wordPhonetic"></div>
+                        <div class="word-chinese" id="wordChinese"></div>
                     </div>
-                    <div class="summary-card">
-                        <div class="summary-icon">📈</div>
-                        <div class="summary-info">
-                            <div class="summary-number" id="today-words">0</div>
-                            <div class="summary-label">今日学习</div>
-                        </div>
+                    <div class="card-controls">
+                        <button class="btn secondary" id="prevBtn">上一个</button>
+                        <button class="btn secondary" id="showAnswerBtn">显示中文</button>
+                        <button class="btn primary" id="pronounceBtn">🔊 发音</button>
+                        <button class="btn secondary" id="nextBtn">下一个</button>
                     </div>
-                    <div class="summary-card">
-                        <div class="summary-icon">🔄</div>
-                        <div class="summary-info">
-                            <div class="summary-number" id="review-words">0</div>
-                            <div class="summary-label">待复习</div>
-                        </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
                     </div>
                 </div>
+            </section>
 
-                <div class="word-list" id="word-list">
-                    <!-- 单词卡片将动态生成 -->
+            <!-- 单词测试 -->
+            <section id="test" class="tab-content">
+                <div class="test-controls">
+                    <select id="testCategorySelect" class="category-select">
+                        <option value="">选择测试分类</option>
+                    </select>
+                    <button id="startTestBtn" class="btn primary">开始测试</button>
+                </div>
+                <div class="test-container" id="testContainer" style="display: none;">
+                    <div class="test-header">
+                        <span class="test-progress" id="testProgress">1/10</span>
+                        <span class="test-score" id="testScore">得分: 0</span>
+                    </div>
+                    <div class="test-question">
+                        <div class="question-word" id="questionWord"></div>
+                        <div class="question-phonetic" id="questionPhonetic"></div>
+                    </div>
+                    <div class="test-options" id="testOptions">
+                        <!-- 动态生成选项 -->
+                    </div>
+                    <div class="test-result" id="testResult"></div>
+                </div>
+            </section>
+
+            <!-- 复习模式 -->
+            <section id="review" class="tab-content">
+                <div class="review-controls">
+                    <button id="startReviewBtn" class="btn primary">开始复习</button>
+                </div>
+                <div class="review-container" id="reviewContainer" style="display: none;">
+                    <div class="review-stats">
+                        <div class="review-item">
+                            <span>需要复习</span>
+                            <span class="review-count" id="needReviewCount">0</span>
+                        </div>
+                        <div class="review-item">
+                            <span>已掌握</span>
+                            <span class="review-count" id="masteredCount">0</span>
+                        </div>
+                    </div>
+                    <div class="review-word-list" id="reviewWordList">
+                        <!-- 动态生成复习单词列表 -->
+                    </div>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- 单词详情弹窗 -->
-    <div id="word-detail-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content word-detail-modal">
-            <div class="word-detail-header">
-                <button class="close-btn" onclick="closeWordDetail()">×</button>
+    <script src="js/word-book.js"></script>
+
+    <!-- 机器人助手 -->
+    <div class="robot-assistant" id="robotAssistant">
+        <div class="robot-avatar">
+            <div class="robot-face">
+                <div class="robot-eyes">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                </div>
+                <div class="robot-mouth"></div>
             </div>
-            <div class="word-detail-content" id="word-detail-content">
-                <!-- 单词详情将动态生成 -->
+        </div>
+        <div class="robot-message" id="robotMessage">
+            <div class="message-bubble" id="messageBubble">
+                嗨！我是你的学习助手小智！有什么可以帮助你的吗？
             </div>
-            <div class="word-detail-actions">
-                <button class="secondary-btn" onclick="playWordAudio()">🔊 播放发音</button>
-                <button class="primary-btn" onclick="startWordPractice()">开始练习</button>
-            </div>
+        </div>
+        <div class="robot-controls">
+            <button class="robot-btn" id="robotHelpBtn" title="帮助">💡</button>
+            <button class="robot-btn" id="robotTipBtn" title="提示">💬</button>
+            <button class="robot-btn" id="robotMicBtn" title="语音识别">🎤</button>
+            <button class="robot-btn" id="robotAdviceBtn" title="建议">📚</button>
+            <button class="robot-btn" id="robotGameBtn" title="游戏">🎮</button>
+            <button class="robot-btn" id="robotVoiceBtn" title="语音">🔊</button>
+            <button class="robot-btn" id="robotCloseBtn" title="关闭">❌</button>
         </div>
     </div>
 
-    <script>
-        // 当前显示的单词列表
-        let currentWords = [];
-        let currentFilter = 'all';
-        let currentDifficulty = 'all';
-        let currentWordDetail = null;
-
-        // ===== 页面初始化 =====
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeWordBook();
-        });
-
-        async function initializeWordBook() {
-            // 等待游戏引擎初始化
-            if (typeof WordAdventure === 'undefined') {
-                setTimeout(initializeWordBook, 100);
-                return;
-            }
-
-            loadWordList();
-            updateStatistics();
-            setupEventListeners();
-        }
-
-        // ===== 加载单词列表 =====
-        function loadWordList() {
-            // 获取所有单词数据
-            const allWords = [];
-            
-            for (const difficulty in WordAdventureData.WordDatabase) {
-                WordAdventureData.WordDatabase[difficulty].forEach(word => {
-                    allWords.push({
-                        ...word,
-                        difficulty: difficulty,
-                        status: getWordStatus(word.id)
-                    });
-                });
-            }
-
-            currentWords = allWords;
-            renderWordList(currentWords);
-        }
-
-        function getWordStatus(wordId) {
-            const gameState = WordAdventure.gameState;
-            
-            if (gameState.learning.learnedWords.includes(wordId)) {
-                const mastery = WordAdventure.calculateMasteryLevel(wordId);
-                if (mastery >= 4) return 'mastered';
-                return 'learning';
-            }
-            
-            const reviewingWords = gameState.learning.reviewingWords;
-            if (reviewingWords.find(review => review.wordId === wordId)) {
-                return 'reviewing';
-            }
-            
-            return 'new';
-        }
-
-        function renderWordList(words) {
-            const wordList = document.getElementById('word-list');
-            
-            if (words.length === 0) {
-                wordList.innerHTML = '<div class="empty-state">暂无单词</div>';
-                return;
-            }
-
-            let html = '';
-            words.forEach(word => {
-                html += createWordCard(word);
-            });
-
-            wordList.innerHTML = html;
-        }
-
-        function createWordCard(word) {
-            const statusColors = {
-                'new': '#e9ecef',
-                'learning': '#fff3cd',
-                'reviewing': '#cce5ff',
-                'mastered': '#d4edda'
-            };
-
-            const statusTexts = {
-                'new': '新单词',
-                'learning': '学习中',
-                'reviewing': '需复习',
-                'mastered': '已掌握'
-            };
-
-            const difficultyTexts = {
-                'beginner': '初级',
-                'intermediate': '中级',
-                'advanced': '高级'
-            };
-
-            return `
-                <div class="word-card ${word.status}" onclick="showWordDetail('${word.id}')">
-                    <div class="word-card-header">
-                        <div class="word-main">${word.word}</div>
-                        <div class="word-status" style="background: ${statusColors[word.status]}">
-                            ${statusTexts[word.status]}
-                        </div>
-                    </div>
-                    <div class="word-phonetic">${word.pronunciation}</div>
-                    <div class="word-chinese">${word.chinese}</div>
-                    <div class="word-card-footer">
-                        <span class="word-difficulty ${word.difficulty}">${difficultyTexts[word.difficulty]}</span>
-                        <span class="word-grade">${word.grade}年级</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // ===== 搜索和筛选 =====
-        function searchWords() {
-            const searchTerm = document.getElementById('word-search').value.toLowerCase().trim();
-            
-            if (!searchTerm) {
-                renderWordList(currentWords);
-                return;
-            }
-
-            const filteredWords = currentWords.filter(word => 
-                word.word.toLowerCase().includes(searchTerm) ||
-                word.chinese.includes(searchTerm) ||
-                word.mnemonic.toLowerCase().includes(searchTerm)
-            );
-
-            renderWordList(filteredWords);
-        }
-
-        function filterWords(filter) {
-            currentFilter = filter;
-            
-            // 更新标签状态
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
-
-            applyFilters();
-        }
-
-        function filterByDifficulty() {
-            currentDifficulty = document.getElementById('difficulty-select').value;
-            applyFilters();
-        }
-
-        function applyFilters() {
-            let filteredWords = [...currentWords];
-
-            // 状态筛选
-            if (currentFilter !== 'all') {
-                filteredWords = filteredWords.filter(word => word.status === currentFilter);
-            }
-
-            // 难度筛选
-            if (currentDifficulty !== 'all') {
-                filteredWords = filteredWords.filter(word => word.difficulty === currentDifficulty);
-            }
-
-            renderWordList(filteredWords);
-        }
-
-        // ===== 单词详情 =====
-        function showWordDetail(wordId) {
-            const word = findWordById(wordId);
-            if (!word) return;
-
-            currentWordDetail = word;
-
-            const modal = document.getElementById('word-detail-modal');
-            const content = document.getElementById('word-detail-content');
-
-            // 获取学习历史
-            const history = WordAdventure.gameState.learning.wordHistory[wordId] || [];
-            const mastery = WordAdventure.calculateMasteryLevel(wordId);
-
-            content.innerHTML = `
-                <div class="word-detail-main">
-                    <div class="word-detail-word">${word.word}</div>
-                    <div class="word-detail-phonetic">${word.pronunciation}</div>
-                    <div class="word-detail-chinese">${word.chinese}</div>
-                </div>
-                
-                <div class="word-detail-section">
-                    <h4>记忆口诀</h4>
-                    <div class="word-mnemonic">${word.mnemonic}</div>
-                </div>
-                
-                <div class="word-detail-section">
-                    <h4>联想场景</h4>
-                    <div class="word-association">${word.联想}</div>
-                </div>
-                
-                <div class="word-detail-section">
-                    <h4>学习进度</h4>
-                    <div class="mastery-info">
-                        <div class="mastery-stars">${generateMasteryStars(mastery)}</div>
-                        <div class="mastery-text">${getMasteryText(mastery)}</div>
-                        <div class="learning-count">学习次数: ${history.length}</div>
-                    </div>
-                </div>
-                
-                ${history.length > 0 ? `
-                    <div class="word-detail-section">
-                        <h4>学习记录</h4>
-                        <div class="history-list">
-                            ${history.slice(-5).map(record => `
-                                <div class="history-item">
-                                    <div class="history-date">${formatDate(record.timestamp)}</div>
-                                    <div class="history-score">得分: ${record.score}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                ` : ''}
-            `;
-
-            modal.style.display = 'flex';
-        }
-
-        function closeWordDetail() {
-            document.getElementById('word-detail-modal').style.display = 'none';
-            currentWordDetail = null;
-        }
-
-        function generateMasteryStars(level) {
-            let stars = '';
-            for (let i = 1; i <= 5; i++) {
-                stars += `<span class="mastery-star ${i <= level ? 'filled' : 'empty'}">⭐</span>`;
-            }
-            return stars;
-        }
-
-        function getMasteryText(level) {
-            const texts = ['未学习', '刚学习', '初步掌握', '良好', '熟练', '完全掌握'];
-            return texts[level] || texts[0];
-        }
-
-        function findWordById(wordId) {
-            for (const difficulty in WordAdventureData.WordDatabase) {
-                const word = WordAdventureData.WordDatabase[difficulty].find(w => w.id === wordId);
-                if (word) return { ...word, difficulty };
-            }
-            return null;
-        }
-
-        function formatDate(timestamp) {
-            const date = new Date(timestamp);
-            return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        // ===== 统计数据更新 =====
-        function updateStatistics() {
-            const gameState = WordAdventure.gameState;
-            
-            // 计算统计数据
-            const learnedCount = gameState.learning.learnedWords.length;
-            const masteredCount = gameState.learning.masteredWords.length;
-            const reviewCount = gameState.learning.reviewingWords.filter(review => review.reviewDate <= Date.now()).length;
-            const todayWords = getTodayLearnedCount();
-
-            // 更新页面显示
-            document.getElementById('learned-count').textContent = learnedCount;
-            document.getElementById('mastered-count').textContent = masteredCount;
-            document.getElementById('total-words').textContent = Object.keys(WordAdventureData.WordDatabase).reduce((sum, difficulty) => {
-                return sum + WordAdventureData.WordDatabase[difficulty].length;
-            }, 0);
-            document.getElementById('today-words').textContent = todayWords;
-            document.getElementById('review-words').textContent = reviewCount;
-        }
-
-        function getTodayLearnedCount() {
-            const today = new Date().toDateString();
-            const history = WordAdventure.gameState.learning.wordHistory;
-            let count = 0;
-
-            for (const wordId in history) {
-                const todayRecords = history[wordId].filter(record => {
-                    return new Date(record.timestamp).toDateString() === today;
-                });
-                
-                if (todayRecords.length > 0) {
-                    count++;
-                }
-            }
-
-            return count;
-        }
-
-        // ===== 功能操作 =====
-        function playWordAudio() {
-            if (!currentWordDetail) return;
-            
-            // 播放单词发音
-            console.log(`播放发音: ${currentWordDetail.word}`);
-            WordAdventureUI.playSound('click');
-            
-            WordAdventureUI.showToast('正在播放发音...', 'info');
-        }
-
-        function startWordPractice() {
-            if (!currentWordDetail) return;
-            
-            // 跳转到练习页面
-            const practiceUrl = `challenge.html?word=${currentWordDetail.id}`;
-            if (window.parent && window.parent.NavigationManager) {
-                window.parent.NavigationManager.navigateToPage(practiceUrl);
-            } else {
-                window.location.href = practiceUrl;
-            }
-        }
-
-        // ===== 事件监听 =====
-        function setupEventListeners() {
-            // 监听游戏状态变化
-            WordAdventure.on('wordLearned', function() {
-                loadWordList();
-                updateStatistics();
-            });
-
-            WordAdventure.on('experienceGained', function() {
-                updateStatistics();
-            });
-
-            // 监听模态框外部点击
-            document.getElementById('word-detail-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeWordDetail();
-                }
-            });
-
-            // 键盘事件
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeWordDetail();
-                }
-            });
-        }
-
-        // 监听页面可见性变化，自动刷新数据
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                updateStatistics();
-            }
-        });
-    </script>
-
-    <style>
-        /* 单词图鉴页面样式 */
-        .header-stats {
-            display: flex;
-            gap: 15px;
-            font-size: 14px;
-        }
-
-        .stat-item {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 8px;
-            border-radius: 12px;
-        }
-
-        /* 搜索筛选区域 */
-        .search-filter-section {
-            background: white;
-            padding: 16px;
-            margin: 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .search-btn {
-            padding: 10px 15px;
-            border: none;
-            background: #6A11CB;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .filter-tab {
-            padding: 8px 16px;
-            border: 1px solid #e9ecef;
-            background: white;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s ease;
-        }
-
-        .filter-tab:hover {
-            border-color: #6A11CB;
-        }
-
-        .filter-tab.active {
-            background: #6A11CB;
-            color: white;
-            border-color: #6A11CB;
-        }
-
-        .difficulty-filter select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            font-size: 12px;
-        }
-
-        /* 统计卡片 */
-        .word-stats-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 12px;
-            margin: 16px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .summary-icon {
-            font-size: 24px;
-        }
-
-        .summary-number {
-            font-size: 20px;
-            font-weight: bold;
-            color: #6A11CB;
-        }
-
-        .summary-label {
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* 单词列表 */
-        .word-list {
-            padding: 0 16px 16px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 12px;
-        }
-
-        .word-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-left: 4px solid transparent;
-        }
-
-        .word-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        .word-card.new {
-            border-left-color: #6c757d;
-        }
-
-        .word-card.learning {
-            border-left-color: #ffc107;
-        }
-
-        .word-card.reviewing {
-            border-left-color: #17a2b8;
-        }
-
-        .word-card.mastered {
-            border-left-color: #28a745;
-        }
-
-        .word-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .word-main {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .word-status {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-        .word-phonetic {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 6px;
-        }
-
-        .word-chinese {
-            font-size: 14px;
-            color: #2c3e50;
-            margin-bottom: 12px;
-        }
-
-        .word-card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .word-difficulty {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: white;
-        }
-
-        .word-difficulty.beginner {
-            background: #4CAF50;
-        }
-
-        .word-difficulty.intermediate {
-            background: #FF9800;
-        }
-
-        .word-difficulty.advanced {
-            background: #FF3B30;
-        }
-
-        .word-grade {
-            font-size: 10px;
-            color: #666;
-        }
-
-        /* 单词详情模态框 */
-        .word-detail-modal {
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .word-detail-header {
-            padding: 20px 20px 0 20px;
-            text-align: right;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .word-detail-content {
-            padding: 20px;
-        }
-
-        .word-detail-main {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .word-detail-word {
-            font-size: 32px;
-            font-weight: bold;
-            color: #6A11CB;
-            margin-bottom: 8px;
-        }
-
-        .word-detail-phonetic {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 6px;
-        }
-
-        .word-detail-chinese {
-            font-size: 18px;
-            color: #333;
-        }
-
-        .word-detail-section {
-            margin-bottom: 20px;
-        }
-
-        .word-detail-section h4 {
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .word-mnemonic, .word-association {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .mastery-info {
-            text-align: center;
-        }
-
-        .mastery-stars {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-
-        .mastery-star.filled {
-            color: #FFD700;
-        }
-
-        .mastery-star.empty {
-            color: #e9ecef;
-        }
-
-        .mastery-text {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .learning-count {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .history-list {
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
-            font-size: 12px;
-        }
-
-        .history-date {
-            color: #666;
-        }
-
-        .history-score {
-            font-weight: bold;
-            color: #6A11CB;
-        }
-
-        .word-detail-actions {
-            display: flex;
-            gap: 10px;
-            padding: 20px;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .word-detail-actions button {
-            flex: 1;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .word-list {
-                grid-template-columns: 1fr;
-            }
-            
-            .word-stats-summary {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .summary-card {
-                flex-direction: column;
-                gap: 5px;
-            }
-            
-            .filter-tabs {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 375px) {
-            .word-card {
-                padding: 12px;
-            }
-            
-            .word-main {
-                font-size: 16px;
-            }
-            
-            .word-detail-word {
-                font-size: 28px;
-            }
-        }
-    </style>
+    <!-- 机器人快捷助手按钮 -->
+    <div class="robot-fab" id="robotFab">
+        <div class="fab-icon">🤖</div>
+    </div>
 </body>
 </html>

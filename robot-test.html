@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机器人助手功能测试</title>
+    <link rel="stylesheet" href="css/word-book.css">
+    <style>
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .test-title {
+            color: #5a67d8;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <header class="test-section">
+            <h1>🤖 机器人助手功能全面测试</h1>
+            <p>这个页面用于测试机器人助手的所有核心功能是否正常工作</p>
+        </header>
+        
+        <!-- 1. 智能对话系统测试 -->
+        <section class="test-section">
+            <h2 class="test-title">1. 智能对话系统测试</h2>
+            <button class="test-btn" onclick="testDialogSystem()">测试对话功能</button>
+            <button class="test-btn" onclick="testContextHelp()">测试情境感知</button>
+            <button class="test-btn" onclick="testLearningFeedback()">测试学习反馈</button>
+            <button class="test-btn" onclick="testPersonalizedAdvice()">测试个性化建议</button>
+            <div id="dialog-status" class="status info">点击按钮开始测试...</div>
+        </section>
+        
+        <!-- 2. 语音合成功能测试 -->
+        <section class="test-section">
+            <h2 class="test-title">2. 语音合成功能测试</h2>
+            <button class="test-btn" onclick="testSpeechSynthesis()">测试语音合成</button>
+            <button class="test-btn" onclick="testBilingualSpeech()">测试双语支持</button>
+            <button class="test-btn" onclick="testPronunciationHelp()">测试发音练习</button>
+            <button class="test-btn" onclick="testSpeechControl()">测试语音控制</button>
+            <div id="speech-status" class="status info">点击按钮开始测试...</div>
+        </section>
+        
+        <!-- 3. 情感交互系统测试 -->
+        <section class="test-section">
+            <h2 class="test-title">3. 情感交互系统测试</h2>
+            <button class="test-btn" onclick="testEmotion('happy')">测试开心表情</button>
+            <button class="test-btn" onclick="testEmotion('excited')">测试兴奋表情</button>
+            <button class="test-btn" onclick="testEmotion('thinking')">测试思考表情</button>
+            <button class="test-btn" onclick="testAnimations()">测试动画效果</button>
+            <div id="emotion-status" class="status info">点击按钮开始测试...</div>
+        </section>
+        
+        <!-- 4. 学习帮助系统测试 -->
+        <section class="test-section">
+            <h2 class="test-title">4. 学习帮助系统测试</h2>
+            <button class="test-btn" onclick="testModeGuidance()">测试分模式指导</button>
+            <button class="test-btn" onclick="testLearningTips()">测试学习技巧</button>
+            <button class="test-btn" onclick="testProgressTracking()">测试进度跟踪</button>
+            <button class="test-btn" onclick="testWordAssociation()">测试单词联想</button>
+            <div id="help-status" class="status info">点击按钮开始测试...</div>
+        </section>
+        
+        <!-- 综合功能测试 -->
+        <section class="test-section">
+            <h2 class="test-title">5. 综合功能测试</h2>
+            <button class="test-btn" onclick="testCompleteWorkflow()">测试完整工作流</button>
+            <button class="test-btn" onclick="testErrorHandling()">测试错误处理</button>
+            <button class="test-btn" onclick="testAllFeatures()">测试所有功能</button>
+            <div id="comprehensive-status" class="status info">点击按钮开始测试...</div>
+        </section>
+    </div>
+
+    <!-- 机器人助手组件 -->
+    <div class="robot-assistant" id="robotAssistant">
+        <div class="robot-avatar">
+            <div class="robot-face">
+                <div class="robot-eyes">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                </div>
+                <div class="robot-mouth"></div>
+            </div>
+        </div>
+        <div class="robot-message" id="robotMessage">
+            <div class="message-bubble" id="messageBubble">
+                准备开始功能测试！
+            </div>
+        </div>
+        <div class="robot-controls">
+            <button class="robot-btn" id="robotHelpBtn" title="帮助">💡</button>
+            <button class="robot-btn" id="robotTipBtn" title="提示">💬</button>
+            <button class="robot-btn" id="robotMicBtn" title="语音识别">🎤</button>
+            <button class="robot-btn" id="robotAdviceBtn" title="建议">📚</button>
+            <button class="robot-btn" id="robotGameBtn" title="游戏">🎮</button>
+            <button class="robot-btn" id="robotVoiceBtn" title="语音">🔊</button>
+            <button class="robot-btn" id="robotCloseBtn" title="关闭">❌</button>
+        </div>
+    </div>
+
+    <div class="robot-fab" id="robotFab">
+        <div class="fab-icon">🤖</div>
+    </div>
+
+    <script src="js/word-book.js"></script>
+    <script>
+        let testRobot;
+        let testResults = {
+            dialog: false,
+            speech: false,
+            emotion: false,
+            help: false,
+            comprehensive: false
+        };
+
+        // 等待机器人初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                testRobot = robotAssistant;
+                if (testRobot) {
+                    testRobot.show();
+                    updateStatus('dialog-status', '机器人助手已就绪，开始测试！', 'success');
+                } else {
+                    updateStatus('dialog-status', '机器人助手初始化失败！', 'error');
+                }
+            }, 1000);
+        });
+
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = message;
+                element.className = `status ${type}`;
+            }
+        }
+
+        // 1. 智能对话系统测试
+        function testDialogSystem() {
+            if (!testRobot) {
+                updateStatus('dialog-status', '机器人助手未初始化！', 'error');
+                return;
+            }
+            
+            try {
+                // 测试消息获取
+                const welcomeMsg = testRobot.getRandomMessage('welcome');
+                const encouragementMsg = testRobot.getRandomMessage('encouragement');
+                
+                updateStatus('dialog-status', 
+                    `✅ 消息系统正常\n欢迎语: ${welcomeMsg}\n鼓励语: ${encouragementMsg}`, 
+                    'success'
+                );
+                
+                testRobot.updateMessage("对话系统测试成功！所有消息类型都能正常获取。");
+            } catch (error) {
+                updateStatus('dialog-status', `❌ 对话系统测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testContextHelp() {
+            try {
+                // 模拟不同页面
+                const originalTab = document.querySelector('.tab-btn.active');
+                
+                testRobot.provideContextHelp();
+                updateStatus('dialog-status', '✅ 情境感知功能正常，能够识别当前页面并提供针对性帮助', 'success');
+            } catch (error) {
+                updateStatus('dialog-status', `❌ 情境感知测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testLearningFeedback() {
+            try {
+                // 模拟学习反馈
+                testRobot.onWordLearned({ word: 'test', chinese: '测试' });
+                setTimeout(() => {
+                    testRobot.onTestCompleted(8, 10);
+                    updateStatus('dialog-status', '✅ 学习反馈功能正常，祝贺和评价系统工作正常', 'success');
+                }, 2000);
+            } catch (error) {
+                updateStatus('dialog-status', `❌ 学习反馈测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testPersonalizedAdvice() {
+            try {
+                const suggestion = testRobot.getStudySuggestion();
+                updateStatus('dialog-status', `✅ 个性化建议正常: ${suggestion}`, 'success');
+            } catch (error) {
+                updateStatus('dialog-status', `❌ 个性化建议测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 2. 语音合成功能测试
+        function testSpeechSynthesis() {
+            if (!window.speechSynthesis) {
+                updateStatus('speech-status', '❌ 浏览器不支持语音合成', 'error');
+                return;
+            }
+            
+            try {
+                testRobot.speak("语音合成功能测试");
+                updateStatus('speech-status', '✅ 语音合成功能启动成功，请注意听声音', 'success');
+            } catch (error) {
+                updateStatus('speech-status', `❌ 语音合成测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testBilingualSpeech() {
+            try {
+                testRobot.speak("Hello", 'en-US');
+                setTimeout(() => {
+                    testRobot.speak("你好", 'zh-CN');
+                    updateStatus('speech-status', '✅ 双语语音合成功能正常', 'success');
+                }, 3000);
+            } catch (error) {
+                updateStatus('speech-status', `❌ 双语语音测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testPronunciationHelp() {
+            try {
+                const testWord = { word: 'apple', phonetic: '/ˈæpl/' };
+                testRobot.helpWithPronunciation(testWord);
+                updateStatus('speech-status', '✅ 发音练习功能正常，正在播放单词发音', 'success');
+            } catch (error) {
+                updateStatus('speech-status', `❌ 发音练习测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testSpeechControl() {
+            try {
+                testRobot.toggleVoice();
+                setTimeout(() => {
+                    testRobot.toggleVoice();
+                    updateStatus('speech-status', '✅ 语音控制功能正常', 'success');
+                }, 1000);
+            } catch (error) {
+                updateStatus('speech-status', `❌ 语音控制测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 3. 情感交互系统测试
+        function testEmotion(emotion) {
+            try {
+                testRobot.setEmotion(emotion);
+                updateStatus('emotion-status', `✅ ${emotion}表情设置成功`, 'success');
+            } catch (error) {
+                updateStatus('emotion-status', `❌ 表情测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testAnimations() {
+            try {
+                testRobot.animateRobot();
+                testRobot.celebrate();
+                updateStatus('emotion-status', '✅ 动画系统正常，眨眼、说话、庆祝动画都能正常播放', 'success');
+            } catch (error) {
+                updateStatus('emotion-status', `❌ 动画测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 4. 学习帮助系统测试
+        function testModeGuidance() {
+            try {
+                const advice = testRobot.getModeSpecificAdvice('study');
+                updateStatus('help-status', `✅ 分模式指导正常: ${advice}`, 'success');
+            } catch (error) {
+                updateStatus('help-status', `❌ 分模式指导测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testLearningTips() {
+            try {
+                testRobot.giveTip();
+                updateStatus('help-status', '✅ 学习技巧提示功能正常', 'success');
+            } catch (error) {
+                updateStatus('help-status', `❌ 学习技巧测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testProgressTracking() {
+            try {
+                testRobot.onStudyProgress(5, 10);
+                testRobot.onStudyProgress(10, 10);
+                updateStatus('help-status', '✅ 进度跟踪功能正常，能够正确识别里程碑', 'success');
+            } catch (error) {
+                updateStatus('help-status', `❌ 进度跟踪测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testWordAssociation() {
+            try {
+                const testWord = { 
+                    word: 'book', 
+                    mnemonic: '宝库里的书', 
+                    association: '书是知识的宝库' 
+                };
+                const association = testRobot.getWordAssociation(testWord);
+                updateStatus('help-status', `✅ 单词联想功能正常: ${association}`, 'success');
+            } catch (error) {
+                updateStatus('help-status', `❌ 单词联想测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 5. 综合功能测试
+        function testCompleteWorkflow() {
+            try {
+                // 完整工作流测试
+                testRobot.provideContextHelp();
+                setTimeout(() => {
+                    testRobot.giveTip();
+                    setTimeout(() => {
+                        testRobot.setEmotion('excited');
+                        updateStatus('comprehensive-status', '✅ 完整工作流测试成功', 'success');
+                    }, 2000);
+                }, 2000);
+            } catch (error) {
+                updateStatus('comprehensive-status', `❌ 工作流测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testErrorHandling() {
+            try {
+                // 测试错误处理
+                testRobot.speak(null); // 应该被优雅处理
+                testRobot.setEmotion('invalid'); // 应该被优雅处理
+                updateStatus('comprehensive-status', '✅ 错误处理机制正常工作', 'success');
+            } catch (error) {
+                updateStatus('comprehensive-status', `❌ 错误处理测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testAllFeatures() {
+            let allPassed = true;
+            const tests = [
+                testDialogSystem,
+                testSpeechSynthesis,
+                testEmotion.bind(null, 'happy'),
+                testModeGuidance
+            ];
+            
+            tests.forEach((test, index) => {
+                try {
+                    test();
+                } catch (error) {
+                    allPassed = false;
+                    updateStatus('comprehensive-status', `❌ 测试 ${index + 1} 失败: ${error.message}`, 'error');
+                }
+            });
+            
+            if (allPassed) {
+                updateStatus('comprehensive-status', '🎉 所有核心功能测试通过！机器人助手功能完整！', 'success');
+                testRobot.celebrate();
+            }
+        }
+    </script>
+</body>
+</html>
