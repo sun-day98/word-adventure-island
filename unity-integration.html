@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity集成 - AI小说创作系统</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .unity-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .unity-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .unity-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .unity-content {
+            padding: 40px;
+        }
+
+        .integration-status {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.disconnected {
+            background: #dc3545;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .api-test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .test-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .test-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .test-card h3 {
+            margin: 0 0 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .test-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .test-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .code-section {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .code-tab {
+            background: none;
+            border: none;
+            color: #a0aec0;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .code-tab.active {
+            color: #e2e8f0;
+            border-bottom-color: #667eea;
+        }
+
+        .code-content {
+            display: none;
+        }
+
+        .code-content.active {
+            display: block;
+        }
+
+        .code-block {
+            background: #1a202c;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+        }
+
+        .response-log {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            background: white;
+        }
+
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .log-entry.success {
+            border-left-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .log-time {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .log-message {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .connection-info {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .connection-steps {
+            margin-top: 20px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            color: #333;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="unity-container">
+        <header class="unity-header">
+            <h1>🎮 Unity集成中心</h1>
+            <p>AI小说创作系统 - Unity API接口和集成指南</p>
+        </header>
+
+        <div class="unity-content">
+            <!-- 连接状态 -->
+            <div class="integration-status">
+                <div class="status-indicator">
+                    <div class="status-dot" id="connectionStatus"></div>
+                    <span id="connectionText">检测Unity连接...</span>
+                </div>
+                <div id="connectionInfo">
+                    正在初始化Unity API桥接...
+                </div>
+            </div>
+
+            <!-- 连接步骤 -->
+            <div class="connection-info">
+                <h3>🔌 Unity集成步骤</h3>
+                <div class="connection-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-text">在Unity中添加WebView组件，加载story-creator.html</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">包含unity-api-bridge.js文件到WebView页面</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-text">在C#脚本中实现JavaScript桥接方法</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-text">通过API调用实现Unity与网页的双向通信</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API测试 -->
+            <div class="api-test-grid">
+                <div class="test-card">
+                    <h3>📖 创建故事</h3>
+                    <p class="test-description">测试创建新故事功能，指定标题、类型和模板</p>
+                    <button class="test-button" onclick="testCreateStory()">测试创建故事</button>
+                </div>
+
+                <div class="test-card">
+                    <h3>📚 获取模板</h3>
+                    <p class="test-description">测试获取故事模板库，支持按类型筛选</p>
+                    <button class="test-button" onclick="testGetTemplates()">测试获取模板</button>
+                </div>
+
+                <div class="test-card">
+                    <h3>👥 生成角色</h3>
+                    <p class="test-description">测试智能角色生成器，基于原型创建角色</p>
+                    <button class="test-button" onclick="testGenerateCharacter()">测试生成角色</button>
+                </div>
+
+                <div class="test-card">
+                    <h3>🤖 AI协助</h3>
+                    <p class="test-description">测试AI助手功能，获取创作建议和帮助</p>
+                    <button class="test-button" onclick="testAIAssist()">测试AI协助</button>
+                </div>
+
+                <div class="test-card">
+                    <h3">💾 保存项目</h3>
+                    <p class="test-description">测试项目保存功能，支持本地和文件导出</p>
+                    <button class="test-button" onclick="testSaveProject()">测试保存项目</button>
+                </div>
+
+                <div class="test-card">
+                    <h3>📂 加载项目</h3>
+                    <p class="test-description">测试项目加载功能，恢复创作进度</p>
+                    <button class="test-button" onclick="testLoadProject()">测试加载项目</button>
+                </div>
+            </div>
+
+            <!-- 代码示例 -->
+            <div class="code-section">
+                <div class="code-tabs">
+                    <button class="code-tab active" onclick="switchCodeTab('csharp')">C# 脚本</button>
+                    <button class="code-tab" onclick="switchCodeTab('javascript')">JavaScript</button>
+                    <button class="code-tab" onclick="switchCodeTab('api')">API 列表</button>
+                </div>
+
+                <div class="code-content active" id="csharp-code">
+                    <h4>Unity C# 脚本示例</h4>
+                    <div class="code-block">using UnityEngine;
+using UnityEngine.UI;
+
+public class StoryCreatorBridge : MonoBehaviour
+{
+    public WebViewObject webView;
+    
+    void Start()
+    {
+        // 初始化WebView
+        string url = Application.streamingAssetsPath + "/story-creator.html";
+        webView.Init((success) => {
+            if (success) {
+                Debug.Log("小说创作系统加载成功");
+            }
+        });
+    }
+    
+    public void CreateNewStory()
+    {
+        string jsonData = @"{
+            ""title"": ""都市爱情故事"",
+            ""genre"": ""romance"",
+            ""templateId"": ""modern_city_love""
+        }";
+        
+        webView.EvaluateJS($@"
+            if (window.unityBridge) {{
+                window.unityBridge.handleCreateStory({jsonData});
+            }}
+        ");
+    }
+    
+    // Unity回调方法
+    public void OnStoryCreated(string storyData)
+    {
+        Debug.Log("故事创建回调: " + storyData);
+    }
+}</div>
+                </div>
+
+                <div class="code-content" id="javascript-code">
+                    <h4>JavaScript API 调用</h4>
+                    <div class="code-block">// 发送消息到Unity
+function sendToUnity(methodName, data) {
+    if (typeof window.Unity !== 'undefined') {
+        window.Unity.call(methodName, JSON.stringify(data));
+    } else if (window.unity) {
+        window.unity.SendMessage('WebBridgeObject', methodName, JSON.stringify(data));
+    }
+}
+
+// 示例：通知Unity故事已创建
+function notifyStoryCreated(storyData) {
+    sendToUnity('OnStoryCreated', storyData);
+}</div>
+                </div>
+
+                <div class="code-content" id="api-code">
+                    <h4>API 方法列表</h4>
+                    <div class="code-block">可用API方法：
+
+CREATE_STORY - 创建新故事
+参数: {title, genre, templateId}
+
+GET_TEMPLATES - 获取故事模板
+参数: {genre} (可选)
+
+GENERATE_CHARACTER - 生成角色
+参数: {archetype, name}
+
+AI_ASSIST - AI协助
+参数: {query, context}
+
+SAVE_PROJECT - 保存项目
+参数: {projectData, fileName}
+
+LOAD_PROJECT - 加载项目
+参数: {projectId}
+
+Unity回调方法：
+OnStoryCreated(data)
+OnTemplatesLoaded(data)
+OnCharacterGenerated(data)
+OnAIResponse(data)
+OnProjectSaved(data)
+OnProjectLoaded(data)
+OnError(errorData)</div>
+                </div>
+            </div>
+
+            <!-- 响应日志 -->
+            <div class="response-log">
+                <h3>📋 API响应日志</h3>
+                <div id="logContainer">
+                    <div class="log-entry">
+                        <div class="log-time">系统启动</div>
+                        <div class="log-message">Unity API桥接已初始化，等待连接...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="story-templates.js"></script>
+    <script src="multi-agent-coordinator.js"></script>
+    <script src="agent-planning.js"></script>
+    <script src="agent-execution.js"></script>
+    <script src="agent-response.js"></script>
+    <script src="story-creation-agent.js"></script>
+    <script src="unity-api-bridge.js"></script>
+
+    <script>
+        let unityBridge;
+        let isConnected = false;
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeUnityIntegration();
+        });
+
+        function initializeUnityIntegration() {
+            try {
+                // 初始化Unity API桥接
+                unityBridge = new UnityAPIBridge();
+                
+                // 检查连接状态
+                setTimeout(() => {
+                    updateConnectionStatus(unityBridge.isConnected());
+                }, 1000);
+
+                addLog('系统初始化', 'Unity API桥接已成功初始化', 'success');
+
+            } catch (error) {
+                updateConnectionStatus(false);
+                addLog('初始化失败', error.message, 'error');
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            const statusDot = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('connectionText');
+            const connectionInfo = document.getElementById('connectionInfo');
+
+            if (connected) {
+                statusDot.classList.remove('disconnected');
+                statusText.textContent = '已连接到Unity';
+                connectionInfo.textContent = 'Unity API桥接工作正常，可以进行通信';
+            } else {
+                statusDot.classList.add('disconnected');
+                statusText.textContent = '未检测到Unity环境';
+                connectionInfo.textContent = '请在Unity WebView中加载此页面以启用Unity集成';
+            }
+        }
+
+        function switchCodeTab(tabName) {
+            // 更新标签状态
+            document.querySelectorAll('.code-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 更新内容显示
+            document.querySelectorAll('.code-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-code').classList.add('active');
+        }
+
+        function addLog(title, message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `
+                <div class="log-time">${time} - ${title}</div>
+                <div class="log-message">${message}</div>
+            `;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // API测试函数
+        async function testCreateStory() {
+            addLog('测试创建故事', '发送创建故事请求...');
+            
+            try {
+                const result = await unityBridge.handleCreateStory({
+                    title: 'Unity测试故事',
+                    genre: 'romance',
+                    templateId: 'modern_city_love'
+                });
+                
+                addLog('创建故事成功', '故事已成功创建', 'success');
+            } catch (error) {
+                addLog('创建故事失败', error.message, 'error');
+            }
+        }
+
+        async function testGetTemplates() {
+            addLog('测试获取模板', '获取所有故事模板...');
+            
+            try {
+                const result = await unityBridge.handleGetTemplates({});
+                addLog('获取模板成功', `已获取 ${result.templates?.length || 0} 个模板`, 'success');
+            } catch (error) {
+                addLog('获取模板失败', error.message, 'error');
+            }
+        }
+
+        async function testGenerateCharacter() {
+            addLog('测试生成角色', '生成新角色...');
+            
+            try {
+                const result = await unityBridge.handleGenerateCharacter({
+                    archetype: 'hero',
+                    name: ''
+                });
+                
+                addLog('角色生成成功', `角色名称: ${result.character?.name || '未知'}`, 'success');
+            } catch (error) {
+                addLog('角色生成失败', error.message, 'error');
+            }
+        }
+
+        async function testAIAssist() {
+            addLog('测试AI协助', '发送AI协助请求...');
+            
+            try {
+                const result = await unityBridge.handleAIAssist({
+                    query: '帮我写一个故事开头',
+                    context: {}
+                });
+                
+                addLog('AI协助成功', 'AI已返回响应', 'success');
+            } catch (error) {
+                addLog('AI协助失败', error.message, 'error');
+            }
+        }
+
+        function testSaveProject() {
+            addLog('测试保存项目', '保存测试项目...');
+            
+            try {
+                unityBridge.handleSaveProject({
+                    projectData: {
+                        title: 'Unity测试项目',
+                        content: '这是一个测试项目内容'
+                    },
+                    fileName: 'unity-test-project.txt'
+                });
+                
+                addLog('保存项目成功', '项目已保存', 'success');
+            } catch (error) {
+                addLog('保存项目失败', error.message, 'error');
+            }
+        }
+
+        function testLoadProject() {
+            addLog('测试加载项目', '加载测试项目...');
+            
+            try {
+                unityBridge.handleLoadProject({});
+                addLog('加载项目成功', '项目已加载', 'success');
+            } catch (error) {
+                addLog('加载项目失败', error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

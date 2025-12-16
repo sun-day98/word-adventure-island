@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小说分集情节大纲辅助设定</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .plot-outline-tool {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+        }
+
+        .tool-header h1 {
+            margin: 0 0 15px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .tool-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .plot-workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .section-content {
+            padding: 25px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-section h3 {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section h3 .icon {
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .character-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .character-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .character-card h4 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .character-card .role {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .character-traits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .trait-tag {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .plot-structure {
+            background: #f0f7ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .plot-phase {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .plot-phase h4 {
+            margin: 0 0 10px;
+            color: #667eea;
+        }
+
+        .plot-phase .questions {
+            margin-top: 10px;
+        }
+
+        .plot-phase .question {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 0 5px 5px 0;
+            font-size: 13px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .ai-suggestions {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .ai-suggestions h4 {
+            margin: 0 0 15px;
+            color: #333;
+        }
+
+        .suggestion-item {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid #ff6b6b;
+        }
+
+        .suggestion-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .progress-step:last-child::after {
+            display: none;
+        }
+
+        .progress-step.active {
+            color: #667eea;
+        }
+
+        .progress-step.active .step-number {
+            background: #667eea;
+            color: white;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+        }
+
+        .floating-tools {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .tool-btn {
+            display: block;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            border: none;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .tool-btn:hover {
+            transform: scale(1.1);
+            background: #5a67d8;
+        }
+
+        .character-generator {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+        }
+
+        .character-generator-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .export-preview {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .export-preview h3 {
+            margin: 0 0 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .plot-workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .floating-tools {
+                bottom: 20px;
+                right: 50%;
+                transform: translateX(50%);
+                top: auto;
+                display: flex;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="plot-outline-tool">
+        <header class="tool-header">
+            <h1>📝 小说分集情节大纲辅助设定</h1>
+            <p>专业的情节设计工具，帮助您构建完整的故事结构，包括开始、发展、高潮和结尾</p>
+        </header>
+
+        <div class="progress-indicator">
+            <div class="progress-step active" data-step="1">
+                <div class="step-number">1</div>
+                <div>核心设定</div>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="step-number">2</div>
+                <div>人物关系</div>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="step-number">3</div>
+                <div>情节发展</div>
+            </div>
+            <div class="progress-step" data-step="4">
+                <div class="step-number">4</div>
+                <div>高潮结局</div>
+            </div>
+        </div>
+
+        <div class="plot-workspace">
+            <!-- 左侧面板：核心设定 -->
+            <div class="section-panel">
+                <div class="section-header">📋 核心设定</div>
+                <div class="section-content">
+                    <div class="form-section">
+                        <h3><span class="icon">🎯</span> 主要内容</h3>
+                        <div class="form-group">
+                            <label>请用一句话描述主要内容</label>
+                            <textarea id="mainContent" placeholder="所有的主要情节都能用一句话概括！例如：一个普通人意外获得超能力后，必须在使用力量和保护隐私之间做出选择。"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><span class="icon">🌍</span> 环境地点</h3>
+                        <div class="form-group">
+                            <label>主要环境描述</label>
+                            <textarea id="environmentDescription" placeholder="这些情节主要发生的环境是如何的？在什么地方？有场景切换吗？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>场景关键词</label>
+                            <input type="text" id="sceneKeywords" placeholder="用简单词句描述场景，如：现代都市、雨夜、咖啡厅、废弃工厂">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><span class="icon">👥</span> 涉及人物</h3>
+                        <div class="form-group">
+                            <label>主要参与者</label>
+                            <textarea id="mainCharacters" placeholder="这个故事的主要参与者有哪些？"></textarea>
+                        </div>
+                        <button class="btn-primary" onclick="openCharacterGenerator()" style="width: 100%;">+ 使用人物设定辅助工具</button>
+                        <div class="character-grid" id="characterGrid"></div>
+                    </div>
+
+                    <div class="ai-suggestions">
+                        <h4>💡 AI建议</h4>
+                        <div id="aiSuggestions"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧面板：情节结构 -->
+            <div class="section-panel">
+                <div class="section-header">📈 情节结构</div>
+                <div class="section-content">
+                    <div class="plot-structure">
+                        <div class="plot-phase">
+                            <h4>🚀 故事开端</h4>
+                            <div class="form-group">
+                                <label>事件引发</label>
+                                <textarea id="storyBeginning" placeholder="事件是如何引发的？发现了问题？遇到了困难？从哪个人开始？注意对伏笔和悬念的描写！"></textarea>
+                            </div>
+                            <div class="questions">
+                                <div class="question">💡 此处出现一个需求或动力，如：引起主角好奇心主动探索，或被动卷入事件不得不顺着线索走下去</div>
+                            </div>
+                        </div>
+
+                        <div class="plot-phase">
+                            <h4>⚡ 故事发展与阻力</h4>
+                            <div class="form-group">
+                                <label>解决过程</label>
+                                <textarea id="storyDevelopment" placeholder="为了解决问题或实现目标，需要如何做？需要达到那些条件？在满足这些条件时遇到了什么阻力？"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>冲突设计</label>
+                                <textarea id="conflictDesign" placeholder="为了解决阻力，主角做了什么？和哪些人产生联系？反派出现了吗？"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="plot-phase">
+                            <h4>🎭 解决问题与高潮</h4>
+                            <div class="form-group">
+                                <label>关键时刻</label>
+                                <textarea id="storyClimax" placeholder="最大的阻力是什么？反派是谁？有多厉害？要如何解决？用什么方式解决才最爽快？"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>人物冲击</label>
+                                <textarea id="characterImpact" placeholder="各个人物遭受了什么冲击？主角给别人产生了什么震撼？"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="plot-phase">
+                            <h4>🌅 故事结尾与新开端</h4>
+                            <div class="form-group">
+                                <label>情节结束</label>
+                                <textarea id="storyEnding" placeholder="这个情节结束后，主角发生了什么变化？有什么收获？其他人物如何了？"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>新的悬念</label>
+                                <textarea id="newSuspense" placeholder="这个情节结束之后，是否又是另外一个情节的开端？引起了另外一个悬念吗？"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-preview" id="exportPreview" style="display: none;">
+            <h3>📋 完整情节大纲预览</h3>
+            <div id="outlineContent"></div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-primary" onclick="generateOutline()">生成完整大纲</button>
+            <button class="btn-secondary" onclick="saveOutline()">保存大纲</button>
+            <button class="btn-secondary" onclick="exportOutline()">导出文档</button>
+        </div>
+    </div>
+
+    <!-- 浮动工具栏 -->
+    <div class="floating-tools">
+        <button class="tool-btn" onclick="getAISuggestions()" title="AI建议">🤖</button>
+        <button class="tool-btn" onclick="randomInspiration()" title="随机灵感">💡</button>
+        <button class="tool-btn" onclick="checkCompleteness()" title="完整性检查">✅</button>
+        <button class="tool-btn" onclick="resetForm()" title="重置">🔄</button>
+    </div>
+
+    <!-- 人物生成器 -->
+    <div class="character-generator" id="characterGenerator">
+        <div class="character-generator-content">
+            <h3>👥 人物设定辅助工具</h3>
+            <div class="form-group">
+                <label>角色姓名</label>
+                <input type="text" id="characterName" placeholder="输入角色姓名">
+            </div>
+            <div class="form-group">
+                <label>角色类型</label>
+                <select id="characterType">
+                    <option value="protagonist">主角</option>
+                    <option value="antagonist">反派</option>
+                    <option value="supporting">配角</option>
+                    <option value="mentor">导师</option>
+                    <option value="love_interest">恋爱对象</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>核心特质</label>
+                <input type="text" id="characterTraits" placeholder="如：勇敢、智慧、冲动、善良">
+            </div>
+            <div class="form-group">
+                <label>背景故事</label>
+                <textarea id="characterBackground" placeholder="简要描述角色背景"></textarea>
+            </div>
+            <div class="form-group">
+                <label>与其他角色的关系</label>
+                <textarea id="characterRelations" placeholder="描述此角色与其他角色的关系"></textarea>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-primary" onclick="addCharacter()">添加角色</button>
+                <button class="btn-secondary" onclick="closeCharacterGenerator()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOutline = {
+            mainContent: '',
+            environment: {
+                description: '',
+                keywords: ''
+            },
+            characters: [],
+            plot: {
+                beginning: '',
+                development: '',
+                climax: '',
+                ending: '',
+                newSuspense: ''
+            }
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedOutline();
+            updateCharacterGrid();
+            generateInitialSuggestions();
+        });
+
+        function openCharacterGenerator() {
+            document.getElementById('characterGenerator').style.display = 'block';
+        }
+
+        function closeCharacterGenerator() {
+            document.getElementById('characterGenerator').style.display = 'none';
+            clearCharacterForm();
+        }
+
+        function clearCharacterForm() {
+            document.getElementById('characterName').value = '';
+            document.getElementById('characterType').value = 'protagonist';
+            document.getElementById('characterTraits').value = '';
+            document.getElementById('characterBackground').value = '';
+            document.getElementById('characterRelations').value = '';
+        }
+
+        function addCharacter() {
+            const name = document.getElementById('characterName').value.trim();
+            if (!name) {
+                alert('请输入角色姓名');
+                return;
+            }
+
+            const character = {
+                id: Date.now(),
+                name: name,
+                type: document.getElementById('characterType').value,
+                traits: document.getElementById('characterTraits').value.split('、').filter(t => t.trim()),
+                background: document.getElementById('characterBackground').value,
+                relations: document.getElementById('characterRelations').value
+            };
+
+            currentOutline.characters.push(character);
+            updateCharacterGrid();
+            closeCharacterGenerator();
+            saveToLocal();
+        }
+
+        function updateCharacterGrid() {
+            const grid = document.getElementById('characterGrid');
+            
+            if (currentOutline.characters.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1 / -1;">暂无角色，点击上方按钮添加</p>';
+                return;
+            }
+
+            grid.innerHTML = currentOutline.characters.map(char => `
+                <div class="character-card">
+                    <h4>${char.name}</h4>
+                    <div class="role">${getRoleName(char.type)}</div>
+                    <div class="character-traits">
+                        ${char.traits.map(trait => `<span class="trait-tag">${trait}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getRoleName(type) {
+            const names = {
+                protagonist: '主角',
+                antagonist: '反派',
+                supporting: '配角',
+                mentor: '导师',
+                love_interest: '恋爱对象'
+            };
+            return names[type] || type;
+        }
+
+        function generateOutline() {
+            // 收集所有数据
+            currentOutline.mainContent = document.getElementById('mainContent').value;
+            currentOutline.environment.description = document.getElementById('environmentDescription').value;
+            currentOutline.environment.keywords = document.getElementById('sceneKeywords').value;
+            currentOutline.plot.beginning = document.getElementById('storyBeginning').value;
+            currentOutline.plot.development = document.getElementById('storyDevelopment').value;
+            currentOutline.plot.climax = document.getElementById('storyClimax').value;
+            currentOutline.plot.ending = document.getElementById('storyEnding').value;
+            currentOutline.plot.newSuspense = document.getElementById('newSuspense').value;
+
+            // 生成完整大纲
+            const outlineHTML = generateOutlineHTML();
+            document.getElementById('outlineContent').innerHTML = outlineHTML;
+            document.getElementById('exportPreview').style.display = 'block';
+
+            // 更新进度
+            updateProgress(4);
+            
+            // 滚动到预览区域
+            document.getElementById('exportPreview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateOutlineHTML() {
+            return `
+                <div style="line-height: 1.8;">
+                    <h2>📋 情节大纲</h2>
+                    
+                    <h3>🎯 主要内容</h3>
+                    <p><strong>${currentOutline.mainContent || '待完善'}</strong></p>
+                    
+                    <h3>🌍 环境设定</h3>
+                    <p><strong>环境描述：</strong>${currentOutline.environment.description || '待完善'}</p>
+                    <p><strong>场景关键词：</strong>${currentOutline.environment.keywords || '待完善'}</p>
+                    
+                    <h3>👥 人物关系</h3>
+                    ${currentOutline.characters.map(char => `
+                        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                            <strong>${char.name}</strong>（${getRoleName(char.type)}）<br>
+                            <strong>特质：</strong>${char.traits.join('、')}<br>
+                            <strong>背景：</strong>${char.background}<br>
+                            <strong>关系：</strong>${char.relations}
+                        </div>
+                    `).join('')}
+                    
+                    <h3>📈 情节发展</h3>
+                    
+                    <h4>🚀 故事开端</h4>
+                    <p>${currentOutline.plot.beginning || '待完善'}</p>
+                    
+                    <h4>⚡ 发展与阻力</h4>
+                    <p><strong>解决过程：</strong>${currentOutline.plot.development || '待完善'}</p>
+                    
+                    <h4>🎭 高潮冲突</h4>
+                    <p><strong>关键时刻：</strong>${currentOutline.plot.climax || '待完善'}</p>
+                    
+                    <h4>🌅 结尾与新开端</h4>
+                    <p><strong>情节结束：</strong>${currentOutline.plot.ending || '待完善'}</p>
+                    <p><strong>新的悬念：</strong>${currentOutline.plot.newSuspense || '待完善'}</p>
+                </div>
+            `;
+        }
+
+        function saveOutline() {
+            generateOutline();
+            localStorage.setItem('plotOutline', JSON.stringify(currentOutline));
+            alert('大纲已保存到本地！');
+        }
+
+        function exportOutline() {
+            generateOutline();
+            
+            let content = `小说分集情节大纲\n`;
+            content += `生成时间：${new Date().toLocaleString()}\n\n`;
+            content += `🎯 主要内容：${currentOutline.mainContent}\n\n`;
+            content += `🌍 环境设定：\n`;
+            content += `环境描述：${currentOutline.environment.description}\n`;
+            content += `场景关键词：${currentOutline.environment.keywords}\n\n`;
+            
+            content += `👥 人物设定：\n`;
+            currentOutline.characters.forEach(char => {
+                content += `${char.name}（${getRoleName(char.type)}）：${char.traits.join('、')}\n`;
+                content += `背景：${char.background}\n`;
+                content += `关系：${char.relations}\n\n`;
+            });
+            
+            content += `📈 情节发展：\n`;
+            content += `故事开端：${currentOutline.plot.beginning}\n\n`;
+            content += `发展与阻力：${currentOutline.plot.development}\n\n`;
+            content += `高潮冲突：${currentOutline.plot.climax}\n\n`;
+            content += `结尾与新开端：${currentOutline.plot.ending}\n\n`;
+            content += `新的悬念：${currentOutline.plot.newSuspense}\n`;
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `情节大纲_${new Date().getTime()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function getAISuggestions() {
+            const suggestions = [
+                {
+                    title: '伏笔设计建议',
+                    content: '在故事开端埋下3个伏笔：1) 一个神秘物品 2) 一句无心的话 3) 一个反常的行为'
+                },
+                {
+                    title: '冲突升级技巧',
+                    content: '每次冲突都应该比前一次更严重，从小误会→大矛盾→生死危机，逐步提升紧张感'
+                },
+                {
+                    title: '角色成长弧线',
+                    content: '主角应该经历：无知→认知→挣扎→成长→蜕变的完整过程，每个阶段都要有具体表现'
+                },
+                {
+                    title: '节奏控制要点',
+                    content: '张弛有度：紧张冲突后安排平静反思，重大事件前铺垫情绪，保持读者注意力'
+                }
+            ];
+
+            const container = document.getElementById('aiSuggestions');
+            container.innerHTML = suggestions.map(s => `
+                <div class="suggestion-item">
+                    <strong>${s.title}</strong><br>
+                    ${s.content}
+                </div>
+            `).join('');
+        }
+
+        function randomInspiration() {
+            const inspirations = [
+                '主角突然发现自己拥有特殊能力',
+                '一个神秘的陌生人带来重要消息',
+                '重要物品丢失或被盗',
+                '长期隐藏的秘密被揭露',
+                '意外事件改变所有计划',
+                '背叛来自最信任的人',
+                '时间旅行到关键时刻',
+                '梦境预言未来的危机'
+            ];
+
+            const random = inspirations[Math.floor(Math.random() * inspirations.length)];
+            const currentText = document.getElementById('mainContent').value;
+            
+            if (currentText.trim() === '') {
+                document.getElementById('mainContent').value = random;
+            } else {
+                alert('灵感建议：' + random);
+            }
+        }
+
+        function checkCompleteness() {
+            let issues = [];
+            let score = 0;
+            const total = 7;
+
+            if (document.getElementById('mainContent').value.trim()) score++;
+            else issues.push('主要内容未填写');
+
+            if (document.getElementById('environmentDescription').value.trim()) score++;
+            else issues.push('环境描述未填写');
+
+            if (currentOutline.characters.length > 0) score++;
+            else issues.push('没有添加角色');
+
+            if (document.getElementById('storyBeginning').value.trim()) score++;
+            else issues.push('故事开端未填写');
+
+            if (document.getElementById('storyDevelopment').value.trim()) score++;
+            else issues.push('发展过程未填写');
+
+            if (document.getElementById('storyClimax').value.trim()) score++;
+            else issues.push('高潮冲突未填写');
+
+            if (document.getElementById('storyEnding').value.trim()) score++;
+            else issues.push('故事结局未填写');
+
+            const percentage = Math.round((score / total) * 100);
+            let message = `完成度：${percentage}%\n`;
+            
+            if (issues.length > 0) {
+                message += '\n需要完善：\n' + issues.map((issue, index) => `${index + 1}. ${issue}`).join('\n');
+            } else {
+                message += '\n🎉 恭喜！大纲已完整，可以开始创作了！';
+            }
+
+            alert(message);
+        }
+
+        function resetForm() {
+            if (confirm('确定要重置所有内容吗？')) {
+                document.getElementById('mainContent').value = '';
+                document.getElementById('environmentDescription').value = '';
+                document.getElementById('sceneKeywords').value = '';
+                document.getElementById('storyBeginning').value = '';
+                document.getElementById('storyDevelopment').value = '';
+                document.getElementById('storyClimax').value = '';
+                document.getElementById('storyEnding').value = '';
+                document.getElementById('newSuspense').value = '';
+                currentOutline.characters = [];
+                updateCharacterGrid();
+                localStorage.removeItem('plotOutline');
+                updateProgress(1);
+            }
+        }
+
+        function updateProgress(step) {
+            document.querySelectorAll('.progress-step').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            for (let i = 1; i <= step; i++) {
+                document.querySelector(`[data-step="${i}"]`).classList.add('active');
+            }
+        }
+
+        function loadSavedOutline() {
+            const saved = localStorage.getItem('plotOutline');
+            if (saved) {
+                try {
+                    currentOutline = JSON.parse(saved);
+                    
+                    // 恢复表单数据
+                    document.getElementById('mainContent').value = currentOutline.mainContent || '';
+                    document.getElementById('environmentDescription').value = currentOutline.environment?.description || '';
+                    document.getElementById('sceneKeywords').value = currentOutline.environment?.keywords || '';
+                    document.getElementById('storyBeginning').value = currentOutline.plot?.beginning || '';
+                    document.getElementById('storyDevelopment').value = currentOutline.plot?.development || '';
+                    document.getElementById('storyClimax').value = currentOutline.plot?.climax || '';
+                    document.getElementById('storyEnding').value = currentOutline.plot?.ending || '';
+                    document.getElementById('newSuspense').value = currentOutline.plot?.newSuspense || '';
+                } catch (error) {
+                    console.error('加载保存的大纲失败:', error);
+                }
+            }
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('plotOutline', JSON.stringify(currentOutline));
+        }
+
+        function generateInitialSuggestions() {
+            getAISuggestions();
+        }
+
+        // 自动保存
+        setInterval(() => {
+            if (document.getElementById('mainContent').value.trim() !== '') {
+                saveToLocal();
+            }
+        }, 30000); // 每30秒自动保存
+
+        // 监听输入变化
+        document.querySelectorAll('input, textarea').forEach(element => {
+            element.addEventListener('input', function() {
+                updateProgress(2); // 输入时更新到第二步
+            });
+        });
+    </script>
+</body>
+</html>

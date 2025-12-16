@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "knowledge-graph": {
+      "command": "node",
+      "args": ["c:/Users/Administrator/CodeBuddy/20251205164818/knowledge-graph-memory-server.js"],
+      "env": {
+        "NODE_ENV": "production",
+        "KNOWLEDGE_GRAPH_DATA_PATH": "c:/Users/Administrator/CodeBuddy/20251205164818/knowledge-graph-data"
+      },
+      "description": "Knowledge Graph Memory Server - 构建和管理结构化的知识网络",
+      "version": "1.0.0",
+      "author": "AI Assistant",
+      "capabilities": [
+        "add_entity",
+        "add_relation",
+        "search_entities",
+        "get_entity",
+        "find_path",
+        "get_neighbors",
+        "update_entity",
+        "delete_entity",
+        "query_graph",
+        "get_statistics",
+        "export_graph",
+        "import_graph"
+      ]
+    }
+  }
+}

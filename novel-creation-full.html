@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI小说创作系统 - 完整版</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .app-header h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: #f0f9ff;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online {
+            background: #10b981;
+        }
+
+        .status-dot.offline {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-workspace {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar, .main-content, .tools-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #666;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: #f8f9fa;
+            color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-header h2 {
+            color: #333;
+            font-size: 1.8em;
+            font-weight: 400;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .tool-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tool-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .tool-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .outline-list {
+            margin-top: 20px;
+        }
+
+        .outline-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .outline-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .outline-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .outline-meta {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .outline-preview {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .create-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            color: #16a34a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .ai-assistant-panel {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .ai-message {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .character-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .character-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .character-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .character-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .character-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .character-type {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .floating-action-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .floating-action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 1024px) {
+            .main-workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .tools-panel {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 10px;
+            }
+
+            .app-header h1 {
+                font-size: 2em;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>🎭 AI小说创作系统</h1>
+            <div class="status-indicator">
+                <span class="status-dot" id="serverStatus"></span>
+                <span id="statusText">检查服务器状态...</span>
+            </div>
+        </header>
+
+        <div class="main-workspace">
+            <!-- 左侧导航栏 -->
+            <aside class="sidebar">
+                <nav>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active" data-section="dashboard">🏠 工作台</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="outline">📝 情节大纲</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="characters">👥 角色管理</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="ai-tools">🤖 AI工具箱</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="library">📚 素材库</a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- 主内容区域 -->
+            <main class="main-content">
+                <!-- 工作台 -->
+                <section id="dashboard" class="content-section active">
+                    <div class="section-header">
+                        <h2>🏠 创作工作台</h2>
+                    </div>
+                    
+                    <div class="tools-grid">
+                        <div class="tool-card" onclick="navigateToSection('outline')">
+                            <div class="tool-icon">📝</div>
+                            <div class="tool-title">情节大纲</div>
+                            <div class="tool-desc">构建完整的故事结构</div>
+                        </div>
+                        <div class="tool-card" onclick="navigateToSection('characters')">
+                            <div class="tool-icon">👥</div>
+                            <div class="tool-title">角色设计</div>
+                            <div class="tool-desc">创建生动的人物形象</div>
+                        </div>
+                        <div class="tool-card" onclick="navigateToSection('ai-tools')">
+                            <div class="tool-icon">🤖</div>
+                            <div class="tool-title">AI助手</div>
+                            <div class="tool-desc">智能创作辅助工具</div>
+                        </div>
+                        <div class="tool-card" onclick="navigateToSection('library')">
+                            <div class="tool-icon">📚</div>
+                            <div class="tool-title">素材库</div>
+                            <div class="tool-desc">丰富的创作素材</div>
+                        </div>
+                    </div>
+
+                    <div class="outline-list">
+                        <h3 style="margin-bottom: 15px;">📋 最近的情节大纲</h3>
+                        <div id="recentOutlines"></div>
+                        <div class="loading" id="outlinesLoading">
+                            <div class="spinner"></div>
+                            <p>正在加载大纲...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 情节大纲 -->
+                <section id="outline" class="content-section">
+                    <div class="section-header">
+                        <h2>📝 情节大纲设计</h2>
+                    </div>
+                    
+                    <button class="create-btn" onclick="createNewOutline()">+ 创建新大纲</button>
+                    
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" id="outlineSearch" placeholder="搜索大纲..." onkeyup="searchOutlines()">
+                    </div>
+                    
+                    <div id="outlineList"></div>
+                </section>
+
+                <!-- 角色管理 -->
+                <section id="characters" class="content-section">
+                    <div class="section-header">
+                        <h2>👥 角色管理系统</h2>
+                    </div>
+                    
+                    <button class="create-btn" onclick="createNewCharacter()">+ 创建新角色</button>
+                    
+                    <div class="character-gallery" id="characterGallery"></div>
+                    <div class="loading" id="charactersLoading">
+                        <div class="spinner"></div>
+                        <p>正在加载角色...</p>
+                    </div>
+                </section>
+
+                <!-- AI工具箱 -->
+                <section id="ai-tools" class="content-section">
+                    <div class="section-header">
+                        <h2>🤖 AI创作工具箱</h2>
+                    </div>
+                    
+                    <div class="tools-grid">
+                        <div class="tool-card" onclick="useAISuggestion('plot_twist')">
+                            <div class="tool-icon">🌀</div>
+                            <div class="tool-title">情节转折</div>
+                            <div class="tool-desc">生成意外转折点</div>
+                        </div>
+                        <div class="tool-card" onclick="useAISuggestion('character_development')">
+                            <div class="tool-icon">🎭</div>
+                            <div class="tool-title">角色发展</div>
+                            <div class="tool-desc">深化角色塑造</div>
+                        </div>
+                        <div class="tool-card" onclick="useAISuggestion('dialogue_improvement')">
+                            <div class="tool-icon">💬</div>
+                            <div class="tool-title">对话优化</div>
+                            <div class="tool-desc">改善对话质量</div>
+                        </div>
+                        <div class="tool-card" onclick="useAISuggestion('pacing_suggestion')">
+                            <div class="tool-icon">⏱️</div>
+                            <div class="tool-title">节奏控制</div>
+                            <div class="tool-desc">调节叙事节奏</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-assistant-panel">
+                        <h3>💡 AI建议面板</h3>
+                        <div id="aiSuggestions"></div>
+                    </div>
+                </section>
+
+                <!-- 素材库 -->
+                <section id="library" class="content-section">
+                    <div class="section-header">
+                        <h2>📚 创作素材库</h2>
+                    </div>
+                    
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" id="librarySearch" placeholder="搜索素材..." onkeyup="searchLibrary()">
+                    </div>
+                    
+                    <div id="libraryContent"></div>
+                </section>
+            </main>
+
+            <!-- 右侧工具面板 -->
+            <aside class="tools-panel">
+                <h3 style="margin-bottom: 20px;">📊 快速统计</h3>
+                <div id="quickStats"></div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 20px;">🚀 快速操作</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="create-btn" onclick="exportAllData()">📤 导出所有数据</button>
+                    <button class="create-btn" onclick="showSystemInfo()">ℹ️ 系统信息</button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- 浮动操作按钮 -->
+        <button class="floating-action-btn" onclick="quickCreate()">+</button>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let currentSection = 'dashboard';
+        let outlines = [];
+        let characters = [];
+        let templates = [];
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', function() {
+            checkServerStatus();
+            setupNavigation();
+            loadInitialData();
+            setInterval(checkServerStatus, 30000); // 每30秒检查一次服务器状态
+        });
+
+        // 检查服务器状态
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/outlines`);
+                const statusDot = document.getElementById('serverStatus');
+                const statusText = document.getElementById('statusText');
+                
+                if (response.ok) {
+                    statusDot.className = 'status-dot online';
+                    statusText.textContent = '服务器连接正常';
+                } else {
+                    throw new Error('服务器响应异常');
+                }
+            } catch (error) {
+                const statusDot = document.getElementById('serverStatus');
+                const statusText = document.getElementById('statusText');
+                statusDot.className = 'status-dot offline';
+                statusText.textContent = '服务器连接失败';
+                console.warn('服务器状态检查失败:', error);
+            }
+        }
+
+        // 设置导航
+        function setupNavigation() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    navigateToSection(section);
+                });
+            });
+        }
+
+        // 导航到指定区域
+        function navigateToSection(section) {
+            // 更新导航状态
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+
+            // 切换内容区域
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(section).classList.add('active');
+
+            currentSection = section;
+
+            // 根据区域加载相应数据
+            switch(section) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'outline':
+                    loadOutlines();
+                    break;
+                case 'characters':
+                    loadCharacters();
+                    break;
+                case 'ai-tools':
+                    loadAITools();
+                    break;
+                case 'library':
+                    loadLibrary();
+                    break;
+            }
+        }
+
+        // 加载初始数据
+        async function loadInitialData() {
+            await Promise.all([
+                loadOutlinesData(),
+                loadCharactersData(),
+                loadTemplatesData()
+            ]);
+            loadDashboard();
+            updateQuickStats();
+        }
+
+        // 加载大纲数据
+        async function loadOutlinesData() {
+            try {
+                const response = await fetch(`${API_BASE}/outlines`);
+                const result = await response.json();
+                if (result.success) {
+                    outlines = result.data;
+                }
+            } catch (error) {
+                console.error('加载大纲数据失败:', error);
+                // 使用本地存储作为备用
+                const localOutlines = localStorage.getItem('outlines');
+                if (localOutlines) {
+                    outlines = JSON.parse(localOutlines);
+                }
+            }
+        }
+
+        // 加载角色数据
+        async function loadCharactersData() {
+            try {
+                const response = await fetch(`${API_BASE}/characters`);
+                const result = await response.json();
+                if (result.success) {
+                    characters = result.data;
+                }
+            } catch (error) {
+                console.error('加载角色数据失败:', error);
+                // 使用本地存储作为备用
+                const localCharacters = localStorage.getItem('characters');
+                if (localCharacters) {
+                    characters = JSON.parse(localCharacters);
+                }
+            }
+        }
+
+        // 加载模板数据
+        async function loadTemplatesData() {
+            try {
+                const response = await fetch(`${API_BASE}/templates`);
+                const result = await response.json();
+                if (result.success) {
+                    templates = result.data;
+                }
+            } catch (error) {
+                console.error('加载模板数据失败:', error);
+            }
+        }
+
+        // 加载工作台
+        function loadDashboard() {
+            const recentOutlinesDiv = document.getElementById('recentOutlines');
+            const loadingDiv = document.getElementById('outlinesLoading');
+            
+            if (outlines.length > 0) {
+                const recentOutlines = outlines.slice(-5).reverse();
+                recentOutlinesDiv.innerHTML = recentOutlines.map(outline => `
+                    <div class="outline-item" onclick="openOutline('${outline.id}')">
+                        <div class="outline-title">${outline.mainContent || '未命名大纲'}</div>
+                        <div class="outline-meta">
+                            创建时间：${new Date(outline.createdAt).toLocaleDateString()}
+                        </div>
+                        <div class="outline-preview">
+                            ${(outline.mainContent || '').substring(0, 100)}...
+                        </div>
+                    </div>
+                `).join('');
+                loadingDiv.classList.remove('show');
+            } else {
+                recentOutlinesDiv.innerHTML = '<p style="text-align: center; color: #999;">暂无大纲，点击上方工具开始创作</p>';
+                loadingDiv.classList.remove('show');
+            }
+        }
+
+        // 加载大纲列表
+        function loadOutlines() {
+            const outlineList = document.getElementById('outlineList');
+            
+            if (outlines.length > 0) {
+                outlineList.innerHTML = outlines.map(outline => `
+                    <div class="outline-item" onclick="openOutline('${outline.id}')">
+                        <div class="outline-title">${outline.mainContent || '未命名大纲'}</div>
+                        <div class="outline-meta">
+                            更新时间：${new Date(outline.updatedAt).toLocaleDateString()}
+                        </div>
+                        <div class="outline-preview">
+                            ${(outline.mainContent || '').substring(0, 150)}...
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                outlineList.innerHTML = '<p style="text-align: center; color: #999;">暂无大纲</p>';
+            }
+        }
+
+        // 加载角色列表
+        function loadCharacters() {
+            const gallery = document.getElementById('characterGallery');
+            const loading = document.getElementById('charactersLoading');
+            
+            if (characters.length > 0) {
+                gallery.innerHTML = characters.map(character => `
+                    <div class="character-card" onclick="viewCharacter('${character.id}')">
+                        <div class="character-avatar">${getCharacterEmoji(character.type)}</div>
+                        <div class="character-name">${character.name}</div>
+                        <div class="character-type">${getCharacterTypeName(character.type)}</div>
+                    </div>
+                `).join('');
+                loading.classList.remove('show');
+            } else {
+                gallery.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #999;">暂无角色</p>';
+                loading.classList.remove('show');
+            }
+        }
+
+        // 加载AI工具
+        function loadAITools() {
+            // AI工具已在HTML中定义，这里可以加载更多动态内容
+            console.log('AI工具已加载');
+        }
+
+        // 加载素材库
+        function loadLibrary() {
+            const libraryContent = document.getElementById('libraryContent');
+            
+            if (templates && templates.plotStructures) {
+                let content = '<h3>📋 情节结构模板</h3>';
+                content += '<div class="tools-grid">';
+                
+                templates.plotStructures.forEach(structure => {
+                    content += `
+                        <div class="tool-card" onclick="useTemplate('${structure.id}')">
+                            <div class="tool-icon">📚</div>
+                            <div class="tool-title">${structure.name}</div>
+                            <div class="tool-desc">${structure.description}</div>
+                        </div>
+                    `;
+                });
+                
+                content += '</div>';
+                libraryContent.innerHTML = content;
+            } else {
+                libraryContent.innerHTML = '<p style="text-align: center; color: #999;">素材库加载中...</p>';
+            }
+        }
+
+        // 创建新大纲
+        function createNewOutline() {
+            window.open('plot-outline-tool.html', '_blank');
+        }
+
+        // 创建新角色
+        function createNewCharacter() {
+            const name = prompt('请输入角色姓名:');
+            if (!name) return;
+
+            const type = prompt('请选择角色类型 (hero/antagonist/supporting/mentor):') || 'supporting';
+            
+            const character = {
+                name: name,
+                type: type,
+                traits: [],
+                background: '',
+                createdAt: new Date().toISOString()
+            };
+
+            saveCharacter(character);
+        }
+
+        // 使用AI建议
+        async function useAISuggestion(type) {
+            try {
+                const response = await fetch(`${API_BASE}/ai/suggest`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: type,
+                        content: '',
+                        context: { currentSection }
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const suggestionsDiv = document.getElementById('aiSuggestions');
+                    const suggestionHTML = `
+                        <div class="ai-message">
+                            <strong>${type} 建议：</strong><br>
+                            ${result.data.suggestion}
+                        </div>
+                    `;
+                    suggestionsDiv.innerHTML = suggestionHTML + suggestionsDiv.innerHTML;
+                }
+            } catch (error) {
+                console.error('获取AI建议失败:', error);
+                showErrorMessage('AI建议获取失败，请稍后重试');
+            }
+        }
+
+        // 保存大纲
+        async function saveOutline(outline) {
+            try {
+                const response = await fetch(`${API_BASE}/outlines`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(outline)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showSuccessMessage('大纲保存成功！');
+                    outlines.push(result.data);
+                    updateQuickStats();
+                }
+            } catch (error) {
+                console.error('保存大纲失败:', error);
+                showErrorMessage('大纲保存失败，请检查网络连接');
+            }
+        }
+
+        // 保存角色
+        async function saveCharacter(character) {
+            try {
+                const response = await fetch(`${API_BASE}/characters`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(character)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showSuccessMessage('角色创建成功！');
+                    characters.push(result.data);
+                    updateQuickStats();
+                }
+            } catch (error) {
+                console.error('保存角色失败:', error);
+                showErrorMessage('角色创建失败，请检查网络连接');
+            }
+        }
+
+        // 搜索功能
+        function searchOutlines() {
+            const query = document.getElementById('outlineSearch').value.toLowerCase();
+            if (!query) {
+                loadOutlines();
+                return;
+            }
+
+            const filtered = outlines.filter(outline => 
+                outline.mainContent && outline.mainContent.toLowerCase().includes(query)
+            );
+
+            const outlineList = document.getElementById('outlineList');
+            if (filtered.length > 0) {
+                outlineList.innerHTML = filtered.map(outline => `
+                    <div class="outline-item" onclick="openOutline('${outline.id}')">
+                        <div class="outline-title">${outline.mainContent}</div>
+                        <div class="outline-preview">${outline.mainContent.substring(0, 150)}...</div>
+                    </div>
+                `).join('');
+            } else {
+                outlineList.innerHTML = '<p style="text-align: center; color: #999;">未找到匹配的大纲</p>';
+            }
+        }
+
+        function searchLibrary() {
+            // 实现素材库搜索
+            console.log('搜索素材库');
+        }
+
+        // 辅助函数
+        function getCharacterEmoji(type) {
+            const emojis = {
+                hero: '🦸',
+                antagonist: '😈',
+                supporting: '👤',
+                mentor: '🧙‍♂️',
+                love_interest: '💕'
+            };
+            return emojis[type] || '👤';
+        }
+
+        function getCharacterTypeName(type) {
+            const names = {
+                hero: '英雄',
+                antagonist: '反派',
+                supporting: '配角',
+                mentor: '导师',
+                love_interest: '恋人'
+            };
+            return names[type] || type;
+        }
+
+        function updateQuickStats() {
+            const statsDiv = document.getElementById('quickStats');
+            statsDiv.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <strong>大纲数量：</strong> ${outlines.length}
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>角色数量：</strong> ${characters.length}
+                </div>
+                <div>
+                    <strong>总字数：</strong> ${calculateTotalWords()}
+                </div>
+            `;
+        }
+
+        function calculateTotalWords() {
+            return outlines.reduce((total, outline) => {
+                return total + (outline.mainContent ? outline.mainContent.length : 0);
+            }, 0);
+        }
+
+        function showSuccessMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'success-message';
+            messageDiv.textContent = message;
+            document.querySelector('.main-content').insertBefore(messageDiv, document.querySelector('.content-section'));
+            
+            setTimeout(() => messageDiv.remove(), 3000);
+        }
+
+        function showErrorMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'error-message';
+            messageDiv.textContent = message;
+            document.querySelector('.main-content').insertBefore(messageDiv, document.querySelector('.content-section'));
+            
+            setTimeout(() => messageDiv.remove(), 5000);
+        }
+
+        function openOutline(id) {
+            const outline = outlines.find(o => o.id === id);
+            if (outline) {
+                window.open(`plot-outline-tool.html?id=${id}`, '_blank');
+            }
+        }
+
+        function viewCharacter(id) {
+            const character = characters.find(c => c.id === id);
+            if (character) {
+                alert(`角色信息：\n姓名：${character.name}\n类型：${getCharacterTypeName(character.type)}\n特质：${character.traits.join('、')}`);
+            }
+        }
+
+        function useTemplate(templateId) {
+            showSuccessMessage(`模板 "${templateId}" 已应用到新大纲`);
+            createNewOutline();
+        }
+
+        function quickCreate() {
+            if (currentSection === 'outline') {
+                createNewOutline();
+            } else if (currentSection === 'characters') {
+                createNewCharacter();
+            } else {
+                createNewOutline();
+            }
+        }
+
+        function exportAllData() {
+            const data = {
+                outlines: outlines,
+                characters: characters,
+                exportTime: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `novel-creation-data-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showSystemInfo() {
+            const info = `
+                AI小说创作系统 v1.0.0
+                
+                服务器：${API_BASE}
+                大纲数量：${outlines.length}
+                角色数量：${characters.length}
+                
+                功能特性：
+                • 情节大纲设计
+                • 角色管理系统  
+                • AI智能建议
+                • 素材模板库
+                • 数据持久化存储
+            `;
+            alert(info);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOVOT AI 实验室 - 配件制作</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #2d3436;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .lab-badge {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #636e72;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .accessories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .accessory-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .accessory-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .accessory-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .accessory-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .accessory-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .accessory-type {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .accessory-content {
+            padding: 25px;
+        }
+
+        .specs-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .specs-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .specs-list li:last-child {
+            border-bottom: none;
+        }
+
+        .spec-name {
+            font-weight: 600;
+            color: #495057;
+            flex: 1;
+        }
+
+        .spec-value {
+            color: #6c757d;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: linear-gradient(135deg, #55efc4, #00b894);
+            color: white;
+        }
+
+        .status-experimental {
+            background: linear-gradient(135deg, #48dbfb, #0abde3);
+            color: white;
+        }
+
+        .status-prototype {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: white;
+        }
+
+        .compatibility-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+        }
+
+        .compatibility-title {
+            font-size: 2rem;
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 30px;
+        }
+
+        .compatibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .compatibility-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .compatibility-item:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #e3e4ff, #f3f4ff);
+        }
+
+        .compatibility-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .compatibility-name {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 5px;
+        }
+
+        .compatibility-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .diy-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+        }
+
+        .diy-title {
+            font-size: 2rem;
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 30px;
+        }
+
+        .diy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .diy-card {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border: 2px solid #667eea;
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .diy-card::before {
+            content: 'DIY';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .diy-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .diy-desc {
+            color: #495057;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .diy-requirements {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .diy-requirements-title {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .diy-requirements-list {
+            list-style: none;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .diy-requirements-list li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .diy-requirements-list li::before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .materials-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+        }
+
+        .materials-title {
+            font-size: 2rem;
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 30px;
+        }
+
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .material-card {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .material-card:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #e3e4ff, #f3f4ff);
+        }
+
+        .material-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .material-name {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 5px;
+        }
+
+        .material-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-text {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .accessories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .compatibility-grid,
+            .diy-grid,
+            .materials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                padding: 20px;
+            }
+
+            .diy-section,
+            .materials-section,
+            .compatibility-section {
+                padding: 20px;
+            }
+
+            .compatibility-grid,
+            .diy-grid,
+            .materials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🛠️</div>
+                <h1>LOVOT 实验室</h1>
+            </div>
+            <div class="lab-badge">
+                🔬 配件制作中心
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h1 class="hero-title">LOVOT AI 实验机型配件制作</h1>
+            <p class="hero-subtitle">
+                打造个性化LOVOT机器人配件<br>
+                从基础组件到高级模块，实现无限创意可能
+            </p>
+        </section>
+
+        <section class="accessories-grid">
+            <div class="accessory-card">
+                <div class="accessory-header">
+                    <div class="accessory-icon">👗</div>
+                    <div class="accessory-title">皮肤套装</div>
+                    <div class="accessory-type">外观定制</div>
+                </div>
+                <div class="accessory-content">
+                    <ul class="specs-list">
+                        <li><span class="spec-name">材质</span><span class="spec-value">食品级硅胶</span></li>
+                        <li><span class="spec-name">颜色</span><span class="spec-value">20+ 可选</span></li>
+                        <li><span class="spec-name">触感</span><span class="spec-value">柔软亲肤</span></li>
+                        <li><span class="spec-name">防水等级</span><span class="spec-value">IP65</span></li>
+                        <li><span class="spec-name">可更换</span><span class="spec-value">磁吸式</span></li>
+                    </ul>
+                    <span class="status-badge status-available">现货供应</span>
+                </div>
+            </div>
+
+            <div class="accessory-card">
+                <div class="accessory-header">
+                    <div class="accessory-icon">👀</div>
+                    <div class="accessory-title">视觉模组</div>
+                    <div class="accessory-type">感知增强</div>
+                </div>
+                <div class="accessory-content">
+                    <ul class="specs-list">
+                        <li><span class="spec-name">深度相机</span><span class="spec-value">ToF/结构光</span></li>
+                        <li><span class="spec-name">热成像</span><span class="spec-value">384×288</span></li>
+                        <li><span class="spec-name">视角</span><span class="spec-value">120°超广角</span></li>
+                        <li><span class="spec-name">帧率</span><span class="spec-value">60FPS</span></li>
+                        <li><span class="spec-name">接口</span><span class="spec-value">USB 3.0</span></li>
+                    </ul>
+                    <span class="status-badge status-experimental">实验阶段</span>
+                </div>
+            </div>
+
+            <div class="accessory-card">
+                <div class="accessory-header">
+                    <div class="accessory-icon">🗣️</div>
+                    <div class="accessory-title">发声系统</div>
+                    <div class="accessory-type">交互增强</div>
+                </div>
+                <div class="accessory-content">
+                    <ul class="specs-list">
+                        <li><span class="spec-name">扬声器</span><span class="spec-value">全频单元x2</span></li>
+                        <li><span class="spec-name">功率</span><span class="spec-value">10W</span></li>
+                        <li><span class="spec-name">频响</span><span class="spec-value">20Hz-20kHz</span></li>
+                        <li><span class="spec-name">麦克风</span><span class="spec-value">阵列x4</span></li>
+                        <li><span class="spec-name">降噪</span><span class="spec-value">AI算法</span></li>
+                    </ul>
+                    <span class="status-badge status-available">现货供应</span>
+                </div>
+            </div>
+
+            <div class="accessory-card">
+                <div class="accessory-header">
+                    <div class="accessory-icon">⚡</div>
+                    <div class="accessory-title">动力电池</div>
+                    <div class="accessory-type">续航增强</div>
+                </div>
+                <div class="accessory-content">
+                    <ul class="specs-list">
+                        <li><span class="spec-name">容量</span><span class="spec-value">120Wh</span></li>
+                        <li><span class="spec-name">充电时间</span><span class="spec-value">25分钟</span></li>
+                        <li><span class="spec-name">循环寿命</span><span class="spec-value">2000次</span></li>
+                        <li><span class="spec-name">快充协议</span><span class="spec-value">QC 4.0</span></li>
+                        <li><span class="spec-name">安全认证</span><span class="spec-value">UL/CE</span></li>
+                    </ul>
+                    <span class="status-badge status-prototype">原型测试</span>
+                </div>
+            </div>
+
+            <div class="accessory-card">
+                <div class="accessory-header">
+                    <div class="accessory-icon">🧠</div>
+                    <div class="accessory-title">AI模组</div>
+                    <div class="accessory-type">智能增强</div>
+                </div>
+                <div class="accessory-content">
+                    <ul class="specs-list">
+                        <li><span class="spec-name">处理器</span><span class="spec-value">NPU x4</span></li>
+                        <li><span class="spec-name">算力</span><span class="spec-value">20 TOPS</span></li>
+                        <li><span class="spec-name">内存</span><span class="spec-value">16GB LPDDR5</span></li>
+                        <li><span class="spec-name">存储</span><span class="spec-value">512GB NVMe</span></li>
+                        <li><span class="spec-name">模型支持</span><span class="spec-value">Transformer</span></li>
+                    </ul>
+                    <span class="status-badge status-experimental">实验阶段</span>
+                </div>
+            </div>
+
+            <div class="accessory-card">
+                <div class="accessory-header">
+                    <div class="accessory-icon">👐</div>
+                    <div class="accessory-title">触觉传感</div>
+                    <div class="accessory-type">交互增强</div>
+                </div>
+                <div class="accessory-content">
+                    <ul class="specs-list">
+                        <li><span class="spec-name">传感器点</span><span class="spec-value">256点</span></li>
+                        <li><span class="spec-name">压力范围</span><span class="spec-value">0-10N</span></li>
+                        <li><span class="spec-name">响应时间</span><span class="spec-value">1ms</span></li>
+                        <li><span class="spec-name">温度感知</span><span class="spec-value">±0.5°C</span></li>
+                        <li><span class="spec-name">通信协议</span><span class="spec-value">I2C/SPI</span></li>
+                    </ul>
+                    <span class="status-badge status-prototype">原型测试</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="compatibility-section">
+            <h2 class="compatibility-title">兼容性矩阵</h2>
+            <div class="compatibility-grid">
+                <div class="compatibility-item">
+                    <div class="compatibility-icon">🔄</div>
+                    <div class="compatibility-name">模块化设计</div>
+                    <div class="compatibility-desc">热插拔支持，无需重启</div>
+                </div>
+                <div class="compatibility-item">
+                    <div class="compatibility-icon">🔌</div>
+                    <div class="compatibility-name">统一接口</div>
+                    <div class="compatibility-desc">Type-C + 定制接口</div>
+                </div>
+                <div class="compatibility-item">
+                    <div class="compatibility-icon">📡</div>
+                    <div class="compatibility-name">无线通信</div>
+                    <div class="compatibility-desc">Wi-Fi 6E + 蓝牙5.3</div>
+                </div>
+                <div class="compatibility-item">
+                    <div class="compatibility-icon">⚙️</div>
+                    <div class="compatibility-name">固件升级</div>
+                    <div class="compatibility-desc">OTA在线更新</div>
+                </div>
+                <div class="compatibility-item">
+                    <div class="compatibility-icon">🛡️</div>
+                    <div class="compatibility-name">安全认证</div>
+                    <div class="compatibility-desc">ISO 27001兼容</div>
+                </div>
+                <div class="compatibility-item">
+                    <div class="compatibility-icon">🔋</div>
+                    <div class="compatibility-name">电源管理</div>
+                    <div class="compatibility-desc">智能功耗优化</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="diy-section">
+            <h2 class="diy-title">DIY制作项目</h2>
+            <div class="diy-grid">
+                <div class="diy-card">
+                    <div class="diy-name">迷你表情显示器</div>
+                    <div class="diy-desc">
+                        制作一个可显示LOVOT表情的小型显示器，通过蓝牙连接，实时同步机器人的情感状态。
+                    </div>
+                    <div class="diy-requirements">
+                        <div class="diy-requirements-title">所需材料</div>
+                        <ul class="diy-requirements-list">
+                            <li>OLED显示屏 1.3寸</li>
+                            <li>ESP32开发板</li>
+                            <li>蓝牙模块</li>
+                            <li>电池座 + 3.7V电池</li>
+                            <li>3D打印外壳</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="diy-card">
+                    <div class="diy-name">智能充电底座</div>
+                    <div class="diy-desc">
+                        自制一个具有无线充电和状态显示的底座，支持多角度调节和智能唤醒功能。
+                    </div>
+                    <div class="diy-requirements">
+                        <div class="diy-requirements-title">所需材料</div>
+                        <ul class="diy-requirements-list">
+                            <li>无线充电线圈 15W</li>
+                            <li>Arduino Nano</li>
+                            <li>LED指示灯</li>
+                            <li>舵机 x2 (角度调节)</li>
+                            <li>亚克力底座材料</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="diy-card">
+                    <div class="diy-name">情感手环</div>
+                    <div class="diy-desc">
+                        制作一个可感知LOVOT情感状态的手环，通过振动和灯光变化来传达机器人的情绪。
+                    </div>
+                    <div class="diy-requirements">
+                        <div class="diy-requirements-title">所需材料</div>
+                        <ul class="diy-requirements-list">
+                            <li>振动马达 x3</li>
+                            <li>RGB LED灯带</li>
+                            <li>NRF52832芯片</li>
+                            <li>心率传感器</li>
+                            <li>硅胶表带材料</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="materials-section">
+            <h2 class="materials-title">推荐制作材料</h2>
+            <div class="materials-grid">
+                <div class="material-card">
+                    <div class="material-icon">🔧</div>
+                    <div class="material-name">电子元件</div>
+                    <div class="material-desc">Arduino、树莓派、传感器模块</div>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">🧵</div>
+                    <div class="material-name">纺织品</div>
+                    <div class="material-desc">导电纤维、智能布料、硅胶</div>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">🔩</div>
+                    <div class="material-name">机械零件</div>
+                    <div class="material-desc">轴承、齿轮、连接件、螺丝</div>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">🎨</div>
+                    <div class="material-name">外观材料</div>
+                    <div class="material-desc">3D打印耗材、油漆、贴纸</div>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">🔌</div>
+                    <div class="material-name">连接器</div>
+                    <div class="material-desc">Type-C、排线、端子台</div>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">🔋</div>
+                    <div class="material-name">电源组件</div>
+                    <div class="material-desc">锂电池、充电模块、稳压器</div>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">📡</div>
+                    <div class="material-name">通信模块</div>
+                    <div class="material-desc">Wi-Fi、蓝牙、NFC模块</div>
+                </div>
+                <div class="material-card">
+                    <div class="material-icon">🏭</div>
+                    <div class="material-name">加工工具</div>
+                    <div class="material-desc">3D打印机、激光切割机、焊台</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p class="footer-text">
+                🛠️ LOVOT AI 实验室 - 配件制作中心<br>
+                <span style="color: #667eea;">让创意无限，让个性飞扬</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.accessory-card, .compatibility-item, .diy-card, .material-card');
+            
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // 添加点击交互效果
+        document.querySelectorAll('.accessory-card, .diy-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // 悬停效果增强
+        document.querySelectorAll('.material-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.material-icon');
+                if (icon) {
+                    icon.style.transform = 'scale(1.2) rotate(10deg)';
+                    icon.style.transition = 'transform 0.3s ease';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.material-icon');
+                if (icon) {
+                    icon.style.transform = 'scale(1) rotate(0deg)';
+                }
+            });
+        });
+
+        console.log('LOVOT实验室配件制作页面加载完成');
+    </script>
+</body>
+</html>

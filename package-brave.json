@@ -1,0 +1,80 @@
+{
+  "name": "brave-search-mcp-server",
+  "version": "1.0.0",
+  "description": "Brave Search MCP Server - 提供安全的网络搜索功能",
+  "main": "brave-search-mcp-server.js",
+  "bin": {
+    "brave-search-mcp-server": "./brave-search-mcp-server.js"
+  },
+  "scripts": {
+    "start": "node brave-search-mcp-server.js",
+    "demo": "node brave-search-demo.js",
+    "test": "node brave-search-demo.js",
+    "install-mcp": "npm install @modelcontextprotocol/sdk",
+    "setup": "npm install && node brave-search-demo.js"
+  },
+  "keywords": [
+    "mcp",
+    "brave-search",
+    "search-api",
+    "ai",
+    "model-context-protocol",
+    "web-search",
+    "news-search",
+    "image-search",
+    "video-search"
+  ],
+  "author": "AI Assistant",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/brave-search-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/brave-search-mcp-server/issues"
+  },
+  "homepage": "https://github.com/your-username/brave-search-mcp-server#readme",
+  "mcpConfig": {
+    "serverName": "brave-search",
+    "capabilities": [
+      "tools"
+    ],
+    "tools": [
+      "brave_search",
+      "brave_news_search",
+      "brave_images_search",
+      "brave_videos_search",
+      "get_search_suggestions",
+      "get_trending_searches"
+    ],
+    "api": {
+      "provider": "Brave Search API",
+      "baseUrl": "https://api.search.brave.com/res/v1/web/search",
+      "authMethod": "API Key",
+      "rateLimit": {
+        "requestsPerSecond": 100,
+        "requestsPerMonth": 2000
+      },
+      "supportedSearchTypes": [
+        "web",
+        "news", 
+        "images",
+        "videos"
+      ]
+    },
+    "features": {
+      "searchSuggestions": true,
+      "trendingSearches": true,
+      "multiLanguage": true,
+      "safeSearch": true,
+      "timeFiltering": true
+    }
+  }
+}

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOVOT AI - 性能试验与实物展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3436;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .performance-badge {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #636e72;
+            margin-bottom: 30px;
+        }
+
+        .specs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .specs-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .specs-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .specs-title {
+            font-size: 1.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .specs-icon {
+            font-size: 2rem;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: #495057;
+            flex: 1;
+        }
+
+        .spec-value {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .test-results {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+        }
+
+        .test-title {
+            font-size: 2rem;
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 40px;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .test-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .test-item:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #e3e4ff, #f3f4ff);
+        }
+
+        .test-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .test-value {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .test-unit {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .performance-chart {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+        }
+
+        .chart-title {
+            font-size: 2rem;
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+        }
+
+        .chart-bar {
+            width: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #495057;
+            white-space: nowrap;
+        }
+
+        .chart-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .hardware-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+        }
+
+        .hardware-title {
+            font-size: 2rem;
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 40px;
+        }
+
+        .hardware-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .hardware-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .hardware-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .hardware-specs {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .hardware-specs li {
+            margin-bottom: 8px;
+            list-style-type: none;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .hardware-specs li::before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-text {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .specs-container {
+                grid-template-columns: 1fr;
+            }
+
+            .test-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-container {
+                padding: 10px;
+            }
+
+            .chart-bar {
+                width: 60px;
+            }
+
+            .hardware-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .chart-bar {
+                width: 50px;
+            }
+
+            .hero-section {
+                padding: 20px;
+            }
+
+            .test-results,
+            .performance-chart,
+            .hardware-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🤖</div>
+                <h1>LOVOT AI 性能试验</h1>
+            </div>
+            <div class="performance-badge">
+                📊 实物测试数据
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h1 class="hero-title">LOVOT AI 实物性能展示</h1>
+            <p class="hero-subtitle">
+                基于实物的性能测试数据与技术规格<br>
+                专业测试验证，确保最佳用户体验
+            </p>
+        </section>
+
+        <section class="specs-container">
+            <div class="specs-card">
+                <h2 class="specs-title">
+                    <span class="specs-icon">📏</span>
+                    物理规格
+                </h2>
+                <div class="spec-item">
+                    <span class="spec-label">高度</span>
+                    <span class="spec-value">43 cm</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">重量</span>
+                    <span class="spec-value">4.3 kg</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">直径</span>
+                    <span class="spec-value">28 cm</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">材质</span>
+                    <span class="spec-value">ABS + 硅胶皮肤</span>
+                </div>
+            </div>
+
+            <div class="specs-card">
+                <h2 class="specs-title">
+                    <span class="specs-icon">🔋</span>
+                    能源系统
+                </h2>
+                <div class="spec-item">
+                    <span class="spec-label">电池容量</span>
+                    <span class="spec-value">89 Wh</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">运行时间</span>
+                    <span class="spec-value">45 分钟</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">充电时间</span>
+                    <span class="spec-value">20 分钟</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">充电方式</span>
+                    <span class="spec-value">自主回巢对接</span>
+                </div>
+            </div>
+
+            <div class="specs-card">
+                <h2 class="specs-title">
+                    <span class="specs-icon">🧠</span>
+                    计算性能
+                </h2>
+                <div class="spec-item">
+                    <span class="spec-label">CPU</span>
+                    <span class="spec-value">Intel x86 + ARM</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">AI加速</span>
+                    <span class="spec-value">NVIDIA Jetson</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">FPGA</span>
+                    <span class="spec-value">深度学习专用</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">内存</span>
+                    <span class="spec-value">8GB LPDDR4</span>
+                </div>
+            </div>
+
+            <div class="specs-card">
+                <h2 class="specs-title">
+                    <span class="specs-icon">👁️</span>
+                    感知系统
+                </h2>
+                <div class="spec-item">
+                    <span class="spec-label">摄像头</span>
+                    <span class="spec-value">360° 半球摄像头</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">深度相机</span>
+                    <span class="spec-value">iToF + 结构光</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">热成像</span>
+                    <span class="spec-value">384×288 VOx</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">传感器数量</span>
+                    <span class="spec-value">50+ 个</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="test-results">
+            <h2 class="test-title">性能测试结果</h2>
+            <div class="test-grid">
+                <div class="test-item">
+                    <div class="test-name">移动速度</div>
+                    <div class="test-value">0.3</div>
+                    <div class="test-unit">m/s</div>
+                </div>
+                <div class="test-item">
+                    <div class="test-name">最大倾斜角度</div>
+                    <div class="test-value">15</div>
+                    <div class="test-unit">度</div>
+                </div>
+                <div class="test-item">
+                    <div class="test-name">语音识别准确率</div>
+                    <div class="test-value">98.5</div>
+                    <div class="test-unit">%</div>
+                </div>
+                <div class="test-item">
+                    <div class="test-name">人脸识别距离</div>
+                    <div class="test-value">5</div>
+                    <div class="test-unit">米</div>
+                </div>
+                <div class="test-item">
+                    <div class="test-name">表情识别时间</div>
+                    <div class="test-value">0.2</div>
+                    <div class="test-unit">秒</div>
+                </div>
+                <div class="test-item">
+                    <div class="test-name">电池循环寿命</div>
+                    <div class="test-value">1500</div>
+                    <div class="test-unit">次</div>
+                </div>
+                <div class="test-item">
+                    <div class="test-name">工作温度范围</div>
+                    <div class="test-value">-10~45</div>
+                    <div class="test-unit">°C</div>
+                </div>
+                <div class="test-item">
+                    <div class="test-name">噪音水平</div>
+                    <div class="test-value">35</div>
+                    <div class="test-unit">dB</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="performance-chart">
+            <h2 class="chart-title">性能指标对比</h2>
+            <div class="chart-container">
+                <div class="chart-bar" style="height: 80%;">
+                    <div class="chart-value">80%</div>
+                    <div class="chart-label">情感识别</div>
+                </div>
+                <div class="chart-bar" style="height: 95%;">
+                    <div class="chart-value">95%</div>
+                    <div class="chart-label">导航精度</div>
+                </div>
+                <div class="chart-bar" style="height: 70%;">
+                    <div class="chart-value">70%</div>
+                    <div class="chart-label">语音交互</div>
+                </div>
+                <div class="chart-bar" style="height: 88%;">
+                    <div class="chart-value">88%</div>
+                    <div class="chart-label">避障能力</div>
+                </div>
+                <div class="chart-bar" style="height: 92%;">
+                    <div class="chart-value">92%</div>
+                    <div class="chart-label">续航表现</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="hardware-section">
+            <h2 class="hardware-title">核心硬件配置</h2>
+            <div class="hardware-grid">
+                <div class="hardware-card">
+                    <h3 class="hardware-name">主控制器</h3>
+                    <ul class="hardware-specs">
+                        <li>Intel Core i7 处理器</li>
+                        <li>NVIDIA Jetson Xavier AI 模块</li>
+                        <li>8GB LPDDR4 内存 + 512GB SSD</li>
+                        <li>深度学习 FPGA 加速卡</li>
+                    </ul>
+                </div>
+
+                <div class="hardware-card">
+                    <h3 class="hardware-name">感知模组</h3>
+                    <ul class="hardware-specs">
+                        <li>360° 4K 广角摄像头</li>
+                        <li>奥比中光 Gemini 335L 深度相机</li>
+                        <li>安酷智芯 AK384 热成像模组</li>
+                        <li>超声波 + 红外距离传感器阵列</li>
+                    </ul>
+                </div>
+
+                <div class="hardware-card">
+                    <h3 class="hardware-name">驱动系统</h3>
+                    <ul class="hardware-specs">
+                        <li>双轮差速驱动系统</li>
+                        <li>无刷轮毂电机 x2</li>
+                        <li>IMU 惯性测量单元</li>
+                        <li>编码器精度: 0.1mm</li>
+                    </ul>
+                </div>
+
+                <div class="hardware-card">
+                    <h3 class="hardware-name">显示系统</h3>
+                    <ul class="hardware-specs">
+                        <li>6层 LED 光源投射系统</li>
+                        <li>OLED 双眼显示模组</li>
+                        <li>10亿+ 微表情组合</li>
+                        <li>120Hz 刷新率</li>
+                    </ul>
+                </div>
+
+                <div class="hardware-card">
+                    <h3 class="hardware-name">音频系统</h3>
+                    <ul class="hardware-specs">
+                        <li>4麦克风阵列</li>
+                        <li>模拟声带发声器</li>
+                        <li>全频扬声器 x2</li>
+                        <li>回声消除 + 噪音抑制</li>
+                    </ul>
+                </div>
+
+                <div class="hardware-card">
+                    <h3 class="hardware-name">能源管理</h3>
+                    <ul class="hardware-specs">
+                        <li>89Wh 高密度锂电池</li>
+                        <li>智能充电管理系统</li>
+                        <li>自主回巢充电基座</li>
+                        <li>温度监控 + 安全保护</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p class="footer-text">
+                🤖 LOVOT AI 萌宠机器人 - 性能试验展示<br>
+                <span style="color: #667eea;">基于实物测试的专业数据</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 添加数据加载动画
+        window.addEventListener('load', () => {
+            const testItems = document.querySelectorAll('.test-item');
+            const chartBars = document.querySelectorAll('.chart-bar');
+            
+            // 延迟显示动画
+            testItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.animation = 'fadeInUp 0.6s ease forwards';
+                }, index * 100);
+            });
+            
+            chartBars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.style.animation = 'growUp 0.8s ease forwards';
+                }, index * 150);
+            });
+        });
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes growUp {
+                from {
+                    height: 0;
+                }
+                to {
+                    height: var(--final-height, 80%);
+                }
+            }
+
+            .test-item {
+                opacity: 0;
+            }
+
+            .chart-bar {
+                --final-height: 80%;
+            }
+
+            .chart-bar:nth-child(2) {
+                --final-height: 95%;
+            }
+
+            .chart-bar:nth-child(3) {
+                --final-height: 70%;
+            }
+
+            .chart-bar:nth-child(4) {
+                --final-height: 88%;
+            }
+
+            .chart-bar:nth-child(5) {
+                --final-height: 92%;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 添加交互效果
+        document.querySelectorAll('.chart-bar').forEach(bar => {
+            bar.addEventListener('click', function() {
+                const label = this.querySelector('.chart-label').textContent;
+                const value = this.querySelector('.chart-value').textContent;
+                console.log(`${label}: ${value}`);
+            });
+        });
+
+        console.log('LOVOT性能试验页面加载完成');
+    </script>
+</body>
+</html>

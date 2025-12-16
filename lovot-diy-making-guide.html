@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOVOT AI 实际配件制作指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .project-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff6b9d, #fd79a8);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .project-title {
+            flex: 1;
+        }
+
+        .project-title h2 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .difficulty.easy {
+            background: #2ecc71;
+        }
+
+        .difficulty.medium {
+            background: #f39c12;
+        }
+
+        .difficulty.hard {
+            background: #e74c3c;
+        }
+
+        .materials-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .materials-list h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .material-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .material-item:last-child {
+            border-bottom: none;
+        }
+
+        .material-icon {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .steps-container {
+            margin-top: 20px;
+        }
+
+        .step {
+            display: flex;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #fff;
+            border-left: 4px solid #ff6b9d;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .step-number {
+            background: #ff6b9d;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .step p {
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+
+        .tools-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tool-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .tool-item:hover {
+            transform: scale(1.05);
+        }
+
+        .tool-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .safety-tips {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .safety-tips h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .safety-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .safety-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .safety-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .cost-calculator {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .cost-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .cost-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b9d;
+        }
+
+        .cost-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .code-snippet {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🛠️ LOVOT AI 实际配件制作指南</h1>
+            <p>详细教程、材料清单和制作步骤 - 让你亲手打造LOVOT配件</p>
+        </header>
+
+        <!-- 安全提示 -->
+        <section class="safety-tips">
+            <h2>⚠️ 安全制作提示</h2>
+            <div class="safety-list">
+                <div class="safety-item">
+                    <span class="safety-icon">👓</span>
+                    <span>佩戴防护眼镜和手套</span>
+                </div>
+                <div class="safety-item">
+                    <span class="safety-icon">🔌</span>
+                    <span>断电操作电子元件</span>
+                </div>
+                <div class="safety-item">
+                    <span class="safety-icon">🌬️</span>
+                    <span>保持良好通风环境</span>
+                </div>
+                <div class="safety-item">
+                    <span class="safety-icon">📖</span>
+                    <span>仔细阅读产品说明</span>
+                </div>
+                <div class="safety-item">
+                    <span class="safety-icon">🧪</span>
+                    <span>使用合适的化学试剂</span>
+                </div>
+                <div class="safety-item">
+                    <span class="safety-icon">🔧</span>
+                    <span>正确使用工具设备</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 制作项目 -->
+        <section class="projects-grid">
+            <!-- 项目1: 可更换皮肤套装 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-icon">🎨</div>
+                    <div class="project-title">
+                        <h2>可更换皮肤套装</h2>
+                        <span class="difficulty easy">简单</span>
+                    </div>
+                </div>
+
+                <div class="materials-list">
+                    <h4>📋 材料清单</h4>
+                    <div class="material-item">
+                        <span class="material-icon">🧵</span>
+                        <span>柔软毛绒布料 (50cm x 50cm) - ¥25</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🧲</span>
+                        <span>强力磁铁片 (10片) - ¥15</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">✂️</span>
+                        <span>热熔胶枪和胶棒 - ¥20</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">📏</span>
+                        <span>皮肤模板图纸 - 免费</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🎯</span>
+                        <span>魔术贴 (2米) - ¥10</span>
+                    </div>
+                </div>
+
+                <div class="steps-container">
+                    <h4>🔧 制作步骤</h4>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>准备模板</h4>
+                            <p>下载LOVOT皮肤模板，打印出来作为裁剪参考</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>裁剪布料</h4>
+                            <p>按照模板在毛绒布料上画线，小心裁剪出各个部件</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>安装磁铁</h4>
+                            <p>在皮肤边缘热熔胶固定磁铁片，对应位置安装铁片</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>缝制装饰</h4>
+                            <p>用魔术贴制作装饰配件，可随时更换位置</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>测试适配</h4>
+                            <p>在LOVOT原型上测试安装，确保贴合度和牢固性</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-snippet">
+# 裁剪尺寸参考 (单位: mm)
+身体主体: 300 x 250
+头部: 120 x 120
+手臂: 80 x 40 (x2)
+装饰片: 50 x 30 (x4)
+                </div>
+            </div>
+
+            <!-- 项目2: 迷你情感显示器 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-icon">📱</div>
+                    <div class="project-title">
+                        <h2>迷你情感显示器</h2>
+                        <span class="difficulty medium">中等</span>
+                    </div>
+                </div>
+
+                <div class="materials-list">
+                    <h4>📋 材料清单</h4>
+                    <div class="material-item">
+                        <span class="material-icon">🖥️</span>
+                        <span>OLED显示屏 (1.3寸 I2C) - ¥45</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔷</span>
+                        <span>Arduino Nano - ¥35</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">📶</span>
+                        <span>HC-05蓝牙模块 - ¥25</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔋</span>
+                        <span>3.7V锂电池 (1000mAh) - ¥20</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">📦</span>
+                        <span>3D打印外壳 - ¥30</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">⚡</span>
+                        <span>TP4056充电模块 - ¥10</span>
+                    </div>
+                </div>
+
+                <div class="steps-container">
+                    <h4>🔧 制作步骤</h4>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>电路连接</h4>
+                            <p>连接OLED、蓝牙模块到Arduino，焊接好电源线</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>编程固件</h4>
+                            <p>上传Arduino代码，实现蓝牙通信和表情显示</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>3D打印外壳</h4>
+                            <p>打印外壳，确保内部空间足够容纳所有组件</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>组装测试</h4>
+                            <p>组装电路板到外壳，测试蓝牙连接和显示效果</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>表情编程</h4>
+                            <p>创建LOVOT表情包，通过蓝牙同步显示状态</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-snippet">
+// Arduino代码示例
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+// 显示LOVOT表情
+void showEmotion(int emotion) {
+  switch(emotion) {
+    case 0: displayHappy(); break;
+    case 1: displayLove(); break;
+    case 2: displayCurious(); break;
+  }
+}
+                </div>
+            </div>
+
+            <!-- 项目3: 智能充电底座 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-icon">⚡</div>
+                    <div class="project-title">
+                        <h2>智能充电底座</h2>
+                        <span class="difficulty medium">中等</span>
+                    </div>
+                </div>
+
+                <div class="materials-list">
+                    <h4>📋 材料清单</h4>
+                    <div class="material-item">
+                        <span class="material-icon">🔌</span>
+                        <span>无线充电模块 (5W) - ¥40</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔋</span>
+                        <span>12V电源适配器 - ¥25</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">⚙️</span>
+                        <span>SG90舵机 - ¥15</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔴</span>
+                        <span>RGB LED灯带 - ¥20</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">📦</span>
+                        <span>亚克力板和支架 - ¥35</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔧</span>
+                        <span>ESP32开发板 - ¥30</span>
+                    </div>
+                </div>
+
+                <div class="steps-container">
+                    <h4>🔧 制作步骤</h4>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>底座设计</h4>
+                            <p>使用CAD设计底座结构，包含无线充电线圈位置</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>切割亚克力</h4>
+                            <p>激光切割亚克力板，制作底座各层结构</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>安装充电模块</h4>
+                            <p>固定无线充电模块，连接12V电源</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>安装舵机</h4>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>编程控制</h4>
+                            <p>编写ESP32代码，控制充电、灯光和角度调节</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目4: 情感感知手环 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-icon">⌚</div>
+                    <div class="project-title">
+                        <h2>情感感知手环</h2>
+                        <span class="difficulty easy">简单</span>
+                    </div>
+                </div>
+
+                <div class="materials-list">
+                    <h4>📋 材料清单</h4>
+                    <div class="material-item">
+                        <span class="material-icon">💫</span>
+                        <span>震动马达 (5个) - ¥10</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🌈</span>
+                        <span>WS2812B LED灯带 (20个) - ¥25</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">📶</span>
+                        <span>NRF52832蓝牙模块 - ¥40</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔋</span>
+                        <span>小型锂电池 (300mAh) - ¥15</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🦾</span>
+                        <span>硅胶手环带 - ¥20</span>
+                    </div>
+                </div>
+
+                <div class="steps-container">
+                    <h4>🔧 制作步骤</h4>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>焊接电路</h4>
+                            <p>将LED、震动马达焊接到主控板</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>编程固件</h4>
+                            <p>编写蓝牙通信和震动、灯光控制程序</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>制作外壳</h4>
+                            <p>用3D打印制作电子元件保护壳</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>组装手环</h4>
+                            <p>将电子元件装入外壳，固定到手环带上</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>测试连接</h4>
+                            <p>测试与LOVOT主机的蓝牙连接和数据同步</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目5: 声音感应耳朵 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-icon">👂</div>
+                    <div class="project-title">
+                        <h2>声音感应耳朵</h2>
+                        <span class="difficulty medium">中等</span>
+                    </div>
+                </div>
+
+                <div class="materials-list">
+                    <h4>📋 材料清单</h4>
+                    <div class="material-item">
+                        <span class="material-icon">🎤</span>
+                        <span>微型麦克风模块 - ¥20</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">⚙️</span>
+                        <span>SG90舵机 (2个) - ¥30</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔷</span>
+                        <span>ATTiny85微控制器 - ¥15</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🧸</span>
+                        <span>毛绒耳朵材料 - ¥25</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">📏</span>
+                        <span>细铁丝和骨架材料 - ¥10</span>
+                    </div>
+                </div>
+
+                <div class="steps-container">
+                    <h4>🔧 制作步骤</h4>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>制作耳朵骨架</h4>
+                            <p>用铁丝制作耳朵形状骨架，覆盖毛绒材料</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>安装舵机</h4>
+                            <p>在耳朵根部安装舵机，连接控制线</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>声音检测</h4>
+                            <p>连接麦克风模块，编写声音检测程序</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>运动控制</h4>
+                            <p>编程控制舵机，实现耳朵随声音转动</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>安装调试</h4>
+                            <p>安装到LOVOT头部，调试响应灵敏度</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目6: 情感灯光尾巴 -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-icon">🦊</div>
+                    <div class="project-title">
+                        <h2>情感灯光尾巴</h2>
+                        <span class="difficulty easy">简单</span>
+                    </div>
+                </div>
+
+                <div class="materials-list">
+                    <h4>📋 材料清单</h4>
+                    <div class="material-item">
+                        <span class="material-icon">🌈</span>
+                        <span>WS2812B LED灯带 (30个) - ¥35</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔷</span>
+                        <span>Arduino Nano - ¥35</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">📦</span>
+                        <span>硅胶管 (直径2cm，长30cm) - ¥20</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🧵</span>
+                        <span>毛绒尾巴套 - ¥25</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-icon">🔋</span>
+                        <span>小型电池盒 - ¥15</span>
+                    </div>
+                </div>
+
+                <div class="steps-container">
+                    <h4>🔧 制作步骤</h4>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>LED组装</h4>
+                            <p>将LED灯带放入硅胶管内，连接控制器</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>编程效果</h4>
+                            <p>编写各种情感灯光效果程序</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>制作外壳</h4>
+                            <p>用毛绒材料制作尾巴套</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>集成安装</h4>
+                            <p>将LED管装入尾巴套，安装到LOVOT</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>测试效果</h4>
+                            <p>测试不同情感的灯光表现效果</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 工具设备 -->
+        <section class="tools-section">
+            <h2>🛠️ 必备工具设备</h2>
+            <div class="tools-grid">
+                <div class="tool-item">
+                    <div class="tool-icon">🔨</div>
+                    <h4>基础工具</h4>
+                    <p>螺丝刀套装、钳子、剪刀</p>
+                </div>
+                <div class="tool-item">
+                    <div class="tool-icon">🔥</div>
+                    <h4>热熔胶枪</h4>
+                    <p>快速粘接电子元件</p>
+                </div>
+                <div class="tool-item">
+                    <div class="tool-icon">⚡</div>
+                    <h4>电烙铁</h4>
+                    <p>精密焊接电子元件</p>
+                </div>
+                <div class="tool-item">
+                    <div class="tool-icon">📏</div>
+                    <h4>卡尺</h4>
+                    <p>精确测量尺寸</p>
+                </div>
+                <div class="tool-item">
+                    <div class="tool-icon">🖨️</div>
+                    <h4>3D打印机</h4>
+                    <p>制作定制外壳和零件</p>
+                </div>
+                <div class="tool-item">
+                    <div class="tool-icon">🔧</div>
+                    <h4>万用表</h4>
+                    <p>测试电路和电压</p>
+                </div>
+                <div class="tool-item">
+                    <div class="tool-icon">💻</div>
+                    <h4>编程电脑</h4>
+                    <p>Arduino/ESP32编程</p>
+                </div>
+                <div class="tool-item">
+                    <div class="tool-icon">📱</div>
+                    <h4>智能手机</h4>
+                    <p>测试蓝牙连接</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 成本计算 -->
+        <section class="cost-calculator">
+            <h2>💰 成本预算分析</h2>
+            <div class="calculator-grid">
+                <div class="cost-item">
+                    <div class="cost-amount">¥70</div>
+                    <div class="cost-label">皮肤套装</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">¥165</div>
+                    <div class="cost-label">迷你显示器</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">¥165</div>
+                    <div class="cost-label">充电底座</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">¥110</div>
+                    <div class="cost-label">情感手环</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">¥100</div>
+                    <div class="cost-label">声音耳朵</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">¥130</div>
+                    <div class="cost-label">灯光尾巴</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">¥280</div>
+                    <div class="cost-label">基础工具</div>
+                </div>
+                <div class="cost-item">
+                    <div class="cost-amount">¥1,090</div>
+                    <div class="cost-label">全套制作</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 下载资源 -->
+        <div style="text-align: center; margin-bottom: 40px;">
+            <a href="#" class="download-btn" onclick="alert('模板文件和代码即将推出！'); return false;">
+                📥 下载所有模板和代码
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.project-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.animation = `fadeInUp 0.6s ease forwards`;
+                }, index * 100);
+            });
+        });
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .project-card {
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 成本计算功能
+        function calculateTotal() {
+            const costs = [70, 165, 165, 110, 100, 130];
+            const total = costs.reduce((sum, cost) => sum + cost, 0) + 280;
+            console.log(`全套制作总成本: ¥${total}`);
+        }
+
+        // 页面加载完成后计算
+        window.addEventListener('load', calculateTotal);
+    </script>
+</body>
+</html>

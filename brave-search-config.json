@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "brave-search": {
+      "command": "node",
+      "args": ["c:/Users/Administrator/CodeBuddy/20251205164818/brave-search-mcp-server.js"],
+      "env": {
+        "NODE_ENV": "production",
+        "BRAVE_API_KEY": "YOUR_BRAVE_API_KEY_HERE"
+      },
+      "description": "Brave Search MCP Server - 提供安全的网络搜索功能",
+      "version": "1.0.0",
+      "author": "AI Assistant",
+      "capabilities": [
+        "brave_search",
+        "brave_news_search",
+        "brave_images_search",
+        "brave_videos_search",
+        "get_search_suggestions",
+        "get_trending_searches"
+      ]
+    }
+  }
+}

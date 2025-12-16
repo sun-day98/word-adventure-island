@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI小说创作系统 - IMA知识库增强版</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .ima-knowledge-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .ima-panel.open {
+            right: 0;
+        }
+        
+        .ima-panel-header {
+            background: #07c160;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ima-panel-content {
+            padding: 20px;
+        }
+        
+        .ima-search-box {
+            margin-bottom: 20px;
+        }
+        
+        .ima-search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .ima-category-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .ima-tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .ima-tab.active {
+            color: #07c160;
+            border-bottom-color: #07c160;
+        }
+        
+        .ima-search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .ima-result-item {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ima-result-item:hover {
+            background: #f8f9fa;
+            border-color: #07c160;
+        }
+        
+        .ima-result-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .ima-result-content {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .ima-result-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .ima-tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        .ima-toggle-btn {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #07c160;
+            color: white;
+            border: none;
+            padding: 15px 10px;
+            border-radius: 8px 0 0 8px;
+            cursor: pointer;
+            z-index: 999;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 14px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .ima-toggle-btn:hover {
+            background: #05a050;
+            padding-right: 15px;
+        }
+        
+        .ima-config-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .ima-config-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .ima-config-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .ima-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .ima-form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .ima-form-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .ima-form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .ima-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .ima-btn-primary {
+            background: #07c160;
+            color: white;
+        }
+        
+        .ima-btn-primary:hover {
+            background: #05a050;
+        }
+        
+        .ima-btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .ima-btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .ima-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .ima-status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .ima-status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .ima-loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .ima-loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #07c160;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .knowledge-suggestion {
+            background: #e8f5e8;
+            border-left: 4px solid #07c160;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .knowledge-suggestion-title {
+            font-weight: bold;
+            color: #07c160;
+            margin-bottom: 5px;
+        }
+        
+        .knowledge-suggestion-content {
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 原有的小说创作界面 -->
+    <div class="container">
+        <header class="header">
+            <h1>🎭 AI小说创作系统 - IMA知识库增强版</h1>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="openIMAConfig()">IMA知识库配置</button>
+                <button class="btn-primary" onclick="saveProject()">💾 保存项目</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- 左侧创作区域 -->
+            <section class="creation-panel">
+                <div class="panel-header">
+                    <h2>📝 创作工作台</h2>
+                </div>
+                
+                <div class="creation-form">
+                    <div class="form-group">
+                        <label for="storyTitle">小说标题</label>
+                        <input type="text" id="storyTitle" placeholder="输入您的小说标题..." class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="genre">故事类型</label>
+                        <select id="genre" class="form-select">
+                            <option value="fantasy">奇幻冒险</option>
+                            <option value="romance">浪漫爱情</option>
+                            <option value="mystery">悬疑推理</option>
+                            <option value="scifi">科幻未来</option>
+                            <option value="historical">历史传奇</option>
+                            <option value="modern">都市现实</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="storyOutline">故事大纲</label>
+                        <textarea id="storyOutline" rows="4" placeholder="描述您的故事构思..." class="form-textarea"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mainCharacters">主要角色</label>
+                        <textarea id="mainCharacters" rows="3" placeholder="描述主要角色的性格、背景..." class="form-textarea"></textarea>
+                    </div>
+
+                    <button class="btn-primary btn-large" onclick="startCreation()">
+                        🚀 开始AI辅助创作
+                    </button>
+                </div>
+
+                <div id="creationResult" class="result-panel" style="display: none;">
+                    <div class="panel-header">
+                        <h3>✨ AI创作成果</h3>
+                    </div>
+                    <div id="generatedContent" class="generated-content"></div>
+                </div>
+            </section>
+
+            <!-- 右侧工具区域 -->
+            <aside class="tools-panel">
+                <div class="panel-header">
+                    <h3>🛠️ 创作工具箱</h3>
+                </div>
+                
+                <div class="tools-grid">
+                    <button class="tool-btn" onclick="openAdvancedTools()">
+                        🧠 AI高级工具
+                    </button>
+                    <button class="tool-btn" onclick="openPlotTool()">
+                        📊 情节大纲工具
+                    </button>
+                    <button class="tool-btn" onclick="showMemoryStats()">
+                        💭 记忆统计
+                    </button>
+                    <button class="tool-btn" onclick="toggleIMAPanel()">
+                        📚 IMA知识库
+                    </button>
+                </div>
+
+                <div id="memoryStats" class="memory-stats" style="display: none;">
+                    <h4>📊 记忆统计</h4>
+                    <div id="statsContent"></div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- IMA知识库面板 -->
+    <div class="ima-panel" id="imaPanel">
+        <div class="ima-panel-header">
+            <h3>📚 IMA知识库</h3>
+            <button onclick="toggleIMAPanel()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
+        </div>
+        
+        <div class="ima-panel-content">
+            <div id="imaStatus" class="ima-status-indicator ima-status-disconnected">
+                <span class="status-dot">●</span>
+                <span class="status-text">未连接</span>
+            </div>
+
+            <div class="ima-search-box">
+                <input type="text" id="imaSearchInput" placeholder="搜索微信开发知识..." class="ima-search-input" onkeyup="handleIMASearch(event)">
+            </div>
+
+            <div class="ima-category-tabs">
+                <div class="ima-tab active" onclick="switchIMACategory('all')">全部</div>
+                <div class="ima-tab" onclick="switchIMACategory('api')">API</div>
+                <div class="ima-tab" onclick="switchIMACategory('component')">组件</div>
+                <div class="ima-tab" onclick="switchIMACategory('tutorial')">教程</div>
+                <div class="ima-tab" onclick="switchIMACategory('practice')">实践</div>
+            </div>
+
+            <div class="ima-loading" id="imaLoading">
+                <div class="spinner"></div>
+                正在搜索...
+            </div>
+
+            <div class="ima-search-results" id="imaSearchResults">
+                <!-- 搜索结果将显示在这里 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- IMA知识库切换按钮 -->
+    <button class="ima-toggle-btn" onclick="toggleIMAPanel()">
+        IMA知识库
+    </button>
+
+    <!-- IMA配置模态框 -->
+    <div class="ima-config-modal" id="imaConfigModal">
+        <div class="ima-config-content">
+            <h3 class="ima-config-title">配置IMA知识库连接</h3>
+            
+            <div class="ima-form-group">
+                <label class="ima-form-label">微信小程序AppID</label>
+                <input type="text" id="wxAppId" placeholder="请输入微信小程序AppID" class="ima-form-input">
+            </div>
+
+            <div class="ima-form-group">
+                <label class="ima-form-label">微信小程序AppSecret</label>
+                <input type="password" id="wxAppSecret" placeholder="请输入微信小程序AppSecret" class="ima-form-input">
+            </div>
+
+            <div class="ima-form-group">
+                <label class="ima-form-label">IMA知识库API密钥（可选）</label>
+                <input type="text" id="imaApiKey" placeholder="请输入IMA API密钥" class="ima-form-input">
+            </div>
+
+            <div class="ima-form-buttons">
+                <button class="ima-btn ima-btn-secondary" onclick="closeIMAConfig()">取消</button>
+                <button class="ima-btn ima-btn-primary" onclick="saveIMAConfig()">保存配置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载脚本 -->
+    <script src="js/story-creation-agent.js"></script>
+    <script src="js/story-templates.js"></script>
+    <script src="memory-manager.js"></script>
+    <script src="weixin-ima-knowledge-base.js"></script>
+
+    <script>
+        // 全局变量
+        let storyAgent;
+        let memoryManager;
+        let imaKnowledgeBase;
+        let currentCategory = 'all';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🎬 初始化AI小说创作系统...');
+            
+            try {
+                // 初始化故事创作代理
+                storyAgent = new StoryCreationAgent();
+                
+                // 初始化记忆管理器
+                memoryManager = new MemoryManager();
+                
+                // 初始化IMA知识库
+                imaKnowledgeBase = new WeixinIMAKnowledgeBase();
+                await initializeIMAConnection();
+                
+                console.log('✅ 系统初始化完成');
+            } catch (error) {
+                console.error('❌ 系统初始化失败:', error);
+                showError('系统初始化失败，请刷新页面重试');
+            }
+        });
+
+        // 初始化IMA连接
+        async function initializeIMAConnection() {
+            try {
+                // 尝试从本地存储加载配置
+                const savedConfig = {
+                    appId: localStorage.getItem('wx_app_id'),
+                    appSecret: localStorage.getItem('wx_app_secret'),
+                    imaApiKey: localStorage.getItem('ima_api_key')
+                };
+
+                if (savedConfig.appId && savedConfig.appSecret) {
+                    const success = await imaKnowledgeBase.initialize(savedConfig);
+                    updateIMAStatus(success);
+                }
+            } catch (error) {
+                console.error('IMA初始化失败:', error);
+                updateIMAStatus(false);
+            }
+        }
+
+        // 更新IMA状态指示器
+        function updateIMAStatus(isConnected) {
+            const statusEl = document.getElementById('imaStatus');
+            const statusDot = statusEl.querySelector('.status-dot');
+            const statusText = statusEl.querySelector('.status-text');
+
+            if (isConnected) {
+                statusEl.className = 'ima-status-indicator ima-status-connected';
+                statusText.textContent = '已连接';
+            } else {
+                statusEl.className = 'ima-status-indicator ima-status-disconnected';
+                statusText.textContent = '未连接';
+            }
+        }
+
+        // 切换IMA面板
+        function toggleIMAPanel() {
+            const panel = document.getElementById('imaPanel');
+            panel.classList.toggle('open');
+        }
+
+        // 打开IMA配置
+        function openIMAConfig() {
+            document.getElementById('imaConfigModal').style.display = 'flex';
+            
+            // 加载已保存的配置
+            document.getElementById('wxAppId').value = localStorage.getItem('wx_app_id') || '';
+            document.getElementById('wxAppSecret').value = localStorage.getItem('wx_app_secret') || '';
+            document.getElementById('imaApiKey').value = localStorage.getItem('ima_api_key') || '';
+        }
+
+        // 关闭IMA配置
+        function closeIMAConfig() {
+            document.getElementById('imaConfigModal').style.display = 'none';
+        }
+
+        // 保存IMA配置
+        async function saveIMAConfig() {
+            const appId = document.getElementById('wxAppId').value.trim();
+            const appSecret = document.getElementById('wxAppSecret').value.trim();
+            const imaApiKey = document.getElementById('imaApiKey').value.trim();
+
+            if (!appId || !appSecret) {
+                showError('请填写微信小程序的AppID和AppSecret');
+                return;
+            }
+
+            try {
+                // 保存到本地存储
+                localStorage.setItem('wx_app_id', appId);
+                localStorage.setItem('wx_app_secret', appSecret);
+                localStorage.setItem('ima_api_key', imaApiKey);
+
+                // 重新初始化IMA连接
+                const success = await imaKnowledgeBase.initialize({ appId, appSecret, imaApiKey });
+                updateIMAStatus(success);
+
+                if (success) {
+                    showSuccess('IMA知识库配置成功！');
+                    closeIMAConfig();
+                } else {
+                    showError('IMA知识库连接失败，请检查配置信息');
+                }
+            } catch (error) {
+                console.error('保存IMA配置失败:', error);
+                showError('保存配置失败：' + error.message);
+            }
+        }
+
+        // 处理IMA搜索
+        async function handleIMASearch(event) {
+            if (event.key === 'Enter') {
+                const query = event.target.value.trim();
+                if (query) {
+                    await searchIMA(query);
+                }
+            }
+        }
+
+        // 搜索IMA知识库
+        async function searchIMA(query) {
+            const loadingEl = document.getElementById('imaLoading');
+            const resultsEl = document.getElementById('imaSearchResults');
+            
+            loadingEl.classList.add('show');
+            resultsEl.innerHTML = '';
+
+            try {
+                const results = await imaKnowledgeBase.search(query, {
+                    category: currentCategory,
+                    limit: 10
+                });
+
+                displayIMAResults(results);
+            } catch (error) {
+                console.error('IMA搜索失败:', error);
+                resultsEl.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">搜索失败，请检查网络连接</div>';
+            } finally {
+                loadingEl.classList.remove('show');
+            }
+        }
+
+        // 显示IMA搜索结果
+        function displayIMAResults(results) {
+            const resultsEl = document.getElementById('imaSearchResults');
+            
+            if (results.length === 0) {
+                resultsEl.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">未找到相关内容</div>';
+                return;
+            }
+
+            resultsEl.innerHTML = results.map(item => `
+                <div class="ima-result-item" onclick="applyIMAKnowledge('${item.id}', '${encodeURIComponent(item.title)}', '${encodeURIComponent(item.content)}')">
+                    <div class="ima-result-title">${item.title}</div>
+                    <div class="ima-result-content">${item.content}</div>
+                    <div class="ima-result-tags">
+                        ${item.tags.map(tag => `<span class="ima-tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 切换IMA分类
+        function switchIMACategory(category) {
+            currentCategory = category;
+            
+            // 更新标签样式
+            document.querySelectorAll('.ima-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 重新搜索
+            const searchInput = document.getElementById('imaSearchInput');
+            if (searchInput.value.trim()) {
+                searchIMA(searchInput.value.trim());
+            }
+        }
+
+        // 应用IMA知识到创作
+        function applyIMAKnowledge(knowledgeId, title, content) {
+            const decodedTitle = decodeURIComponent(title);
+            const decodedContent = decodeURIComponent(content);
+            
+            // 在创作区域显示知识建议
+            const suggestionHtml = `
+                <div class="knowledge-suggestion">
+                    <div class="knowledge-suggestion-title">💡 来自IMA知识库的建议：${decodedTitle}</div>
+                    <div class="knowledge-suggestion-content">${decodedContent}</div>
+                </div>
+            `;
+            
+            const creationResult = document.getElementById('creationResult');
+            const generatedContent = document.getElementById('generatedContent');
+            
+            if (creationResult.style.display === 'none') {
+                creationResult.style.display = 'block';
+            }
+            
+            generatedContent.innerHTML = suggestionHtml + (generatedContent.innerHTML || '');
+            
+            // 关闭IMA面板
+            toggleIMAPanel();
+            
+            // 滚动到结果区域
+            creationResult.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 开始创作（保持原有功能）
+        async function startCreation() {
+            const title = document.getElementById('storyTitle').value.trim();
+            const genre = document.getElementById('genre').value;
+            const outline = document.getElementById('storyOutline').value.trim();
+            const characters = document.getElementById('mainCharacters').value.trim();
+
+            if (!title || !outline) {
+                showError('请填写小说标题和故事大纲');
+                return;
+            }
+
+            try {
+                showLoading('正在创作中...');
+
+                const storyRequest = {
+                    title: title,
+                    genre: genre,
+                    outline: outline,
+                    characters: characters,
+                    style: 'detailed'
+                };
+
+                const response = await storyAgent.createStory(storyRequest);
+                
+                displayStory(response);
+                
+                // 保存到记忆
+                if (memoryManager) {
+                    await memoryManager.saveCreativeMemory('story', response);
+                }
+
+            } catch (error) {
+                console.error('创作失败:', error);
+                showError('创作失败：' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 显示故事内容
+        function displayStory(story) {
+            const creationResult = document.getElementById('creationResult');
+            const generatedContent = document.getElementById('generatedContent');
+            
+            creationResult.style.display = 'block';
+            
+            generatedContent.innerHTML = `
+                <h3>${story.title}</h3>
+                <div class="story-meta">
+                    <span class="genre-tag">${story.genre}</span>
+                    <span class="word-count">字数: ${story.wordCount}</span>
+                </div>
+                <div class="story-content">${story.content}</div>
+                <div class="story-actions">
+                    <button class="btn-secondary" onclick="regenerateStory()">🔄 重新生成</button>
+                    <button class="btn-primary" onclick="saveStory()">💾 保存故事</button>
+                </div>
+            `;
+        }
+
+        // 辅助函数
+        function showLoading(message) {
+            // 显示加载提示
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'globalLoading';
+            loadingDiv.className = 'loading-overlay';
+            loadingDiv.innerHTML = `<div class="loading-spinner">${message}</div>`;
+            document.body.appendChild(loadingDiv);
+        }
+
+        function hideLoading() {
+            const loadingDiv = document.getElementById('globalLoading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        function showError(message) {
+            alert('错误: ' + message);
+        }
+
+        function showSuccess(message) {
+            alert('成功: ' + message);
+        }
+
+        // 其他原有功能保持不变
+        function openAdvancedTools() {
+            // 实现高级工具功能
+            console.log('打开高级工具');
+        }
+
+        function openPlotTool() {
+            window.open('plot-outline-tool.html', '_blank');
+        }
+
+        function showMemoryStats() {
+            if (!memoryManager) {
+                showError('记忆管理器未初始化');
+                return;
+            }
+
+            const stats = memoryManager.getMemoryStats();
+            const statsContent = document.getElementById('statsContent');
+            
+            statsContent.innerHTML = `
+                <p>对话数量: ${stats.conversations}</p>
+                <p>故事数量: ${stats.stories}</p>
+                <p>角色数量: ${stats.characters}</p>
+                <p>IMA连接状态: ${imaKnowledgeBase ? '已配置' : '未配置'}</p>
+            `;
+
+            document.getElementById('memoryStats').style.display = 'block';
+        }
+
+        function saveProject() {
+            const projectData = {
+                title: document.getElementById('storyTitle').value,
+                genre: document.getElementById('genre').value,
+                outline: document.getElementById('storyOutline').value,
+                characters: document.getElementById('mainCharacters').value,
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('currentProject', JSON.stringify(projectData));
+            showSuccess('项目已保存到本地');
+        }
+
+        function regenerateStory() {
+            startCreation();
+        }
+
+        function saveStory() {
+            const storyContent = document.getElementById('generatedContent').innerText;
+            localStorage.setItem('savedStory', storyContent);
+            showSuccess('故事已保存到本地');
+        }
+    </script>
+</body>
+</html>
