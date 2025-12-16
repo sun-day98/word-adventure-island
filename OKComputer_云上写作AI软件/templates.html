@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>写作模板 - AI写作助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script src="multi-agent-coordinator.js"></script>
+    <script src="base-agents.js"></script>
+    <script src="story-creation-agent.js"></script>
+    <script src="story-templates.js"></script>
+    <script src="templates.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D3748;
+            --secondary-color: #F6AD55;
+            --bg-color: #F7FAFC;
+            --text-color: #1A202C;
+            --success-color: #38A169;
+            --warning-color: #D69E2E;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .serif-font {
+            font-family: 'Noto Serif SC', serif;
+        }
+        
+        .template-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--secondary-color);
+        }
+        
+        .category-filter {
+            transition: all 0.3s ease;
+        }
+        
+        .category-filter.active {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #ED8936);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(246, 173, 85, 0.4);
+        }
+        
+        .template-preview {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e0;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: #4a5568;
+        }
+        
+        .modal {
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold serif-font text-gray-800">AI写作助手</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">写作</a>
+                        <a href="dashboard.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">仪表板</a>
+                        <a href="templates.html" class="text-gray-900 hover:text-orange-500 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-orange-500">模板</a>
+                        <a href="settings.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">设置</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="createCustomTemplate()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">创建模板</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="py-12 bg-gradient-to-r from-orange-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold serif-font text-gray-900 mb-4">写作模板库</h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                精心设计的写作模板，帮助您快速开始各种类型的写作项目
+            </p>
+            
+            <!-- 搜索框 -->
+            <div class="max-w-md mx-auto">
+                <div class="relative">
+                    <input type="text" id="template-search" placeholder="搜索模板..." 
+                           class="w-full px-4 py-3 pl-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    <svg class="absolute left-4 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 分类筛选 -->
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button onclick="filterTemplates('all')" class="category-filter active px-6 py-3 rounded-full bg-gray-200 text-gray-700 hover:bg-orange-500 hover:text-white font-medium">
+                    全部模板
+                </button>
+                <button onclick="filterTemplates('novel')" class="category-filter px-6 py-3 rounded-full bg-gray-200 text-gray-700 hover:bg-orange-500 hover:text-white font-medium">
+                    小说创作
+                </button>
+                <button onclick="filterTemplates('essay')" class="category-filter px-6 py-3 rounded-full bg-gray-200 text-gray-700 hover:bg-orange-500 hover:text-white font-medium">
+                    学术论文
+                </button>
+                <button onclick="filterTemplates('business')" class="category-filter px-6 py-3 rounded-full bg-gray-200 text-gray-700 hover:bg-orange-500 hover:text-white font-medium">
+                    商务文档
+                </button>
+                <button onclick="filterTemplates('creative')" class="category-filter px-6 py-3 rounded-full bg-gray-200 text-gray-700 hover:bg-orange-500 hover:text-white font-medium">
+                    创意写作
+                </button>
+                <button onclick="filterTemplates('technical')" class="category-filter px-6 py-3 rounded-full bg-gray-200 text-gray-700 hover:bg-orange-500 hover:text-white font-medium">
+                    技术文档
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 推荐模板轮播 -->
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">推荐模板</h3>
+            <div class="splide" id="featured-templates">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <div class="template-card bg-white p-6 rounded-xl mx-2">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">科幻小说框架</h4>
+                                        <p class="text-sm text-gray-500">小说创作</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 mb-4">完整的科幻小说结构模板，包含世界观设定、角色发展和情节推进。</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">⭐ 4.9 (128)</span>
+                                    <button onclick="previewTemplate('sci-fi-novel')" class="btn-primary px-4 py-2 rounded-lg text-sm">预览</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="template-card bg-white p-6 rounded-xl mx-2">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">学术论文模板</h4>
+                                        <p class="text-sm text-gray-500">学术论文</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 mb-4">标准的学术论文格式，包含摘要、引言、方法、结果和讨论等部分。</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">⭐ 4.8 (95)</span>
+                                    <button onclick="previewTemplate('academic-essay')" class="btn-primary px-4 py-2 rounded-lg text-sm">预览</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="template-card bg-white p-6 rounded-xl mx-2">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">博客文章模板</h4>
+                                        <p class="text-sm text-gray-500">创意写作</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 mb-4">吸引人的博客文章结构，包含标题优化、内容组织和互动元素。</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">⭐ 4.7 (156)</span>
+                                    <button onclick="previewTemplate('blog-post')" class="btn-primary px-4 py-2 rounded-lg text-sm">预览</button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 模板库 -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">所有模板</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="templates-grid">
+                <!-- 模板卡片将通过JavaScript动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 模板预览模态框 -->
+    <div id="template-modal" class="modal fixed inset-0 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content w-full max-w-4xl max-h-screen overflow-y-auto p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="modal-title" class="text-2xl font-bold text-gray-900"></h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="modal-content" class="mb-6">
+                    <!-- 模板内容将在这里显示 -->
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button onclick="closeModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        取消
+                    </button>
+                    <button onclick="useTemplate()" class="btn-primary px-6 py-2 rounded-lg">
+                        使用模板
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold serif-font mb-4">AI写作助手</h3>
+                <p class="text-gray-400 mb-4">让写作变得更智能、更高效、更有趣</p>
+                <p class="text-sm text-gray-500">© 2025 AI写作助手. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 模板数据
+        const templates = [
+            {
+                id: 'sci-fi-novel',
+                title: '科幻小说框架',
+                category: 'novel',
+                description: '完整的科幻小说结构模板，包含世界观设定、角色发展和情节推进',
+                rating: 4.9,
+                reviews: 128,
+                content: `## 科幻小说框架模板
+
+### 第一章：世界观设定
+- **时间背景**：设定故事发生的时代
+- **地点环境**：描述主要场景
+- **科技水平**：定义世界的科技程度
+- **社会结构**：描述社会组织和规则
+
+### 第二章：主要角色
+- **主角**：姓名、背景、动机、性格特点
+- **配角**：支持角色和反派角色
+- **角色关系图**：角色之间的关联
+
+### 第三章：情节大纲
+- **开端**：故事的起点和冲突引入
+- **发展**：主要事件和转折点
+- **高潮**：故事的最高潮部分
+- **结局**：故事的收尾和主题升华
+
+### 第四章：关键场景
+- **场景1**：详细描述重要情节
+- **场景2**：转折点场景
+- **场景3**：高潮场景
+
+### 第五章：科技元素
+- **核心科技**：故事中的关键技术
+- **科技影响**：科技对人物和社会的影响
+- **科技限制**：科技的局限性和规则`
+            },
+            {
+                id: 'academic-essay',
+                title: '学术论文模板',
+                category: 'essay',
+                description: '标准的学术论文格式，包含完整的学术写作结构',
+                rating: 4.8,
+                reviews: 95,
+                content: `## 学术论文模板
+
+### 标题页
+- **论文标题**：准确、简洁、有吸引力
+- **作者信息**：姓名、单位、联系方式
+- **摘要**：200-300字的研究概述
+- **关键词**：3-5个关键词
+
+### 引言
+- **研究背景**：介绍研究领域和现状
+- **研究问题**：明确研究要解决的具体问题
+- **研究意义**：阐述研究的理论和实践价值
+- **论文结构**：概述论文的组织结构
+
+### 文献综述
+- **相关研究**：回顾相关领域的研究成果
+- **研究空白**：指出现有研究的不足
+- **理论框架**：介绍研究的理论基础
+- **研究假设**：提出研究假设或研究问题
+
+### 研究方法
+- **研究设计**：说明研究的整体设计思路
+- **数据来源**：描述数据的获取方式和来源
+- **分析方法**：介绍使用的分析工具和方法
+- **研究步骤**：详细的研究实施步骤
+
+### 研究结果
+- **数据描述**：对收集的数据进行描述性统计
+- **分析结果**：展示主要的分析结果
+- **结果讨论**：对结果进行深入讨论
+- **假设检验**：验证研究假设是否成立
+
+### 结论
+- **主要发现**：总结研究的核心发现
+- **理论贡献**：阐述研究对理论的贡献
+- **实践意义**：讨论研究的实际应用价值
+- **研究局限**：说明研究的局限性
+- **未来展望**：提出未来研究方向
+
+### 参考文献
+- **格式要求**：按照指定的引用格式
+- **文献质量**：确保引用文献的权威性和时效性`
+            },
+            {
+                id: 'blog-post',
+                title: '博客文章模板',
+                category: 'creative',
+                description: '吸引人的博客文章结构，包含SEO优化和互动元素',
+                rating: 4.7,
+                reviews: 156,
+                content: `## 博客文章模板
+
+### 标题
+- **主标题**：吸引人、包含关键词
+- **副标题**：进一步说明文章内容
+- **元描述**：150字以内的文章摘要
+
+### 引言
+- **开场白**：用有趣的方式吸引读者
+- **问题陈述**：指出读者可能面临的问题
+- **文章价值**：说明文章能为读者带来什么价值
+- **内容预告**：简要介绍文章的主要内容
+
+### 正文结构
+- **小标题1**：第一个主要观点
+  - 支持论据和例子
+  - 相关图片或图表
+  - 实用建议或技巧
+
+- **小标题2**：第二个主要观点
+  - 深入分析
+  - 案例研究
+  - 数据和统计
+
+- **小标题3**：第三个主要观点
+  - 专家观点
+  - 对比分析
+  - 未来趋势
+
+### 实用部分
+- **操作指南**：详细的步骤说明
+- **工具推荐**：相关的工具和资源
+- **注意事项**：重要的提醒和警告
+- **常见问题**：解答读者可能的疑问
+
+### 互动元素
+- **提问环节**：向读者提出问题
+- **评论区引导**：鼓励读者分享观点
+- **社交分享**：分享按钮和引导语
+- **相关文章推荐**：增加页面停留时间
+
+### 结尾
+- **总结要点**：回顾文章核心内容
+- **行动号召**：鼓励读者采取行动
+- **订阅引导**：邀请读者订阅或关注
+- **联系方式**：提供联系方式或社交媒体链接`
+            },
+            {
+                id: 'business-report',
+                title: '商务报告模板',
+                category: 'business',
+                description: '专业的商务报告格式，适用于各种商业场景',
+                rating: 4.6,
+                reviews: 89,
+                content: `## 商务报告模板
+
+### 封面
+- **报告标题**：明确、专业的标题
+- **公司名称**：完整的组织名称
+- **报告日期**：提交日期
+- **作者信息**：报告撰写人信息
+
+### 执行摘要
+- **报告目的**：说明报告的目标和用途
+- **主要发现**：总结关键发现
+- **建议措施**：提出主要建议
+- **预期结果**：预测实施建议的效果
+
+### 背景介绍
+- **项目背景**：介绍报告产生的背景
+- **研究范围**：明确报告的研究边界
+- **方法论**：说明数据收集和分析方法
+- **报告结构**：概述报告的组织架构
+
+### 市场分析
+- **市场环境**：宏观环境分析
+- **竞争对手**：主要竞争者分析
+- **目标客户**：客户群体特征
+- **市场趋势**：行业发展趋势
+
+### 数据分析
+- **关键指标**：核心业务指标
+- **趋势分析**：数据变化趋势
+- **对比分析**：与历史数据或行业标准对比
+- **问题识别**：发现的问题和挑战
+
+### 解决方案
+- **问题分析**：深入分析问题根源
+- **解决方案**：提出具体的解决方案
+- **实施计划**：详细的执行步骤
+- **资源需求**：所需的人力、物力、财力
+
+### 风险评估
+- **潜在风险**：可能面临的风险
+- **影响程度**：风险对项目的影响
+- **应对措施**：风险预防和应对策略
+- **备选方案**：替代解决方案
+
+### 结论和建议
+- **主要结论**：总结报告核心发现
+- **具体建议**：可执行的行动建议
+- **实施时间表**：详细的时间规划
+- **成功指标**：衡量成功的标准`
+            },
+            {
+                id: 'technical-documentation',
+                title: '技术文档模板',
+                category: 'technical',
+                description: '清晰的技术文档结构，适用于API文档和用户手册',
+                rating: 4.5,
+                reviews: 67,
+                content: `## 技术文档模板
+
+### 文档概述
+- **文档目的**：说明文档的用途和目标读者
+- **产品简介**：简要介绍产品功能
+- **系统要求**：硬件和软件要求
+- **版本信息**：文档版本和更新历史
+
+### 安装指南
+- **环境准备**：安装前的准备工作
+- **安装步骤**：详细的安装流程
+- **配置说明**：系统配置和参数设置
+- **验证测试**：安装后的验证方法
+
+### 快速入门
+- **基本概念**：核心概念和术语
+- **第一个示例**：简单的使用示例
+- **常见问题**：新手常见问题
+- **最佳实践**：推荐的使用方法
+
+### 功能说明
+- **核心功能**：主要功能详细介绍
+- **高级功能**：进阶功能说明
+- **配置选项**：详细的配置参数
+- **使用限制**：功能使用的限制条件
+
+### API参考
+- **接口列表**：所有API接口
+- **参数说明**：请求和响应参数
+- **示例代码**：各种语言的示例
+- **错误码**：错误码说明和处理
+
+### 故障排除
+- **常见问题**：FAQ和解决方案
+- **错误诊断**：错误诊断方法
+- **性能优化**：性能优化建议
+- **技术支持**：获取技术支持的途径`
+            },
+            {
+                id: 'creative-story',
+                title: '创意故事模板',
+                category: 'creative',
+                description: '富有创意的短篇故事结构，适合各种题材',
+                rating: 4.8,
+                reviews: 134,
+                content: `## 创意故事模板
+
+### 故事开头
+- **引人入胜的开场**：立即吸引读者的注意力
+- **背景设定**：时间、地点、环境的描述
+- **主角介绍**：主角的基本信息和特点
+- **冲突引入**：早期出现的矛盾或问题
+
+### 情节发展
+- **上升行动**：冲突逐渐升级
+- **角色成长**：主角的变化和发展
+- **次要情节**：丰富主线的支线故事
+- **悬念设置**：保持读者兴趣的技巧
+
+### 故事高潮
+- **关键时刻**：故事的最紧张时刻
+- **重大转折**：改变故事走向的事件
+- **角色抉择**：主角的重要决定
+- **情感爆发**：强烈的情感表达
+
+### 故事结尾
+- **问题解决**：主要冲突的解决
+- **主题升华**：故事主题的深化
+- **角色命运**：角色的最终结局
+- **余韵留存**：给读者留下深刻印象`
+            },
+            {
+                id: 'marketing-copy',
+                title: '营销文案模板',
+                category: 'business',
+                description: '高转化率的营销文案结构，适用于各种营销场景',
+                rating: 4.4,
+                reviews: 78,
+                content: `## 营销文案模板
+
+### 标题策略
+- **主标题**：吸引眼球的核心标题
+- **副标题**：进一步说明产品价值
+- **利益承诺**：明确的产品利益承诺
+- **紧迫感**：创造时间或数量紧迫感
+
+### 开场部分
+- **问题识别**：指出目标客户的痛点
+- **情感共鸣**：与读者情感连接
+- **权威建立**：展示品牌或产品权威性
+- **期望设定**：设定合理的期望值
+
+### 产品介绍
+- **核心功能**：产品的主要功能特点
+- **独特优势**：与竞品的差异化
+- **使用场景**：产品的具体应用场景
+- **用户评价**：真实的用户反馈
+
+### 价值证明
+- **具体数据**：量化的效果数据
+- **案例研究**：成功的使用案例
+- **专家推荐**：权威人士的推荐
+- **媒体报道**：获得的媒体关注
+
+### 行动号召
+- **明确指令**：清晰的下一步行动
+- **限时优惠**：特殊的促销信息
+- **风险消除**：降低购买风险
+- **多重选择**：提供不同的购买选项`
+            },
+            {
+                id: 'project-proposal',
+                title: '项目提案模板',
+                category: 'business',
+                description: '专业的项目提案格式，适用于各种项目申请',
+                rating: 4.6,
+                reviews: 92,
+                content: `## 项目提案模板
+
+### 项目概述
+- **项目名称**：清晰、专业的项目名称
+- **项目背景**：项目产生的背景和原因
+- **项目目标**：具体、可衡量的目标
+- **预期成果**：项目完成后的具体成果
+
+### 需求分析
+- **现状分析**：当前存在的问题和挑战
+- **需求调研**：目标群体的实际需求
+- **机会识别**：项目带来的机会
+- **影响评估**：项目的潜在影响
+
+### 实施方案
+- **实施步骤**：详细的执行计划
+- **时间安排**：项目时间表和里程碑
+- **资源配置**：所需的人力、物力、财力
+- **质量标准**：项目质量要求
+
+### 预算规划
+- **成本估算**：详细的项目成本
+- **资金来源**：项目资金来源
+- **预算分配**：各项支出的预算分配
+- **财务预测**：项目的财务效益预测
+
+### 风险管控
+- **风险识别**：可能面临的风险
+- **风险评估**：风险的影响程度
+- **应对措施**：风险预防和应对策略
+- **监控机制**：风险监控和报告机制
+
+### 评估标准
+- **成功指标**：衡量项目成功的标准
+- **评估方法**：项目评估的方法
+- **监控体系**：项目进度监控体系
+- **报告机制**：项目进展报告机制`
+            }
+        ];
+
+        let currentTemplate = null;
+        let filteredTemplates = templates;
+
+        // 初始化页面
+        function initializeTemplates() {
+            setupSplide();
+            renderTemplates();
+            setupSearch();
+            setupAnimations();
+        }
+
+        // 设置轮播
+        function setupSplide() {
+            new Splide('#featured-templates', {
+                type: 'loop',
+                perPage: 3,
+                perMove: 1,
+                gap: '1rem',
+                autoplay: true,
+                interval: 5000,
+                breakpoints: {
+                    1024: {
+                        perPage: 2,
+                    },
+                    640: {
+                        perPage: 1,
+                    }
+                }
+            }).mount();
+        }
+
+        // 渲染模板
+        function renderTemplates() {
+            const grid = document.getElementById('templates-grid');
+            grid.innerHTML = '';
+
+            filteredTemplates.forEach(template => {
+                const card = document.createElement('div');
+                card.className = 'template-card bg-white p-6 rounded-xl';
+                card.setAttribute('data-category', template.category);
+                
+                const categoryColors = {
+                    'novel': 'bg-blue-100 text-blue-600',
+                    'essay': 'bg-green-100 text-green-600',
+                    'business': 'bg-purple-100 text-purple-600',
+                    'creative': 'bg-orange-100 text-orange-600',
+                    'technical': 'bg-gray-100 text-gray-600'
+                };
+
+                const categoryNames = {
+                    'novel': '小说创作',
+                    'essay': '学术论文',
+                    'business': '商务文档',
+                    'creative': '创意写作',
+                    'technical': '技术文档'
+                };
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 ${categoryColors[template.category].split(' ')[0].replace('100', '500')} rounded-full mr-3"></div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">${template.title}</h4>
+                                <span class="text-xs px-2 py-1 rounded-full ${categoryColors[template.category]}">${categoryNames[template.category]}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex items-center text-sm text-gray-500">
+                                <span class="text-yellow-400 mr-1">⭐</span>
+                                ${template.rating}
+                            </div>
+                            <div class="text-xs text-gray-400">${template.reviews} 评价</div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4 text-sm leading-relaxed">${template.description}</p>
+                    
+                    <div class="flex justify-between items-center">
+                        <button onclick="previewTemplate('${template.id}')" class="text-orange-600 hover:text-orange-800 text-sm font-medium">
+                            预览模板
+                        </button>
+                        <button onclick="useTemplate('${template.id}')" class="btn-primary px-4 py-2 rounded-lg text-sm">
+                            使用模板
+                        </button>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            // 添加动画
+            anime({
+                targets: '.template-card',
+                scale: [0.9, 1],
+                opacity: [0, 1],
+                delay: anime.stagger(100),
+                duration: 500,
+                easing: 'easeOutExpo'
+            });
+        }
+
+        // 筛选模板
+        function filterTemplates(category) {
+            // 更新按钮状态
+            document.querySelectorAll('.category-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 筛选模板
+            if (category === 'all') {
+                filteredTemplates = templates;
+            } else {
+                filteredTemplates = templates.filter(template => template.category === category);
+            }
+
+            // 重新渲染
+            renderTemplates();
+        }
+
+        // 搜索模板
+        function setupSearch() {
+            const searchInput = document.getElementById('template-search');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                filteredTemplates = templates.filter(template => 
+                    template.title.toLowerCase().includes(query) ||
+                    template.description.toLowerCase().includes(query) ||
+                    template.category.toLowerCase().includes(query)
+                );
+                renderTemplates();
+            });
+        }
+
+        // 预览模板
+        function previewTemplate(templateId) {
+            const template = templates.find(t => t.id === templateId);
+            if (!template) return;
+
+            currentTemplate = template;
+            
+            document.getElementById('modal-title').textContent = template.title;
+            document.getElementById('modal-content').innerHTML = `
+                <div class="template-preview p-4 rounded-lg">
+                    <pre class="whitespace-pre-wrap text-sm">${template.content}</pre>
+                </div>
+            `;
+            
+            document.getElementById('template-modal').classList.remove('hidden');
+            
+            // 添加模态框动画
+            anime({
+                targets: '.modal-content',
+                scale: [0.8, 1],
+                opacity: [0, 1],
+                duration: 300,
+                easing: 'easeOutExpo'
+            });
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            anime({
+                targets: '.modal-content',
+                scale: [1, 0.8],
+                opacity: [1, 0],
+                duration: 200,
+                easing: 'easeInExpo',
+                complete: () => {
+                    document.getElementById('template-modal').classList.add('hidden');
+                }
+            });
+        }
+
+        // 使用模板
+        function useTemplate(templateId) {
+            const template = templates.find(t => t.id === templateId);
+            if (!template) return;
+
+            // 将模板内容保存到localStorage
+            localStorage.setItem('selected_template', JSON.stringify(template));
+            
+            // 跳转到写作页面
+            window.location.href = `index.html?template=${templateId}`;
+        }
+
+        // 创建自定义模板
+        function createCustomTemplate() {
+            alert('自定义模板功能即将推出！');
+        }
+
+        // 设置动画
+        function setupAnimations() {
+            // 页面标题动画
+            anime({
+                targets: 'h2',
+                translateY: [50, 0],
+                opacity: [0, 1],
+                duration: 800,
+                easing: 'easeOutExpo'
+            });
+
+            // 分类按钮动画
+            anime({
+                targets: '.category-filter',
+                scale: [0.8, 1],
+                opacity: [0, 1],
+                delay: anime.stagger(100, {start: 400}),
+                duration: 500,
+                easing: 'easeOutExpo'
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initializeTemplates);
+    </script>
+</body>
+</html>

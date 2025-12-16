@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>后端测试</title>
+    <script src="backend/frontend/api-client.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+        button { margin: 5px; padding: 10px 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>后端API测试</h1>
+    
+    <h2>基础接口测试</h2>
+    <button onclick="testHealth()">测试健康检查</button>
+    <button onclick="testAPIInfo()">测试API信息</button>
+    
+    <h2>认证测试</h2>
+    <button onclick="testRegister()">测试注册</button>
+    <button onclick="testLogin()">测试登录</button>
+    
+    <h2>业务接口测试</h2>
+    <button onclick="testDocuments()">获取文档列表</button>
+    <button onclick="testCreateDoc()">创建文档</button>
+    <button onclick="testAIWriter()">测试AI-Writer</button>
+    
+    <h2>测试结果</h2>
+    <div id="results"></div>
+
+    <script>
+        async function testHealth() {
+            try {
+                const response = await apiClient.healthCheck();
+                showResult('健康检查', response.success ? 'success' : 'error', JSON.stringify(response, null, 2));
+            } catch (error) {
+                showResult('健康检查', 'error', error.message);
+            }
+        }
+
+        async function testAPIInfo() {
+            try {
+                const response = await apiClient.getAPIInfo();
+                showResult('API信息', response.success ? 'success' : 'error', JSON.stringify(response, null, 2));
+            } catch (error) {
+                showResult('API信息', 'error', error.message);
+            }
+        }
+
+        async function testRegister() {
+            try {
+                const response = await apiClient.register({
+                    username: 'testuser' + Date.now(),
+                    password: '123456',
+                    email: 'test@example.com',
+                    nickname: '测试用户'
+                });
+                showResult('注册', response.success ? 'success' : 'error', JSON.stringify(response, null, 2));
+            } catch (error) {
+                showResult('注册', 'error', error.message);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const response = await apiClient.login('testuser', '123456');
+                showResult('登录', response.success ? 'success' : 'error', JSON.stringify(response, null, 2));
+            } catch (error) {
+                showResult('登录', 'error', error.message);
+            }
+        }
+
+        async function testDocuments() {
+            try {
+                const response = await apiClient.getProjects();
+                showResult('获取文档', response.success ? 'success' : 'error', JSON.stringify(response, null, 2));
+            } catch (error) {
+                showResult('获取文档', 'error', error.message);
+            }
+        }
+
+        async function testCreateDoc() {
+            try {
+                const response = await apiClient.createProject({
+                    title: '测试文档 ' + Date.now(),
+                    content: '这是一个测试文档内容',
+                    genre: 'fantasy'
+                });
+                showResult('创建文档', response.success ? 'success' : 'error', JSON.stringify(response, null, 2));
+            } catch (error) {
+                showResult('创建文档', 'error', error.message);
+            }
+        }
+
+        async function testAIWriter() {
+            try {
+                const response = await apiClient.generateAIContent({
+                    genre: 'fantasy',
+                    mode: 'continuation',
+                    prompt: '在古老的魔法大陆上'
+                });
+                showResult('AI-Writer', response.success ? 'success' : 'error', JSON.stringify(response, null, 2));
+            } catch (error) {
+                showResult('AI-Writer', 'error', error.message);
+            }
+        }
+
+        function showResult(title, type, content) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>${title}:</strong><pre>${content}</pre>`;
+            results.appendChild(div);
+        }
+
+        // 初始化时自动测试基础接口
+        window.onload = function() {
+            console.log('API Client:', apiClient);
+            testHealth();
+            testAPIInfo();
+        };
+    </script>
+</body>
+</html>

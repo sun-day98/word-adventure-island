@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - AI写作助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="settings.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2D3748;
+            --secondary-color: #F6AD55;
+            --bg-color: #F7FAFC;
+            --text-color: #1A202C;
+            --success-color: #38A169;
+            --warning-color: #D69E2E;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .serif-font {
+            font-family: 'Noto Serif SC', serif;
+        }
+        
+        .settings-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #ED8936);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(246, 173, 85, 0.4);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--secondary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .color-picker:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-picker.selected {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px var(--secondary-color);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold serif-font text-gray-800">AI写作助手</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">写作</a>
+                        <a href="dashboard.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">仪表板</a>
+                        <a href="templates.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">模板</a>
+                        <a href="settings.html" class="text-gray-900 hover:text-orange-500 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-orange-500">设置</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="saveAllSettings()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">保存设置</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="py-12 bg-gradient-to-r from-orange-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold serif-font text-gray-900 mb-4">个人设置</h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                自定义您的写作体验，让AI写作助手更好地为您服务
+            </p>
+        </div>
+    </section>
+
+    <!-- 设置内容 -->
+    <section class="py-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- 个人资料 -->
+                <div class="settings-card p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 text-orange-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        个人资料
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                            <input type="text" id="username" value="写作达人" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">邮箱</label>
+                            <input type="email" id="email" value="writer@example.com" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">写作领域</label>
+                            <select id="writing-field" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="fiction">小说创作</option>
+                                <option value="academic">学术研究</option>
+                                <option value="business">商务写作</option>
+                                <option value="creative">创意写作</option>
+                                <option value="technical">技术文档</option>
+                                <option value="general">通用写作</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">个人简介</label>
+                            <textarea id="bio" rows="3" placeholder="介绍一下您的写作经历和目标..."
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">热爱写作，专注于科幻小说创作，希望通过AI工具提升写作效率。</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 写作偏好 -->
+                <div class="settings-card p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 text-orange-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        写作偏好
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">默认写作风格</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex items-center">
+                                    <input type="radio" name="writing-style" value="creative" class="mr-2 text-orange-600" checked>
+                                    <span class="text-sm">创意风格</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="writing-style" value="formal" class="mr-2 text-orange-600">
+                                    <span class="text-sm">正式风格</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="writing-style" value="academic" class="mr-2 text-orange-600">
+                                    <span class="text-sm">学术风格</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="writing-style" value="casual" class="mr-2 text-orange-600">
+                                    <span class="text-sm">轻松风格</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">默认文档类型</label>
+                            <select id="default-doc-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="novel">小说</option>
+                                <option value="essay">论文</option>
+                                <option value="blog">博客</option>
+                                <option value="report">报告</option>
+                                <option value="document">普通文档</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">目标字数</label>
+                            <input type="number" id="target-word-count" value="1000" min="100" max="100000" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">设置每日写作目标字数</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">自动保存</label>
+                                <p class="text-xs text-gray-500">每隔30秒自动保存文档</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="auto-save" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">实时语法检查</label>
+                                <p class="text-xs text-gray-500">写作时实时检查语法错误</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="grammar-check" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI助手设置 -->
+                <div class="settings-card p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 text-orange-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        AI助手设置
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">AI建议频率</label>
+                            <select id="ai-suggestion-frequency" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="high">频繁（每句话）</option>
+                                <option value="medium" selected>适中（每段落）</option>
+                                <option value="low">较少（手动触发）</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">AI创意程度</label>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-500">保守</span>
+                                <input type="range" id="ai-creativity" min="1" max="10" value="5" 
+                                       class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span class="text-sm text-gray-500">创新</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">智能补全</label>
+                                <p class="text-xs text-gray-500">AI自动补全句子和段落</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="ai-autocomplete" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">多语言支持</label>
+                                <p class="text-xs text-gray-500">启用多语言写作建议</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="multilingual-support">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">专业领域</label>
+                            <select id="ai-specialty" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="general">通用写作</option>
+                                <option value="fiction">文学创作</option>
+                                <option value="academic">学术研究</option>
+                                <option value="business">商务文案</option>
+                                <option value="technical">技术文档</option>
+                                <option value="marketing">营销内容</option>
+                            </select>
+                        </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">AI助手语言风格</label>
+                            <div class="grid grid-cols-1 gap-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="ai-language" value="professional" class="mr-2 text-orange-600" checked>
+                                    <span class="text-sm">专业严谨</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="ai-language" value="friendly" class="mr-2 text-orange-600">
+                                    <span class="text-sm">友好易懂</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="ai-language" value="creative" class="mr-2 text-orange-600">
+                                    <span class="text-sm">创意启发</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">智能续写</label>
+                                <p class="text-xs text-gray-500">根据上下文自动生成后续内容</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="smart-continue" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">灵感提示</label>
+                                <p class="text-xs text-gray-500">定期提供写作灵感和创意建议</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="inspiration-tips" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 界面设置 -->
+                <div class="settings-card p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 text-orange-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                        </svg>
+                        界面设置
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">主题颜色</label>
+                            <div class="flex space-x-3">
+                                <div class="color-picker selected" style="background-color: #F6AD55;" onclick="selectColor('#F6AD55', this)"></div>
+                                <div class="color-picker" style="background-color: #4299E1;" onclick="selectColor('#4299E1', this)"></div>
+                                <div class="color-picker" style="background-color: #48BB78;" onclick="selectColor('#48BB78', this)"></div>
+                                <div class="color-picker" style="background-color: #9F7AEA;" onclick="selectColor('#9F7AEA', this)"></div>
+                                <div class="color-picker" style="background-color: #ED8936;" onclick="selectColor('#ED8936', this)"></div>
+                                <div class="color-picker" style="background-color: #38B2AC;" onclick="selectColor('#38B2AC', this)"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">字体大小</label>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-500">小</span>
+                                <input type="range" id="font-size" min="12" max="20" value="16" 
+                                       class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span class="text-sm text-gray-500">大</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">当前大小: <span id="font-size-value">16px</span></p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">界面语言</label>
+                            <select id="interface-language" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="zh-CN" selected>简体中文</option>
+                                <option value="zh-TW">繁体中文</option>
+                                <option value="en-US">English</option>
+                                <option value="ja-JP">日本語</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">深色模式</label>
+                                <p class="text-xs text-gray-500">切换到深色主题</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="dark-mode">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">动画效果</label>
+                                <p class="text-xs text-gray-500">启用界面动画和过渡效果</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="animations" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据管理 -->
+                <div class="settings-card p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 text-orange-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                        </svg>
+                        数据管理
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">存储空间使用</span>
+                                <span class="text-sm text-gray-500">2.3GB / 10GB</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full" style="width: 23%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button onclick="exportData()" class="w-full bg-blue-100 text-blue-800 py-3 px-4 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium">
+                                导出所有数据
+                            </button>
+                            <button onclick="importData()" class="w-full bg-green-100 text-green-800 py-3 px-4 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
+                                导入数据
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button onclick="clearCache()" class="w-full bg-yellow-100 text-yellow-800 py-3 px-4 rounded-lg hover:bg-yellow-200 transition-colors text-sm font-medium">
+                                清除缓存
+                            </button>
+                            <button onclick="resetSettings()" class="w-full bg-red-100 text-red-800 py-3 px-4 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
+                                重置设置
+                            </button>
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">数据同步</h4>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">云端同步</label>
+                                    <p class="text-xs text-gray-500">将数据同步到云端</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="cloud-sync" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 通知设置 -->
+                <div class="settings-card p-6 rounded-xl">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 text-orange-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        通知设置
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">写作提醒</label>
+                                <p class="text-xs text-gray-500">每日写作目标提醒</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="writing-reminder" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">AI建议通知</label>
+                                <p class="text-xs text-gray-500">AI生成新建议时通知</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="ai-suggestions-notification" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">成就通知</label>
+                                <p class="text-xs text-gray-500">达成写作里程碑时通知</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="achievement-notification" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">产品更新</label>
+                                <p class="text-xs text-gray-500">新功能和版本更新通知</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="product-updates" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">提醒时间</label>
+                            <input type="time" id="reminder-time" value="09:00" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold serif-font mb-4">AI写作助手</h3>
+                <p class="text-gray-400 mb-4">让写作变得更智能、更高效、更有趣</p>
+                <p class="text-sm text-gray-500">© 2025 AI写作助手. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 高级设置区域 -->
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                        <svg class="w-6 h-6 text-orange-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        数据与备份
+                    </h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-medium text-gray-800">数据导出</h4>
+                        
+                        <button onclick="exportAllData()" class="w-full bg-blue-100 text-blue-800 py-3 px-4 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            导出所有数据
+                        </button>
+                        
+                        <button onclick="exportWritingHistory()" class="w-full bg-green-100 text-green-800 py-3 px-4 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
+                            导出写作历史
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-medium text-gray-800">数据清理</h4>
+                        
+                        <button onclick="clearCache()" class="w-full bg-yellow-100 text-yellow-800 py-3 px-4 rounded-lg hover:bg-yellow-200 transition-colors text-sm font-medium">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            清除缓存
+                        </button>
+                        
+                        <button onclick="clearOldFiles()" class="w-full bg-orange-100 text-orange-800 py-3 px-4 rounded-lg hover:bg-orange-200 transition-colors text-sm font-medium">
+                            清理旧文件
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-medium text-gray-800">危险操作</h4>
+                        
+                        <button onclick="resetAllData()" class="w-full bg-red-100 text-red-800 py-3 px-4 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.232 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            重置所有数据
+                        </button>
+                        
+                        <button onclick="deleteAccount()" class="w-full bg-red-200 text-red-900 py-3 px-4 rounded-lg hover:bg-red-300 transition-colors text-sm font-medium border-2 border-red-400">
+                            删除账户
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold serif-font mb-4">AI写作助手</h3>
+                <p class="text-gray-400 mb-4">让写作变得更智能、更高效、更有趣</p>
+                <p class="text-sm text-gray-500">© 2025 AI写作助手. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 数据管理函数
+        function exportAllData() {
+            const data = {
+                settings: getCurrentSettings(),
+                documents: JSON.parse(localStorage.getItem('ai_writing_documents') || '[]'),
+                statistics: JSON.parse(localStorage.getItem('writing_statistics') || '{}'),
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ai-writing-backup.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('✅ 数据已导出', 'success');
+        }
+        
+        function exportWritingHistory() {
+            // 实现写作历史导出
+            showNotification('✅ 写作历史已导出', 'success');
+        }
+        
+        function clearCache() {
+            if (confirm('确定要清除所有缓存吗？这将删除临时文件和缓存数据。')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                showNotification('✅ 缓存已清除', 'success');
+            }
+        }
+        
+        function clearOldFiles() {
+            if (confirm('确定要清理30天前的旧文件吗？')) {
+                // 实现旧文件清理逻辑
+                showNotification('✅ 旧文件已清理', 'success');
+            }
+        }
+        
+        function resetAllData() {
+            if (confirm('⚠️ 警告：此操作将删除所有数据并恢复默认设置，确定继续吗？')) {
+                if (confirm('⚠️ 最后确认：此操作不可撤销，确定要重置所有数据吗？')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            }
+        }
+        
+        function deleteAccount() {
+            const confirmation = prompt('请输入 "DELETE MY ACCOUNT" 来确认删除账户：');
+            if (confirmation === 'DELETE MY ACCOUNT') {
+                showNotification('🚫 账户删除功能暂未实现', 'error');
+            } else if (confirmation) {
+                showNotification('❌ 确认文字不正确', 'error');
+            }
+        }
+        
+        // 导出函数供HTML使用
+        window.exportAllData = exportAllData;
+        window.exportWritingHistory = exportWritingHistory;
+        window.clearCache = clearCache;
+        window.clearOldFiles = clearOldFiles;
+        window.resetAllData = resetAllData;
+        window.deleteAccount = deleteAccount;
+            interface: {
+                themeColor: '#F6AD55',
+                fontSize: 16,
+                language: 'zh-CN',
+                darkMode: false,
+                animations: true
+            },
+            notifications: {
+                writingReminder: true,
+                aiSuggestions: true,
+                achievement: true,
+                productUpdates: true,
+                reminderTime: '09:00'
+            },
+            data: {
+                cloudSync: true
+            }
+        };
+
+        // 初始化设置页面
+        function initializeSettings() {
+            loadSettings();
+            setupEventListeners();
+            setupAnimations();
+        }
+
+        // 加载设置
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('ai_writing_settings');
+            if (savedSettings) {
+                settings = { ...settings, ...JSON.parse(savedSettings) };
+            }
+
+            // 应用设置到界面
+            applySettingsToUI();
+        }
+
+        // 应用设置到UI
+        function applySettingsToUI() {
+            // 个人资料
+            document.getElementById('username').value = settings.personal.username;
+            document.getElementById('email').value = settings.personal.email;
+            document.getElementById('writing-field').value = settings.personal.writingField;
+            document.getElementById('bio').value = settings.personal.bio;
+
+            // 写作偏好
+            document.querySelector(`input[name="writing-style"][value="${settings.writing.writingStyle}"]`).checked = true;
+            document.getElementById('default-doc-type').value = settings.writing.defaultDocType;
+            document.getElementById('target-word-count').value = settings.writing.targetWordCount;
+            document.getElementById('auto-save').checked = settings.writing.autoSave;
+            document.getElementById('grammar-check').checked = settings.writing.grammarCheck;
+
+            // AI助手设置
+            document.getElementById('ai-suggestion-frequency').value = settings.ai.suggestionFrequency;
+            document.getElementById('ai-creativity').value = settings.ai.creativity;
+            document.querySelector(`input[name="ai-language"][value="${settings.ai.language}"]`).checked = true;
+            document.getElementById('smart-continue').checked = settings.ai.smartContinue;
+            document.getElementById('inspiration-tips').checked = settings.ai.inspirationTips;
+
+            // 界面设置
+            document.getElementById('font-size').value = settings.interface.fontSize;
+            document.getElementById('font-size-value').textContent = settings.interface.fontSize + 'px';
+            document.getElementById('interface-language').value = settings.interface.language;
+            document.getElementById('dark-mode').checked = settings.interface.darkMode;
+            document.getElementById('animations').checked = settings.interface.animations;
+
+            // 通知设置
+            document.getElementById('writing-reminder').checked = settings.notifications.writingReminder;
+            document.getElementById('ai-suggestions-notification').checked = settings.notifications.aiSuggestions;
+            document.getElementById('achievement-notification').checked = settings.notifications.achievement;
+            document.getElementById('product-updates').checked = settings.notifications.productUpdates;
+            document.getElementById('reminder-time').value = settings.notifications.reminderTime;
+
+            // 数据管理
+            document.getElementById('cloud-sync').checked = settings.data.cloudSync;
+
+            // 主题颜色
+            updateThemeColor(settings.interface.themeColor);
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 字体大小滑块
+            document.getElementById('font-size').addEventListener('input', (e) => {
+                document.getElementById('font-size-value').textContent = e.target.value + 'px';
+            });
+
+            // 所有输入变化时保存设置
+            document.querySelectorAll('input, select, textarea').forEach(element => {
+                element.addEventListener('change', saveSettingsFromUI);
+            });
+        }
+
+        // 从UI保存设置
+        function saveSettingsFromUI() {
+            // 个人资料
+            settings.personal.username = document.getElementById('username').value;
+            settings.personal.email = document.getElementById('email').value;
+            settings.personal.writingField = document.getElementById('writing-field').value;
+            settings.personal.bio = document.getElementById('bio').value;
+
+            // 写作偏好
+            settings.writing.writingStyle = document.querySelector('input[name="writing-style"]:checked').value;
+            settings.writing.defaultDocType = document.getElementById('default-doc-type').value;
+            settings.writing.targetWordCount = parseInt(document.getElementById('target-word-count').value);
+            settings.writing.autoSave = document.getElementById('auto-save').checked;
+            settings.writing.grammarCheck = document.getElementById('grammar-check').checked;
+
+            // AI助手设置
+            settings.ai.suggestionFrequency = document.getElementById('ai-suggestion-frequency').value;
+            settings.ai.creativity = parseInt(document.getElementById('ai-creativity').value);
+            settings.ai.language = document.querySelector('input[name="ai-language"]:checked').value;
+            settings.ai.smartContinue = document.getElementById('smart-continue').checked;
+            settings.ai.inspirationTips = document.getElementById('inspiration-tips').checked;
+
+            // 界面设置
+            settings.interface.fontSize = parseInt(document.getElementById('font-size').value);
+            settings.interface.language = document.getElementById('interface-language').value;
+            settings.interface.darkMode = document.getElementById('dark-mode').checked;
+            settings.interface.animations = document.getElementById('animations').checked;
+
+            // 通知设置
+            settings.notifications.writingReminder = document.getElementById('writing-reminder').checked;
+            settings.notifications.aiSuggestions = document.getElementById('ai-suggestions-notification').checked;
+            settings.notifications.achievement = document.getElementById('achievement-notification').checked;
+            settings.notifications.productUpdates = document.getElementById('product-updates').checked;
+            settings.notifications.reminderTime = document.getElementById('reminder-time').value;
+
+            // 数据管理
+            settings.data.cloudSync = document.getElementById('cloud-sync').checked;
+
+            // 保存到localStorage
+            localStorage.setItem('ai_writing_settings', JSON.stringify(settings));
+        }
+
+        // 保存所有设置
+        function saveAllSettings() {
+            saveSettingsFromUI();
+            
+            // 显示保存成功动画
+            const button = event.target;
+            anime({
+                targets: button,
+                scale: [1, 1.1, 1],
+                backgroundColor: ['#F6AD55', '#38A169', '#F6AD55'],
+                duration: 800,
+                easing: 'easeInOutQuad'
+            });
+
+            // 显示通知
+            showNotification('设置已保存', 'success');
+        }
+
+        // 选择颜色
+        function selectColor(color, element) {
+            // 移除所有选中状态
+            document.querySelectorAll('.color-picker').forEach(picker => {
+                picker.classList.remove('selected');
+            });
+            
+            // 添加选中状态
+            element.classList.add('selected');
+            
+            // 更新设置
+            settings.interface.themeColor = color;
+            updateThemeColor(color);
+            
+            // 保存设置
+            saveSettingsFromUI();
+        }
+
+        // 更新主题颜色
+        function updateThemeColor(color) {
+            document.documentElement.style.setProperty('--secondary-color', color);
+        }
+
+        // 数据管理函数
+        function exportData() {
+            const data = {
+                settings: settings,
+                documents: JSON.parse(localStorage.getItem('ai_writing_documents') || '[]'),
+                templates: JSON.parse(localStorage.getItem('ai_writing_templates') || '[]'),
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ai-writing-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showNotification('数据导出成功', 'success');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            
+                            // 恢复设置
+                            if (data.settings) {
+                                settings = { ...settings, ...data.settings };
+                                localStorage.setItem('ai_writing_settings', JSON.stringify(settings));
+                            }
+                            
+                            // 恢复文档
+                            if (data.documents) {
+                                localStorage.setItem('ai_writing_documents', JSON.stringify(data.documents));
+                            }
+                            
+                            // 恢复模板
+                            if (data.templates) {
+                                localStorage.setItem('ai_writing_templates', JSON.stringify(data.templates));
+                            }
+                            
+                            applySettingsToUI();
+                            showNotification('数据导入成功', 'success');
+                        } catch (error) {
+                            showNotification('数据导入失败，请检查文件格式', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function clearCache() {
+            // 清除缓存数据
+            const keysToKeep = ['ai_writing_settings', 'ai_writing_documents'];
+            const allKeys = Object.keys(localStorage);
+            
+            allKeys.forEach(key => {
+                if (!keysToKeep.includes(key)) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
+            showNotification('缓存已清除', 'success');
+        }
+
+        function resetSettings() {
+            if (confirm('确定要重置所有设置吗？此操作不可撤销。')) {
+                localStorage.removeItem('ai_writing_settings');
+                location.reload();
+            }
+        }
+
+        // 通知函数
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 显示动画
+            anime({
+                targets: notification,
+                translateX: [300, 0],
+                opacity: [0, 1],
+                duration: 500,
+                easing: 'easeOutExpo'
+            });
+            
+            // 3秒后自动消失
+            setTimeout(() => {
+                anime({
+                    targets: notification,
+                    translateX: [0, 300],
+                    opacity: [1, 0],
+                    duration: 500,
+                    easing: 'easeInExpo',
+                    complete: () => {
+                        document.body.removeChild(notification);
+                    }
+                });
+            }, 3000);
+        }
+
+        // 设置动画
+        function setupAnimations() {
+            // 设置卡片动画
+            anime({
+                targets: '.settings-card',
+                translateY: [50, 0],
+                opacity: [0, 1],
+                delay: anime.stagger(200),
+                duration: 800,
+                easing: 'easeOutExpo'
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initializeSettings);
+    </script>
+</body>
+</html>

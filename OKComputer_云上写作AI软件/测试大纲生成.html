@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大纲生成功能测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="story-creation-agent.js"></script>
+    <style>
+        body { font-family: 'Noto Sans SC', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">🎯 大纲生成功能测试</h1>
+        
+        <!-- 测试区域 -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">📝 大纲生成测试</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">故事类型</label>
+                    <select id="story-genre" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        <option value="">请选择类型</option>
+                        <option value="romance">言情小说</option>
+                        <option value="fantasy">玄幻小说</option>
+                        <option value="mystery">悬疑推理</option>
+                        <option value="historical">历史小说</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">故事主题</label>
+                    <input type="text" id="story-theme" placeholder="例如：冒险、爱情、成长" 
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">主角设定</label>
+                    <input type="text" id="story-protagonist" placeholder="描述您的主角" 
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                </div>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button onclick="testAIOutline()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    🤖 AI生成大纲
+                </button>
+                <button onclick="testTemplateOutline()" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                    📋 使用模板大纲
+                </button>
+                <button onclick="testStoryAgent()" class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition-colors">
+                    🧪 测试故事代理
+                </button>
+            </div>
+        </div>
+        
+        <!-- 结果显示区域 -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">📊 生成结果</h2>
+            <div id="result-container" class="text-sm text-gray-700">
+                <p class="text-gray-500 italic">点击上方按钮开始测试...</p>
+            </div>
+        </div>
+        
+        <!-- 状态显示 -->
+        <div id="loading-indicator" class="hidden fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg">
+            正在处理中...
+        </div>
+    </div>
+
+    <script>
+        // 初始化故事创作代理
+        let storyCreationAgent = null;
+        
+        try {
+            if (typeof StoryCreationAgent !== 'undefined') {
+                storyCreationAgent = new StoryCreationAgent();
+                console.log('✅ 故事创作代理初始化成功');
+            } else {
+                console.error('❌ StoryCreationAgent 未找到');
+            }
+        } catch (error) {
+            console.error('❌ 故事创作代理初始化失败:', error);
+        }
+        
+        function showLoading(message) {
+            const indicator = document.getElementById('loading-indicator');
+            indicator.textContent = message;
+            indicator.classList.remove('hidden');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading-indicator').classList.add('hidden');
+        }
+        
+        function showResult(title, content) {
+            const container = document.getElementById('result-container');
+            container.innerHTML = `
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">${title}</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 测试AI大纲生成
+        async function testAIOutline() {
+            const genre = document.getElementById('story-genre').value;
+            const theme = document.getElementById('story-theme').value;
+            const protagonist = document.getElementById('story-protagonist').value;
+            
+            if (!genre || !theme) {
+                showResult('❌ 错误', '<p class="text-red-600">请填写故事类型和主题</p>');
+                return;
+            }
+            
+            try {
+                showLoading('🤖 AI正在生成大纲...');
+                
+                if (!storyCreationAgent) {
+                    throw new Error('故事创作代理未初始化');
+                }
+                
+                const query = `创作一个${genre}类型的故事，主题是${theme}${protagonist ? '，主角是' + protagonist : ''}，请生成故事大纲`;
+                const result = await storyCreationAgent.processUserInput(query);
+                
+                hideLoading();
+                
+                if (result && result.type === 'plot_planning') {
+                    let outlineHTML = '';
+                    if (result.outline && result.outline.length > 0) {
+                        outlineHTML = result.outline.map((item, index) => `
+                            <div class="border-l-4 border-blue-500 pl-4 mb-3">
+                                <h4 class="font-medium text-blue-700">${item.phase}</h4>
+                                <p class="text-gray-600">${item.description}</p>
+                                ${item.keyEvents ? `
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        <strong>关键事件：</strong>${item.keyEvents.join('、')}
+                                    </p>
+                                ` : ''}
+                            </div>
+                        `).join('');
+                    } else {
+                        outlineHTML = '<p class="text-gray-500">暂无大纲内容</p>';
+                    }
+                    
+                    showResult('🤖 AI大纲生成结果', outlineHTML);
+                } else if (result && result.suggestions) {
+                    const suggestionsHTML = result.suggestions.map(suggestion => `
+                        <div class="border-l-4 border-green-500 pl-4 mb-2">
+                            <p>• ${suggestion}</p>
+                        </div>
+                    `).join('');
+                    
+                    showResult('🤖 AI建议结果', suggestionsHTML);
+                } else {
+                    showResult('🤖 AI响应', `<pre>${JSON.stringify(result, null, 2)}</pre>`);
+                }
+                
+            } catch (error) {
+                hideLoading();
+                showResult('❌ 生成失败', `<p class="text-red-600">错误：${error.message}</p>`);
+            }
+        }
+        
+        // 测试模板大纲
+        function testTemplateOutline() {
+            const genre = document.getElementById('story-genre').value;
+            const theme = document.getElementById('story-theme').value;
+            const protagonist = document.getElementById('story-protagonist').value;
+            
+            if (!genre || !theme) {
+                showResult('❌ 错误', '<p class="text-red-600">请填写故事类型和主题</p>');
+                return;
+            }
+            
+            const templateOutline = generateDefaultOutline(genre, theme, protagonist);
+            showResult('📋 模板大纲结果', templateOutline);
+        }
+        
+        // 测试故事代理
+        async function testStoryAgent() {
+            if (!storyCreationAgent) {
+                showResult('❌ 错误', '<p class="text-red-600">故事创作代理未初始化</p>');
+                return;
+            }
+            
+            try {
+                showLoading('🧪 正在测试故事代理...');
+                
+                const testQuery = '我想写一个玄幻小说';
+                const result = await storyCreationAgent.processUserInput(testQuery);
+                
+                hideLoading();
+                showResult('🧪 故事代理测试', `
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium text-gray-800">输入查询：</h4>
+                            <p class="text-gray-600">${testQuery}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800">AI响应：</h4>
+                            <pre class="bg-gray-100 p-3 rounded text-xs overflow-auto">${JSON.stringify(result, null, 2)}</pre>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800">响应类型：</h4>
+                            <p class="text-blue-600 font-medium">${result.type || '未知'}</p>
+                        </div>
+                    </div>
+                `);
+                
+            } catch (error) {
+                hideLoading();
+                showResult('❌ 测试失败', `<p class="text-red-600">错误：${error.message}</p>`);
+            }
+        }
+        
+        // 生成默认大纲模板
+        function generateDefaultOutline(genre, theme, protagonist) {
+            const genreOutlines = {
+                romance: {
+                    title: '言情小说大纲',
+                    outline: `
+                        <div class="space-y-3">
+                            <div class="border-l-4 border-pink-500 pl-3">
+                                <h4 class="font-medium text-pink-700">第一章：初遇</h4>
+                                <p>主角${protagonist || '她'}在一个偶然的机会中遇到了命中注定的人，故事由此展开...</p>
+                            </div>
+                            <div class="border-l-4 border-pink-500 pl-3">
+                                <h4 class="font-medium text-pink-700">第二章：情感萌芽</h4>
+                                <p>两人通过日常接触逐渐了解彼此，${theme}开始在两人之间产生微妙的化学反应...</p>
+                            </div>
+                            <div class="border-l-4 border-pink-500 pl-3">
+                                <h4 class="font-medium text-pink-700">第三章：波折出现</h4>
+                                <p>感情发展遇到阻碍，可能是误会、外界因素或是内心的犹豫...</p>
+                            </div>
+                            <div class="border-l-4 border-pink-500 pl-3">
+                                <h4 class="font-medium text-pink-700">第四章：解决与成长</h4>
+                                <p>经历波折后，主角们学会了成长，最终找到了属于他们的幸福...</p>
+                            </div>
+                        </div>
+                    `
+                },
+                fantasy: {
+                    title: '玄幻小说大纲',
+                    outline: `
+                        <div class="space-y-3">
+                            <div class="border-l-4 border-purple-500 pl-3">
+                                <h4 class="font-medium text-purple-700">第一章：平凡世界的觉醒</h4>
+                                <p>主角${protagonist || '他'}原本过着平凡的生活，直到某天发现了自己不平凡的能力...</p>
+                            </div>
+                            <div class="border-l-4 border-purple-500 pl-3">
+                                <h4 class="font-medium text-purple-700">第二章：踏上冒险之旅</h4>
+                                <p>为了拯救世界或寻找真相，主角踏上充满${theme}的冒险之路...</p>
+                            </div>
+                            <div class="border-l-4 border-purple-500 pl-3">
+                                <h4 class="font-medium text-purple-700">第三章：试炼与成长</h4>
+                                <p>面对各种挑战和敌人，主角不断成长，学会掌控自己的力量...</p>
+                            </div>
+                            <div class="border-l-4 border-purple-500 pl-3">
+                                <h4 class="font-medium text-purple-700">第四章：最终决战</h4>
+                                <p>主角与最终的敌人展开决战，${theme}达到最高潮，世界的命运悬于一线...</p>
+                            </div>
+                            <div class="border-l-4 border-purple-500 pl-3">
+                                <h4 class="font-medium text-purple-700">第五章：新的开始</h4>
+                                <p>战争结束，世界恢复和平，主角也找到了自己真正的使命...</p>
+                            </div>
+                        </div>
+                    `
+                }
+            };
+            
+            const selectedOutline = genreOutlines[genre] || genreOutlines.fantasy;
+            return `
+                <h4 class="font-semibold text-lg text-gray-800 mb-3">${selectedOutline.title}</h4>
+                ${selectedOutline.outline}
+                <div class="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p class="text-sm text-yellow-800">
+                        <strong>创作提示：</strong>这是一个基础大纲模板，你可以根据${theme}的主题自由发挥，
+                        在每个章节中添加更多细节和对话，让故事更加生动有趣。
+                    </p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
