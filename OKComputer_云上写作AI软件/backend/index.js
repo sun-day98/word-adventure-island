@@ -27,6 +27,11 @@ const { createDatabaseConnection } = require('./config/database');
 const { setupLogger } = require('./utils/logger');
 const { registerCustomFunctions } = require('./functions/custom-functions');
 const { setupAuthMiddleware } = require('./middleware/auth');
+const { fullDatabaseInitialization } = require('./utils/database-init');
+
+// 导入新的路由
+const authRoutes = require('./routes/auth');
+const projectRoutes = require('./routes/projects');
 
 // 创建Express应用
 const app = express();
@@ -79,13 +84,8 @@ async function initializeDatabase() {
   try {
     logger.info('🚀 正在初始化数据库连接...');
     
-    // 连接数据库
-    const connection = await createDatabaseConnection(dbConfig);
-    logger.info('✅ 数据库连接成功');
-    
-    // 创建数据库表结构
-    await createTables(connection);
-    logger.info('✅ 数据库表结构创建完成');
+    // 使用完整的数据库初始化流程
+    const connection = await fullDatabaseInitialization(dbConfig);
     
     return connection;
     
@@ -93,7 +93,17 @@ async function initializeDatabase() {
     logger.error('❌ 数据库初始化失败:', error);
     // 如果没有数据库配置，创建内存数据库模拟
     logger.warn('⚠️ 使用内存存储模式（未配置数据库）');
-    return null;
+    
+    // 仍然尝试使用旧的初始化方法作为后备
+    try {
+      const connection = await createDatabaseConnection(dbConfig);
+      await createTables(connection);
+      logger.info('✅ 使用旧方法成功初始化数据库');
+      return connection;
+    } catch (fallbackError) {
+      logger.warn('⚠️ 旧方法也失败，使用内存存储模式');
+      return null;
+    }
   }
 }
 
@@ -235,6 +245,10 @@ async function startServer() {
     
     // 设置自定义API路由
     setupAPIRoutes(app, dbConnection);
+    
+    // 添加新的数据库API路由
+    app.use('/api/v2/auth', authRoutes);
+    app.use('/api/v2/projects', projectRoutes);
     
     // 健康检查接口
     app.get('/health', (req, res) => {

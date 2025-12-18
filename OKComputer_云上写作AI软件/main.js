@@ -1723,8 +1723,143 @@ function getModeName(mode) {
 
 // ================== 原有函数继续 ==================
 
+// 登录注册相关函数
+function showLoginModal() {
+    document.getElementById('login-modal').classList.remove('hidden');
+}
+
+function closeLoginModal() {
+    document.getElementById('login-modal').classList.add('hidden');
+}
+
+function showRegisterModal() {
+    document.getElementById('register-modal').classList.remove('hidden');
+}
+
+function closeRegisterModal() {
+    document.getElementById('register-modal').classList.add('hidden');
+}
+
+function switchToRegister() {
+    closeLoginModal();
+    showRegisterModal();
+}
+
+function switchToLogin() {
+    closeRegisterModal();
+    showLoginModal();
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    
+    if (!username || !password) {
+        showNotification('请填写用户名和密码', 'error');
+        return;
+    }
+    
+    try {
+        const success = await dbIntegration.login(username, password);
+        
+        if (success) {
+            closeLoginModal();
+            updateUserInterface();
+            showNotification('登录成功！', 'success');
+        }
+    } catch (error) {
+        console.error('登录失败:', error);
+    }
+}
+
+async function handleRegister(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('register-username').value;
+    const email = document.getElementById('register-email').value;
+    const displayName = document.getElementById('register-displayname').value;
+    const password = document.getElementById('register-password').value;
+    
+    if (!username || !email || !password) {
+        showNotification('请填写必填项', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showNotification('密码长度至少6位', 'error');
+        return;
+    }
+    
+    try {
+        const success = await dbIntegration.register({
+            username,
+            email,
+            displayName,
+            password
+        });
+        
+        if (success) {
+            closeRegisterModal();
+            showLoginModal();
+        }
+    } catch (error) {
+        console.error('注册失败:', error);
+    }
+}
+
+function toggleUserMenu() {
+    const menu = document.getElementById('user-menu');
+    menu.classList.toggle('hidden');
+}
+
+function showUserProfile() {
+    document.getElementById('user-menu').classList.add('hidden');
+    showNotification('个人资料功能开发中...', 'info');
+}
+
+function updateUserInterface() {
+    const status = dbIntegration.getStatus();
+    const loginButtons = document.getElementById('login-buttons');
+    const userInfo = document.getElementById('user-info');
+    const usernameDisplay = document.getElementById('username-display');
+    const syncIndicator = document.getElementById('sync-indicator');
+    const syncText = document.getElementById('sync-text');
+    
+    if (status.currentUser) {
+        // 已登录状态
+        loginButtons.classList.add('hidden');
+        userInfo.classList.remove('hidden');
+        usernameDisplay.textContent = status.currentUser.username;
+        
+        if (status.onlineMode) {
+            syncIndicator.className = 'w-2 h-2 bg-green-500 rounded-full';
+            syncText.textContent = '已同步';
+        } else {
+            syncIndicator.className = 'w-2 h-2 bg-yellow-500 rounded-full';
+            syncText.textContent = '离线';
+        }
+    } else {
+        // 未登录状态
+        loginButtons.classList.remove('hidden');
+        userInfo.classList.add('hidden');
+        
+        syncIndicator.className = 'w-2 h-2 bg-gray-400 rounded-full';
+        syncText.textContent = '离线';
+    }
+}
+
+// 定期更新用户界面状态
+setInterval(updateUserInterface, 5000);
+
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+// 等待数据库集成初始化完成后更新界面
+setTimeout(() => {
+    updateUserInterface();
+}, 2000);
 
 // 故事创作工具函数
 function openStoryCreator() {

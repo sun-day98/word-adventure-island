@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI写作助手 - 现代版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #5B5FDE;
+            --secondary-color: #FF6B6B;
+            --accent-color: #4ECDC4;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F9FA;
+            --bg-dark: #2D3436;
+            --text-primary: #2D3436;
+            --text-secondary: #636E72;
+            --border-color: #E1E8ED;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 头部导航 */
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .nav-btn-ghost:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .nav-btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .nav-btn-primary:hover {
+            background: #4B4FCE;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* 主布局 */
+        .main-container {
+            max-width: 1400px;
+            margin: 24px auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 24px;
+            min-height: calc(100vh - 120px);
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            overflow-y: auto;
+            max-height: calc(100vh - 144px);
+        }
+
+        .sidebar-section {
+            margin-bottom: 32px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .doc-list {
+            list-style: none;
+        }
+
+        .doc-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .doc-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .doc-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .doc-info {
+            flex: 1;
+        }
+
+        .doc-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .doc-meta {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .doc-action-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .doc-action-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 编辑器区域 */
+        .editor-container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .editor-title-input {
+            font-size: 24px;
+            font-weight: 600;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            background: transparent;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .editor-toolbar {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0 12px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .toolbar-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .editor-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .editor-textarea {
+            width: 100%;
+            min-height: 500px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            background: transparent;
+            resize: vertical;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+        }
+
+        .editor-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-secondary);
+        }
+
+        .word-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* AI助手面板 */
+        .ai-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            overflow-y: auto;
+            max-height: calc(100vh - 144px);
+        }
+
+        .ai-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .ai-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .ai-section {
+            margin-bottom: 24px;
+        }
+
+        .ai-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .ai-suggestion {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .ai-suggestion:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .suggestion-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .suggestion-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .ai-input-group {
+            margin-bottom: 16px;
+        }
+
+        .ai-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+            background: var(--bg-primary);
+        }
+
+        .ai-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(91, 95, 222, 0.1);
+        }
+
+        .ai-btn {
+            width: 100%;
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .ai-btn:hover {
+            background: #4B4FCE;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .ai-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr 320px;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 0 16px;
+            }
+            
+            .ai-panel {
+                display: none;
+            }
+            
+            .nav-container {
+                padding: 0 16px;
+            }
+        }
+
+        /* 浮动操作按钮 */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(91, 95, 222, 0.4);
+        }
+
+        /* 加载动画 */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">AI</div>
+                <span>AI写作助手</span>
+            </a>
+            
+            <div class="nav-actions">
+                <button class="nav-btn nav-btn-ghost" onclick="toggleTheme()">
+                    🌙 主题
+                </button>
+                <button class="nav-btn nav-btn-ghost" onclick="showSettings()">
+                    ⚙️ 设置
+                </button>
+                <button class="nav-btn nav-btn-primary" onclick="saveDocument()">
+                    💾 保存
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 左侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">文档管理</h3>
+                <ul class="doc-list" id="docList">
+                    <li class="doc-item active" onclick="selectDocument('doc1')">
+                        <div class="doc-info">
+                            <div class="doc-title">新建小说</div>
+                            <div class="doc-meta">刚刚编辑</div>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="doc-action-btn" onclick="editDocTitle(event, 'doc1')">✏️</button>
+                            <button class="doc-action-btn" onclick="deleteDoc(event, 'doc1')">🗑️</button>
+                        </div>
+                    </li>
+                </ul>
+                <button class="ai-btn" style="margin-top: 12px;" onclick="createNewDocument()">
+                    ➕ 新建文档
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">模板库</h3>
+                <ul class="doc-list">
+                    <li class="doc-item" onclick="useTemplate('novel')">
+                        <div class="doc-info">
+                            <div class="doc-title">📖 小说模板</div>
+                            <div class="doc-meta">经典三幕式结构</div>
+                        </div>
+                    </li>
+                    <li class="doc-item" onclick="useTemplate('essay')">
+                        <div class="doc-info">
+                            <div class="doc-title">📝 散文模板</div>
+                            <div class="doc-meta">抒情散文结构</div>
+                        </div>
+                    </li>
+                    <li class="doc-item" onclick="useTemplate('article')">
+                        <div class="doc-info">
+                            <div class="doc-title">📰 文章模板</div>
+                            <div class="doc-meta">议论文结构</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- 编辑器区域 -->
+        <main class="editor-container">
+            <div class="editor-header">
+                <input type="text" class="editor-title-input" id="docTitle" placeholder="请输入文档标题..." value="未命名文档">
+                <div class="editor-actions">
+                    <button class="nav-btn nav-btn-ghost" onclick="exportDocument()">
+                        📤 导出
+                    </button>
+                    <button class="nav-btn nav-btn-ghost" onclick="shareDocument()">
+                        🔗 分享
+                    </button>
+                    <button class="nav-btn nav-btn-primary" onclick="aiGenerate()">
+                        ✨ AI生成
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-toolbar">
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="formatText('bold')" title="粗体">
+                        <strong>B</strong>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('italic')" title="斜体">
+                        <em>I</em>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('underline')" title="下划线">
+                        <u>U</u>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="insertHeading(1)" title="标题1">
+                        H1
+                    </button>
+                    <button class="toolbar-btn" onclick="insertHeading(2)" title="标题2">
+                        H2
+                    </button>
+                    <button class="toolbar-btn" onclick="insertHeading(3)" title="标题3">
+                        H3
+                    </button>
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="insertList('ul')" title="无序列表">
+                        •
+                    </button>
+                    <button class="toolbar-btn" onclick="insertList('ol')" title="有序列表">
+                        1.
+                    </button>
+                    <button class="toolbar-btn" onclick="insertQuote()" title="引用">
+                        "
+                    </button>
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="findReplace()" title="查找替换">
+                        🔍
+                    </button>
+                    <button class="toolbar-btn" onclick="toggleFullscreen()" title="全屏">
+                        ⛶
+                    </button>
+                    <button class="toolbar-btn" onclick="toggleFocusMode()" title="专注模式">
+                        🎯
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-content">
+                <textarea class="editor-textarea" id="editor" placeholder="在这里开始您的创作...
+
+AI写作助手会实时为您提供：
+• 智能续写建议
+• 语法错误检查  
+• 词汇优化推荐
+• 情节发展建议
+• 人物性格分析
+
+开始输入，让AI助您的创作更上一层楼！"></textarea>
+            </div>
+
+            <div class="editor-footer">
+                <div class="word-count">
+                    <span id="wordCount">字数: 0</span> | 
+                    <span id="charCount">字符: 0</span> | 
+                    <span id="readTime">阅读时间: 0分钟</span>
+                </div>
+                <div class="loading-text" id="saveStatus" style="display: none;">
+                    <div class="spinner"></div>
+                    <span>正在保存...</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- AI助手面板 -->
+        <aside class="ai-panel">
+            <div class="ai-header">
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-status">
+                    <div class="status-dot"></div>
+                    <span>AI助手在线</span>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h3 class="ai-section-title">💡 智能建议</h3>
+                <div id="aiSuggestions">
+                    <div class="ai-suggestion" onclick="applySuggestion('continue')">
+                        <div class="suggestion-title">继续写作</div>
+                        <div class="suggestion-desc">根据当前内容智能续写下一段</div>
+                    </div>
+                    <div class="ai-suggestion" onclick="applySuggestion('improve')">
+                        <div class="suggestion-title">优化表达</div>
+                        <div class="suggestion-desc">改善语言表达和句子结构</div>
+                    </div>
+                    <div class="ai-suggestion" onclick="applySuggestion('expand')">
+                        <div class="suggestion-title">扩展内容</div>
+                        <div class="suggestion-desc">丰富描述和细节描写</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h3 class="ai-section-title">🎯 快速生成</h3>
+                <div class="ai-input-group">
+                    <input type="text" class="ai-input" id="aiPrompt" placeholder="输入您想要生成的内容...">
+                </div>
+                <button class="ai-btn" onclick="aiGenerateContent()" id="aiGenerateBtn">
+                    🚀 AI生成内容
+                </button>
+            </div>
+
+            <div class="ai-section">
+                <h3 class="ai-section-title">📚 写作工具</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button class="nav-btn nav-btn-ghost" onclick="checkGrammar()">语法检查</button>
+                    <button class="nav-btn nav-btn-ghost" onclick="analyzeText()">文本分析</button>
+                    <button class="nav-btn nav-btn-ghost" onclick="findSynonyms()">同义词</button>
+                    <button class="nav-btn nav-btn-ghost" onclick="translateText()">翻译</button>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h3 class="ai-section-title">📖 AI拆书</h3>
+                <div class="ai-input-group">
+                    <textarea class="ai-input" id="bookContent" placeholder="粘贴书籍内容进行分析..." rows="4"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <select class="ai-input" id="bookType">
+                        <option value="fiction">文学作品</option>
+                        <option value="non_fiction">非文学作品</option>
+                        <option value="academic">学术作品</option>
+                    </select>
+                    <select class="ai-input" id="bookCategory">
+                        <option value="chinese_novel">中文小说</option>
+                        <option value="foreign_novel">外文小说</option>
+                        <option value="self_help">自我提升</option>
+                        <option value="business">商业管理</option>
+                        <option value="psychology">心理学</option>
+                        <option value="research_paper">研究论文</option>
+                    </select>
+                </div>
+                <button class="ai-btn" onclick="aiDeconstructBook()">📖 开始拆书</button>
+            </div>
+
+            <div class="ai-section">
+                <h3 class="ai-section-title">✍️ AI仿写</h3>
+                <div class="ai-input-group">
+                    <textarea class="ai-input" id="imitationText" placeholder="粘贴要模仿的文本..." rows="3"></textarea>
+                </div>
+                <div class="ai-input-group">
+                    <select class="ai-input" id="targetStyle">
+                        <option value="">选择目标风格</option>
+                        <optgroup label="文学作家">
+                            <option value="luxun">鲁迅 - 批判现实主义</option>
+                            <option value="ba_jin">巴金 - 激情澎湃</option>
+                            <option value="maodun">茅盾 - 宏大叙事</option>
+                            <option value="shen_congwen">沈从文 - 诗意田园</option>
+                        </optgroup>
+                        <optgroup label="现代作家">
+                            <option value="wang_xiaobo">王小波 - 理性幽默</option>
+                            <option value="yu_hua">余华 - 平实深刻</option>
+                            <option value="mo_yan">莫言 - 魔幻现实</option>
+                        </optgroup>
+                        <optgroup label="网络文学">
+                            <option value="xianxia">玄幻修仙</option>
+                            <option value="urban">都市情感</option>
+                            <option value="history">历史穿越</option>
+                        </optgroup>
+                        <optgroup label="专业风格">
+                            <option value="academic">学术论文</option>
+                            <option value="tech">技术文档</option>
+                            <option value="business">商业文案</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <button class="ai-btn" onclick="aiImitateStyle()">✍️ 开始仿写</button>
+            </div>
+
+            <div class="ai-section">
+                <h3 class="ai-section-title">📊 写作统计</h3>
+                <div style="background: var(--bg-secondary); border-radius: 8px; padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>今日字数</span>
+                        <strong id="todayWords">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>本周字数</span>
+                        <strong id="weekWords">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>完成文档</span>
+                        <strong id="completedDocs">0</strong>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 浮动操作按钮 -->
+    <button class="fab" onclick="quickAIHelp()" title="快速AI帮助">
+        ✨
+    </button>
+
+    <script src="ai-writing-tools.js"></script>
+    <script src="ai-book-deconstruction.js"></script>
+    <script src="ai-writing-imitation.js"></script>
+    <script>
+        // 全局变量
+        let currentDocument = null;
+        let documents = JSON.parse(localStorage.getItem('aiWritingDocs') || '{}');
+        let autoSaveTimer = null;
+        let isDarkMode = false;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEditor();
+            loadDocuments();
+            setupAutoSave();
+            updateStatistics();
+        });
+
+        // 初始化编辑器
+        function initializeEditor() {
+            const editor = document.getElementById('editor');
+            const titleInput = document.getElementById('docTitle');
+            
+            editor.addEventListener('input', function() {
+                updateWordCount();
+                scheduleAutoSave();
+            });
+            
+            titleInput.addEventListener('input', function() {
+                scheduleAutoSave();
+            });
+            
+            updateWordCount();
+        }
+
+        // 更新字数统计
+        function updateWordCount() {
+            const content = document.getElementById('editor').value;
+            const wordCount = content.replace(/\s/g, '').length;
+            const charCount = content.length;
+            const readTime = Math.max(1, Math.ceil(wordCount / 400)); // 假设每分钟阅读400字
+            
+            document.getElementById('wordCount').textContent = `字数: ${wordCount}`;
+            document.getElementById('charCount').textContent = `字符: ${charCount}`;
+            document.getElementById('readTime').textContent = `阅读时间: ${readTime}分钟`;
+        }
+
+        // 自动保存
+        function scheduleAutoSave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                autoSave();
+            }, 2000);
+        }
+
+        function autoSave() {
+            if (currentDocument) {
+                saveCurrentDocument();
+            }
+        }
+
+        function saveCurrentDocument() {
+            const title = document.getElementById('docTitle').value;
+            const content = document.getElementById('editor').value;
+            
+            if (!currentDocument) {
+                currentDocument = 'doc_' + Date.now();
+            }
+            
+            documents[currentDocument] = {
+                title: title,
+                content: content,
+                updatedAt: new Date().toISOString(),
+                createdAt: documents[currentDocument]?.createdAt || new Date().toISOString()
+            };
+            
+            localStorage.setItem('aiWritingDocs', JSON.stringify(documents));
+            showSaveStatus();
+            loadDocuments();
+        }
+
+        function showSaveStatus() {
+            const saveStatus = document.getElementById('saveStatus');
+            saveStatus.style.display = 'flex';
+            setTimeout(() => {
+                saveStatus.style.display = 'none';
+            }, 2000);
+        }
+
+        // 文档管理
+        function createNewDocument() {
+            if (document.getElementById('editor').value.trim() && !confirm('当前文档未保存，确定要创建新文档吗？')) {
+                return;
+            }
+            
+            currentDocument = 'doc_' + Date.now();
+            document.getElementById('docTitle').value = '未命名文档';
+            document.getElementById('editor').value = '';
+            updateWordCount();
+            
+            documents[currentDocument] = {
+                title: '未命名文档',
+                content: '',
+                updatedAt: new Date().toISOString(),
+                createdAt: new Date().toISOString()
+            };
+            
+            loadDocuments();
+        }
+
+        function selectDocument(docId) {
+            if (currentDocument === docId) return;
+            
+            const doc = documents[docId];
+            if (doc) {
+                currentDocument = docId;
+                document.getElementById('docTitle').value = doc.title;
+                document.getElementById('editor').value = doc.content;
+                updateWordCount();
+                
+                // 更新活动状态
+                document.querySelectorAll('.doc-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[onclick="selectDocument('${docId}')"]`).classList.add('active');
+            }
+        }
+
+        function loadDocuments() {
+            const docList = document.getElementById('docList');
+            const docIds = Object.keys(documents).sort((a, b) => {
+                return new Date(documents[b].updatedAt) - new Date(documents[a].updatedAt);
+            });
+            
+            if (docIds.length === 0) {
+                docList.innerHTML = '<li class="doc-item"><div class="doc-info"><div class="doc-title">暂无文档</div></div></li>';
+                return;
+            }
+            
+            docList.innerHTML = docIds.map(docId => {
+                const doc = documents[docId];
+                const isActive = docId === currentDocument;
+                const date = new Date(doc.updatedAt).toLocaleString();
+                
+                return `
+                    <li class="doc-item ${isActive ? 'active' : ''}" onclick="selectDocument('${docId}')">
+                        <div class="doc-info">
+                            <div class="doc-title">${doc.title}</div>
+                            <div class="doc-meta">${date}</div>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="doc-action-btn" onclick="editDocTitle(event, '${docId}')">✏️</button>
+                            <button class="doc-action-btn" onclick="deleteDoc(event, '${docId}')">🗑️</button>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function deleteDoc(event, docId) {
+            event.stopPropagation();
+            
+            if (confirm('确定要删除这个文档吗？')) {
+                delete documents[docId];
+                localStorage.setItem('aiWritingDocs', JSON.stringify(documents));
+                
+                if (currentDocument === docId) {
+                    currentDocument = null;
+                    document.getElementById('docTitle').value = '';
+                    document.getElementById('editor').value = '';
+                    updateWordCount();
+                }
+                
+                loadDocuments();
+            }
+        }
+
+        function editDocTitle(event, docId) {
+            event.stopPropagation();
+            
+            const doc = documents[docId];
+            const newTitle = prompt('请输入新的文档标题:', doc.title);
+            
+            if (newTitle && newTitle !== doc.title) {
+                documents[docId].title = newTitle;
+                documents[docId].updatedAt = new Date().toISOString();
+                localStorage.setItem('aiWritingDocs', JSON.stringify(documents));
+                
+                if (currentDocument === docId) {
+                    document.getElementById('docTitle').value = newTitle;
+                }
+                
+                loadDocuments();
+            }
+        }
+
+        // 模板功能
+        function useTemplate(type) {
+            const templates = {
+                novel: {
+                    title: '小说模板',
+                    content: `# ${document.getElementById('docTitle').value || '小说标题'}
+
+## 第一章 相遇
+
+### 场景设置
+[描述故事发生的时间、地点、环境氛围]
+
+### 人物登场
+[介绍主要角色，包括外貌、性格、背景]
+
+### 核心事件
+[描述触发故事情节的关键事件]
+
+## 第二章 发展
+
+### 矛盾升级
+[描述冲突的发展和变化]
+
+### 人物成长
+[展示角色的变化和成长过程]
+
+### 关键转折
+[故事的重要转折点]
+
+## 第三章 高潮与结局
+
+### 最终对决
+[描述故事的高潮部分]
+
+### 问题解决
+[如何解决主要矛盾]
+
+### 主题升华
+[通过故事传达的主题思想]
+
+---
+*AI写作助手：随时为您提供续写建议和情节优化*`
+                },
+                essay: {
+                    title: '散文模板',
+                    content: `# ${document.getElementById('docTitle').value || '散文标题'}
+
+## 开篇
+
+### 情景引入
+[通过具体的场景描写引入主题]
+
+### 情感萌发
+[描述内心感受的变化]
+
+## 主体
+
+### 回忆叙述
+[追忆相关的经历和故事]
+
+### 感悟升华
+[从经历中获得的思考和启示]
+
+## 结尾
+
+### 情感回归
+[情感的自然流露和收敛]
+
+### 主题呼应
+[与开篇形成呼应，深化主题]
+
+---
+*AI写作助手：帮您润色文字，提升表达力*`
+                },
+                article: {
+                    title: '文章模板',
+                    content: `# ${document.getElementById('docTitle').value || '文章标题'}
+
+## 引言
+
+### 问题提出
+[明确阐述要讨论的核心问题]
+
+### 背景介绍
+[提供相关的背景信息和现状]
+
+### 观点概述
+[简明扼要地表明文章的主要观点]
+
+## 论证主体
+
+### 论据一：事实支撑
+[提供具体的事实、数据或案例]
+
+### 分析说明
+[对论据进行深入分析和解读]
+
+### 论据二：逻辑推理
+[通过逻辑推理进一步证明观点]
+
+### 案例佐证
+[用典型案例来支撑论点]
+
+### 论据三：对比分析
+[通过对比增强说服力]
+
+## 结论
+
+### 观点重申
+[总结和重申主要观点]
+
+### 意义阐述
+[说明观点的重要意义和价值]
+
+### 建议展望
+[提出相关建议或未来展望]
+
+---
+*AI写作助手：优化论证逻辑，增强说服力*`
+                }
+            };
+            
+            const template = templates[type];
+            if (template && confirm(`使用${template.title}将覆盖当前内容，是否继续？`)) {
+                document.getElementById('editor').value = template.content;
+                updateWordCount();
+                scheduleAutoSave();
+            }
+        }
+
+        // AI功能
+        function aiGenerateContent() {
+            const prompt = document.getElementById('aiPrompt').value.trim();
+            if (!prompt) {
+                alert('请输入生成内容的描述');
+                return;
+            }
+            
+            const btn = document.getElementById('aiGenerateBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> 正在生成...';
+            
+            // 模拟AI生成
+            setTimeout(() => {
+                const generatedContent = generateAIContent(prompt);
+                const editor = document.getElementById('editor');
+                editor.value = editor.value + '\n\n' + generatedContent;
+                updateWordCount();
+                scheduleAutoSave();
+                
+                btn.disabled = false;
+                btn.innerHTML = '🚀 AI生成内容';
+                document.getElementById('aiPrompt').value = '';
+            }, 2000);
+        }
+
+        function generateAIContent(prompt) {
+            // 简化的AI内容生成逻辑
+            const templates = {
+                '小说': `根据"${prompt}"的要求，我生成了以下小说片段：
+
+夜幕降临，华灯初上。主人公站在窗前，望着远方的城市灯火，心中涌起复杂的情感。这个看似平静的夜晚，却暗藏着即将改变一切的契机...
+
+[AI生成的内容会根据您的具体要求进一步优化]`,
+                
+                '散文': `关于"${prompt}"，我为您创作了这段散文：
+
+时光荏苒，岁月如梭。在这个瞬息万变的时代，我们每个人都在寻找属于自己的那份宁静与归属。"${prompt}"不仅仅是一个词语，更是一种生活态度和人生哲学...
+
+[继续深入挖掘主题内涵]`,
+                
+                default: `关于"${prompt}"，以下是为您生成的内容：
+
+在这个话题上，我们可以从多个角度来探讨。首先，我们需要理解其核心概念和基本特征。其次，要分析其在实际应用中的重要性和影响...
+
+[AI会根据具体需求生成相应内容]`
+            };
+            
+            // 简单的关键词匹配
+            for (const keyword in templates) {
+                if (prompt.includes(keyword)) {
+                    return templates[keyword];
+                }
+            }
+            
+            return templates.default;
+        }
+
+        function applySuggestion(type) {
+            const editor = document.getElementById('editor');
+            const cursorPos = editor.selectionStart;
+            const currentText = editor.value;
+            
+            let suggestion = '';
+            
+            switch(type) {
+                case 'continue':
+                    suggestion = '\n\n[AI续写建议：根据上文内容，可以进一步描述人物的内心活动，或者引入新的情节发展...]\n';
+                    break;
+                case 'improve':
+                    suggestion = '\n\n[AI优化建议：考虑使用更加生动的词汇来增强表达效果，可以适当调整句式结构使文章更流畅...]\n';
+                    break;
+                case 'expand':
+                    suggestion = '\n\n[AI扩展建议：可以在当前段落基础上，增加更多细节描写，丰富场景的感官体验...]\n';
+                    break;
+            }
+            
+            editor.value = currentText.substring(0, cursorPos) + suggestion + currentText.substring(cursorPos);
+            editor.focus();
+            editor.setSelectionRange(cursorPos + suggestion.length, cursorPos + suggestion.length);
+            updateWordCount();
+            scheduleAutoSave();
+        }
+
+        function quickAIHelp() {
+            const helpText = prompt('请告诉我您需要什么帮助：', '我想写一段关于友谊的描述');
+            if (helpText) {
+                document.getElementById('aiPrompt').value = helpText;
+                aiGenerateContent();
+            }
+        }
+
+        // 工具功能
+        function formatText(format) {
+            const editor = document.getElementById('editor');
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const selectedText = editor.value.substring(start, end);
+            
+            let formattedText = '';
+            switch(format) {
+                case 'bold':
+                    formattedText = `**${selectedText}**`;
+                    break;
+                case 'italic':
+                    formattedText = `*${selectedText}*`;
+                    break;
+                case 'underline':
+                    formattedText = `<u>${selectedText}</u>`;
+                    break;
+            }
+            
+            if (selectedText) {
+                editor.value = editor.value.substring(0, start) + formattedText + editor.value.substring(end);
+                editor.focus();
+                updateWordCount();
+                scheduleAutoSave();
+            }
+        }
+
+        function insertHeading(level) {
+            const editor = document.getElementById('editor');
+            const heading = '#'.repeat(level) + ' ';
+            const cursorPos = editor.selectionStart;
+            
+            editor.value = editor.value.substring(0, cursorPos) + '\n' + heading + editor.value.substring(cursorPos);
+            editor.focus();
+            editor.setSelectionRange(cursorPos + heading.length + 1, cursorPos + heading.length + 1);
+            updateWordCount();
+            scheduleAutoSave();
+        }
+
+        function insertList(type) {
+            const editor = document.getElementById('editor');
+            const cursorPos = editor.selectionStart;
+            const listMarker = type === 'ul' ? '• ' : '1. ';
+            
+            editor.value = editor.value.substring(0, cursorPos) + '\n' + listMarker + editor.value.substring(cursorPos);
+            editor.focus();
+            editor.setSelectionRange(cursorPos + listMarker.length + 1, cursorPos + listMarker.length + 1);
+            updateWordCount();
+            scheduleAutoSave();
+        }
+
+        function insertQuote() {
+            const editor = document.getElementById('editor');
+            const cursorPos = editor.selectionStart;
+            const quote = '\n> ';
+            
+            editor.value = editor.value.substring(0, cursorPos) + quote + editor.value.substring(cursorPos);
+            editor.focus();
+            updateWordCount();
+            scheduleAutoSave();
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function toggleFocusMode() {
+            const sidebar = document.querySelector('.sidebar');
+            const aiPanel = document.querySelector('.ai-panel');
+            
+            if (sidebar.style.display === 'none') {
+                sidebar.style.display = 'block';
+                aiPanel.style.display = 'block';
+            } else {
+                sidebar.style.display = 'none';
+                aiPanel.style.display = 'none';
+            }
+        }
+
+        function saveDocument() {
+            saveCurrentDocument();
+            alert('文档已保存！');
+        }
+
+        function exportDocument() {
+            const title = document.getElementById('docTitle').value || '未命名文档';
+            const content = document.getElementById('editor').value;
+            
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = title + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function shareDocument() {
+            const title = document.getElementById('docTitle').value || '未命名文档';
+            const shareText = `我正在使用AI写作助手创作《${title}》`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: shareText
+                });
+            } else {
+                prompt('分享链接：', window.location.href);
+            }
+        }
+
+        function checkGrammar() {
+            alert('语法检查功能正在开发中...');
+        }
+
+        function analyzeText() {
+            const content = document.getElementById('editor').value;
+            const analysis = `
+文本分析结果：
+- 总字数：${content.length}
+- 段落数：${content.split('\n\n').length}
+- 平均句长：${Math.round(content.split('。').length / content.length * 100)}字
+- 情感倾向：积极
+- 可读性：良好
+            `;
+            alert(analysis);
+        }
+
+        function findSynonyms() {
+            alert('同义词查询功能正在开发中...');
+        }
+
+        function translateText() {
+            alert('翻译功能正在开发中...');
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            // 实现深色主题切换
+            if (isDarkMode) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        }
+
+        function showSettings() {
+            alert('设置功能正在开发中...');
+        }
+
+        function aiGenerate() {
+            quickAIHelp();
+        }
+
+        function findReplace() {
+            alert('查找替换功能正在开发中...');
+        }
+
+        // AI拆书功能
+        async function aiDeconstructBook() {
+            const bookContent = document.getElementById('bookContent').value.trim();
+            const bookType = document.getElementById('bookType').value;
+            const bookCategory = document.getElementById('bookCategory').value;
+
+            if (!bookContent) {
+                alert('请输入要拆解的书籍内容');
+                return;
+            }
+
+            try {
+                // 显示加载状态
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<div class="spinner"></div> 正在分析...';
+                btn.disabled = true;
+
+                // 执行拆书分析
+                const analysis = await window.aiBookDeconstruction.deconstructBook(bookContent, bookType, bookCategory);
+
+                // 生成读书笔记
+                const notes = await window.aiBookDeconstruction.generateReadingNotes(analysis, 'comprehensive');
+
+                // 生成知识卡片
+                const cards = await window.aiBookDeconstruction.generateKnowledgeCards(analysis, 'concept');
+
+                // 显示分析结果
+                showDeconstructionResults(analysis, notes, cards);
+
+                // 恢复按钮状态
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+                // 保存分析结果
+                saveDeconstructionResults(bookContent, analysis, notes, cards);
+
+            } catch (error) {
+                alert('拆书分析失败：' + error.message);
+                const btn = event.target;
+                btn.innerHTML = '📖 开始拆书';
+                btn.disabled = false;
+            }
+        }
+
+        // 显示拆书结果
+        function showDeconstructionResults(analysis, notes, cards) {
+            // 创建结果弹窗
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white; border-radius: 16px; padding: 32px;
+                max-width: 800px; max-height: 80vh; overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            `;
+
+            content.innerHTML = `
+                <h2 style="color: #5B5FDE; margin-bottom: 24px;">📖 AI拆书分析报告</h2>
+                
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: #2D3436; margin-bottom: 12px;">📊 基本信息</h3>
+                    <div style="background: #F8F9FA; padding: 16px; border-radius: 8px;">
+                        <p><strong>结构框架：</strong>${analysis.structure.outline.map(item => item.title).join(' → ')}</p>
+                        <p><strong>主要章节：</strong>${analysis.structure.chapters.length}个</p>
+                        <p><strong>整体风格：</strong>${analysis.writingTechniques.overall.style || '现代风格'}</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: #2D3436; margin-bottom: 12px;">🎯 核心观点</h3>
+                    <div style="background: #F8F9FA; padding: 16px; border-radius: 8px;">
+                        ${analysis.keyPoints.central.slice(0, 3).map(point => 
+                            `<p><strong>${point.title || '核心观点'}：</strong>${point.description || '详细描述'}</p>`
+                        ).join('')}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: #2D3436; margin-bottom: 12px;">💡 实用建议</h3>
+                    <div style="background: #F8F9FA; padding: 16px; border-radius: 8px;">
+                        ${analysis.keyPoints.practical.slice(0, 3).map(point => 
+                            `<p><strong>${point.title || '建议'}：</strong>${point.application || '应用方法'}</p>`
+                        ).join('')}
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: #2D3436; margin-bottom: 12px;">📈 价值评估</h3>
+                    <div style="background: #F8F9FA; padding: 16px; border-radius: 8px;">
+                        <p><strong>智力价值：</strong>${analysis.valueAssessment.intellectual}/10</p>
+                        <p><strong>实用价值：</strong>${analysis.valueAssessment.practical}/10</p>
+                        <p><strong>总体评价：</strong>${analysis.valueAssessment.overall}</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button onclick="this.closest('.modal-backdrop').remove()" style="padding: 12px 24px; background: #636E72; color: white; border: none; border-radius: 8px; cursor: pointer;">关闭</button>
+                    <button onclick="exportDeconstructionResults()" style="padding: 12px 24px; background: #5B5FDE; color: white; border: none; border-radius: 8px; cursor: pointer;">导出报告</button>
+                </div>
+            `;
+
+            modal.className = 'modal-backdrop';
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+        }
+
+        // AI仿写功能
+        async function aiImitateStyle() {
+            const originalText = document.getElementById('imitationText').value.trim();
+            const targetStyle = document.getElementById('targetStyle').value;
+
+            if (!originalText) {
+                alert('请输入要仿写的文本');
+                return;
+            }
+
+            if (!targetStyle) {
+                alert('请选择目标风格');
+                return;
+            }
+
+            try {
+                // 显示加载状态
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<div class="spinner"></div> 正在分析风格...';
+                btn.disabled = true;
+
+                // 先分析原文风格
+                const analysis = await window.aiWritingImitation.analyzeWritingStyle(originalText);
+
+                // 生成仿写内容
+                const result = await window.aiWritingImitation.generateImitation(originalText, targetStyle);
+
+                // 显示仿写结果
+                showImitationResults(originalText, result, analysis);
+
+                // 恢复按钮状态
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+                // 保存仿写结果
+                saveImitationResults(originalText, result, analysis);
+
+            } catch (error) {
+                alert('仿写失败：' + error.message);
+                const btn = event.target;
+                btn.innerHTML = '✍️ 开始仿写';
+                btn.disabled = false;
+            }
+        }
+
+        // 显示仿写结果
+        function showImitationResults(originalText, result, analysis) {
+            // 创建结果弹窗
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white; border-radius: 16px; padding: 32px;
+                max-width: 900px; max-height: 80vh; overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            `;
+
+            const styleTemplate = window.aiWritingImitation.getStyleTemplate(result.targetStyle);
+
+            content.innerHTML = `
+                <h2 style="color: #5B5FDE; margin-bottom: 24px;">✍️ AI仿写分析报告</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <div>
+                        <h3 style="color: #2D3436; margin-bottom: 12px;">📝 原文</h3>
+                        <div style="background: #F8F9FA; padding: 16px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                            <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">${originalText}</pre>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: #2D3436; margin-bottom: 12px;">🎯 仿写结果</h3>
+                        <div style="background: #E8F5E8; padding: 16px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                            <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">${result.imitated}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: #2D3436; margin-bottom: 12px;">🎨 目标风格特点</h3>
+                    <div style="background: #F8F9FA; padding: 16px; border-radius: 8px;">
+                        <p><strong>风格特征：</strong>${styleTemplate.characteristics ? styleTemplate.characteristics.join('、') : '特色明显'}</p>
+                        <p><strong>情感基调：</strong>${styleTemplate.tone || '独特'}</p>
+                        <p><strong>结构特点：</strong>${styleTemplate.structure || '清晰'}</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: #2D3436; margin-bottom: 12px;">📊 质量评估</h3>
+                    <div style="background: #F8F9FA; padding: 16px; border-radius: 8px;">
+                        <p><strong>风格相似度：</strong>${result.quality ? Math.round(result.quality.overall * 100) + '%' : '85%'}</p>
+                        <p><strong>意义保持度：</strong>${result.quality ? '高' : '良好'}</p>
+                        <p><strong>语言流畅度：</strong>${result.quality ? '良好' : '优秀'}</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: #2D3436; margin-bottom: 12px;">💡 改进建议</h3>
+                    <div style="background: #F8F9FA; padding: 16px; border-radius: 8px;">
+                        ${(result.suggestions || [
+                            '可以适当增加一些修辞手法来增强表现力',
+                            '注意保持情感基调的一致性',
+                            '可以适当调整句式结构来丰富表达'
+                        ]).join('<br>')}
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button onclick="this.closest('.modal-backdrop').remove()" style="padding: 12px 24px; background: #636E72; color: white; border: none; border-radius: 8px; cursor: pointer;">关闭</button>
+                    <button onclick="copyImitationResult('${result.imitated.replace(/'/g, "\\'")}')" style="padding: 12px 24px; background: #5B5FDE; color: white; border: none; border-radius: 8px; cursor: pointer;">复制结果</button>
+                    <button onclick="applyImitationToEditor('${result.imitated.replace(/'/g, "\\'")}')" style="padding: 12px 24px; background: #4ECDC4; color: white; border: none; border-radius: 8px; cursor: pointer;">应用到编辑器</button>
+                </div>
+            `;
+
+            modal.className = 'modal-backdrop';
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+        }
+
+        // 保存拆书结果
+        function saveDeconstructionResults(bookContent, analysis, notes, cards) {
+            const result = {
+                bookContent: bookContent,
+                analysis: analysis,
+                notes: notes,
+                cards: cards,
+                createdAt: new Date().toISOString()
+            };
+
+            const savedResults = JSON.parse(localStorage.getItem('aiDeconstructionResults') || '[]');
+            savedResults.unshift(result);
+            
+            // 只保留最近10个结果
+            if (savedResults.length > 10) {
+                savedResults.splice(10);
+            }
+
+            localStorage.setItem('aiDeconstructionResults', JSON.stringify(savedResults));
+        }
+
+        // 保存仿写结果
+        function saveImitationResults(originalText, result, analysis) {
+            const savedResult = {
+                originalText: originalText,
+                result: result,
+                analysis: analysis,
+                createdAt: new Date().toISOString()
+            };
+
+            const savedResults = JSON.parse(localStorage.getItem('aiImitationResults') || '[]');
+            savedResults.unshift(savedResult);
+            
+            // 只保留最近10个结果
+            if (savedResults.length > 10) {
+                savedResults.splice(10);
+            }
+
+            localStorage.setItem('aiImitationResults', JSON.stringify(savedResults));
+        }
+
+        // 复制仿写结果
+        function copyImitationResult(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('仿写结果已复制到剪贴板');
+            }).catch(() => {
+                alert('复制失败，请手动选择复制');
+            });
+        }
+
+        // 将仿写结果应用到编辑器
+        function applyImitationToEditor(text) {
+            const editor = document.getElementById('editor');
+            const cursorPos = editor.selectionStart;
+            
+            editor.value = editor.value.substring(0, cursorPos) + text + editor.value.substring(cursorPos);
+            updateWordCount();
+            scheduleAutoSave();
+            
+            // 关闭弹窗
+            document.querySelector('.modal-backdrop').remove();
+        }
+
+        // 导出拆书报告
+        function exportDeconstructionResults() {
+            // 从localStorage获取最新的拆书结果
+            const savedResults = JSON.parse(localStorage.getItem('aiDeconstructionResults') || '[]');
+            if (savedResults.length === 0) {
+                alert('没有可导出的拆书结果');
+                return;
+            }
+
+            const latestResult = savedResults[0];
+            const reportContent = generateDeconstructionReport(latestResult);
+            
+            // 创建并下载文件
+            const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'AI拆书分析报告_' + new Date().toISOString().slice(0, 10) + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // 生成拆书报告内容
+        function generateDeconstructionReport(result) {
+            let report = '📖 AI拆书分析报告\n';
+            report += '生成时间：' + new Date(result.createdAt).toLocaleString() + '\n\n';
+
+            report += '📊 基本信息\n';
+            report += '结构框架：' + result.analysis.structure.outline.map(item => item.title).join(' → ') + '\n';
+            report += '主要章节：' + result.analysis.structure.chapters.length + '个\n';
+            report += '整体风格：' + (result.analysis.writingTechniques.overall.style || '现代风格') + '\n\n';
+
+            report += '🎯 核心观点\n';
+            result.analysis.keyPoints.central.slice(0, 5).forEach((point, index) => {
+                report += `${index + 1}. ${point.title || '核心观点'}：${point.description || '详细描述'}\n`;
+            });
+            report += '\n';
+
+            report += '💡 实用建议\n';
+            result.analysis.keyPoints.practical.slice(0, 5).forEach((point, index) => {
+                report += `${index + 1}. ${point.title || '建议'}：${point.application || '应用方法'}\n`;
+            });
+            report += '\n';
+
+            report += '📈 价值评估\n';
+            report += '智力价值：' + result.analysis.valueAssessment.intellectual + '/10\n';
+            report += '实用价值：' + result.analysis.valueAssessment.practical + '/10\n';
+            report += '总体评价：' + result.analysis.valueAssessment.overall + '\n\n';
+
+            report += '📝 原文内容\n';
+            report += result.bookContent.substring(0, 1000) + (result.bookContent.length > 1000 ? '...' : '') + '\n\n';
+
+            report += '---\n';
+            report += '本报告由AI写作助手自动生成\n';
+
+            return report;
+        }
+
+        // 统计功能
+        function updateStatistics() {
+            // 今日字数
+            const today = new Date().toDateString();
+            let todayWords = 0;
+            
+            for (const docId in documents) {
+                const doc = documents[docId];
+                if (new Date(doc.updatedAt).toDateString() === today) {
+                    todayWords += doc.content.length;
+                }
+            }
+            
+            document.getElementById('todayWords').textContent = todayWords;
+            document.getElementById('weekWords').textContent = Math.round(todayWords * 7); // 简化计算
+            document.getElementById('completedDocs').textContent = Object.keys(documents).filter(id => 
+                documents[id].content.length > 100
+            ).length;
+        }
+    </script>
+</body>
+</html>

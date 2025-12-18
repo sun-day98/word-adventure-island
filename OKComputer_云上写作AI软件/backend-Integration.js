@@ -7,15 +7,25 @@
 let currentUser = null;
 let apiClient = null;
 
+// 简单的API客户端模拟
+const mockAPIClient = {
+  request: async function(method, url, data) {
+    console.log(`API请求: ${method} ${url}`, data);
+    return { success: true, data: data || {} };
+  }
+};
+
 // 初始化API客户端
 async function initializeAPIIntegration() {
   try {
     // 检查是否已有全局API客户端
-    if (typeof apiClient !== 'undefined') {
-      window.apiClient = apiClient;
+    if (typeof window.apiClient !== 'undefined') {
+      apiClient = window.apiClient;
+    } else if (typeof apiClient !== 'undefined') {
+      apiClient = apiClient;
     } else {
       console.warn('API客户端未找到，使用本地模拟');
-      return;
+      apiClient = mockAPIClient;
     }
 
     // 恢复用户会话

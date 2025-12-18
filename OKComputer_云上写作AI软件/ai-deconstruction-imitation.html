@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI拆书仿写工作台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #5B5FDE;
+            --secondary-color: #FF6B6B;
+            --accent-color: #4ECDC4;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --error-color: #EF4444;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F9FA;
+            --bg-dark: #2D3436;
+            --text-primary: #2D3436;
+            --text-secondary: #636E72;
+            --border-color: #E1E8ED;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部 */
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* 主布局 */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+            background: var(--bg-primary);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(91, 95, 222, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4B4FCE;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* 结果区域 */
+        .results-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .result-item {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .result-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* 加载动画 */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+
+        /* 标签页 */
+        .tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 统计数据 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .container {
+                padding: 16px;
+            }
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-dark);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <h1>🧠 AI拆书仿写工作台</h1>
+            <p>智能拆解书籍内容，精准模仿写作风格</p>
+        </header>
+
+        <!-- 统计数据 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="deconstructionCount">0</div>
+                <div class="stat-label">拆书次数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="imitationCount">0</div>
+                <div class="stat-label">仿写次数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="savedResults">0</div>
+                <div class="stat-label">保存结果</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgQuality">0%</div>
+                <div class="stat-label">平均质量</div>
+            </div>
+        </div>
+
+        <!-- 主工作区 -->
+        <div class="main-layout">
+            <!-- AI拆书 -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">
+                            📖 AI拆书
+                        </h2>
+                        <p class="card-description">深度分析书籍结构，提取核心要点</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">书籍内容</label>
+                    <textarea 
+                        id="bookContent" 
+                        class="form-textarea" 
+                        placeholder="粘贴要分析的书籍内容，建议包含完整的章节或段落..."
+                    ></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label">作品类型</label>
+                        <select id="bookType" class="form-select">
+                            <option value="fiction">文学作品</option>
+                            <option value="non_fiction">非文学作品</option>
+                            <option value="academic">学术作品</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">具体分类</label>
+                        <select id="bookCategory" class="form-select">
+                            <option value="chinese_novel">中文小说</option>
+                            <option value="foreign_novel">外文小说</option>
+                            <option value="self_help">自我提升</option>
+                            <option value="business">商业管理</option>
+                            <option value="psychology">心理学</option>
+                            <option value="research_paper">研究论文</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-full" onclick="startDeconstruction()">
+                        📖 开始拆书分析
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI仿写 -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">
+                            ✍️ AI仿写
+                        </h2>
+                        <p class="card-description">智能模仿写作风格，生成相似内容</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">原文内容</label>
+                    <textarea 
+                        id="imitationText" 
+                        class="form-textarea" 
+                        placeholder="粘贴要模仿风格的文本..."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">目标风格</label>
+                    <select id="targetStyle" class="form-select">
+                        <option value="">选择目标风格</option>
+                        <optgroup label="📚 文学作家">
+                            <option value="luxun">鲁迅 - 批判现实主义</option>
+                            <option value="ba_jin">巴金 - 激情澎湃</option>
+                            <option value="maodun">茅盾 - 宏大叙事</option>
+                            <option value="shen_congwen">沈从文 - 诗意田园</option>
+                        </optgroup>
+                        <optgroup label="✨ 现代作家">
+                            <option value="wang_xiaobo">王小波 - 理性幽默</option>
+                            <option value="yu_hua">余华 - 平实深刻</option>
+                            <option value="mo_yan">莫言 - 魔幻现实</option>
+                        </optgroup>
+                        <optgroup label="🌐 网络文学">
+                            <option value="xianxia">玄幻修仙</option>
+                            <option value="urban">都市情感</option>
+                            <option value="history">历史穿越</option>
+                        </optgroup>
+                        <optgroup label="💼 专业风格">
+                            <option value="academic">学术论文</option>
+                            <option value="tech">技术文档</option>
+                            <option value="business">商业文案</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-full" onclick="startImitation()">
+                        ✍️ 开始风格仿写
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果展示区 -->
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <div class="results-header">
+                <h2 class="results-title">📊 分析结果</h2>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="clearResults()">清除结果</button>
+                    <button class="btn btn-success" onclick="exportResults()">导出报告</button>
+                </div>
+            </div>
+
+            <!-- 标签页 -->
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('overview')">📋 概览</div>
+                <div class="tab" onclick="switchTab('details')">📝 详情</div>
+                <div class="tab" onclick="switchTab('history')">📚 历史</div>
+            </div>
+
+            <!-- 标签页内容 -->
+            <div id="overviewTab" class="tab-content active">
+                <div id="overviewResults">
+                    <!-- 概览结果将动态插入这里 -->
+                </div>
+            </div>
+
+            <div id="detailsTab" class="tab-content">
+                <div id="detailsResults">
+                    <!-- 详细结果将动态插入这里 -->
+                </div>
+            </div>
+
+            <div id="historyTab" class="tab-content">
+                <div id="historyResults">
+                    <!-- 历史记录将动态插入这里 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入JavaScript文件 -->
+    <script src="ai-writing-tools.js"></script>
+    <script src="ai-book-deconstruction.js"></script>
+    <script src="ai-writing-imitation.js"></script>
+    <script>
+        // 全局变量
+        let currentAnalysis = null;
+        let currentImitation = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStatistics();
+            loadHistory();
+        });
+
+        // 开始拆书分析
+        async function startDeconstruction() {
+            const bookContent = document.getElementById('bookContent').value.trim();
+            const bookType = document.getElementById('bookType').value;
+            const bookCategory = document.getElementById('bookCategory').value;
+
+            if (!bookContent) {
+                showMessage('请输入要拆解的书籍内容', 'warning');
+                return;
+            }
+
+            try {
+                showLoading('正在分析书籍结构...');
+                
+                // 执行拆书分析
+                const analysis = await window.aiBookDeconstruction.deconstructBook(bookContent, bookType, bookCategory);
+                
+                // 生成读书笔记
+                const notes = await window.aiBookDeconstruction.generateReadingNotes(analysis, 'comprehensive');
+                
+                currentAnalysis = { analysis, notes };
+                
+                // 显示结果
+                showDeconstructionResults(analysis, notes);
+                
+                // 更新统计
+                updateStatistics('deconstruction');
+                
+                // 保存结果
+                saveToHistory('deconstruction', {
+                    bookContent: bookContent.substring(0, 500) + '...',
+                    bookType: bookType,
+                    bookCategory: bookCategory,
+                    analysis: analysis,
+                    notes: notes,
+                    createdAt: new Date().toISOString()
+                });
+
+                hideLoading();
+                showMessage('拆书分析完成！', 'success');
+
+            } catch (error) {
+                hideLoading();
+                showMessage('拆书分析失败：' + error.message, 'error');
+            }
+        }
+
+        // 开始仿写
+        async function startImitation() {
+            const originalText = document.getElementById('imitationText').value.trim();
+            const targetStyle = document.getElementById('targetStyle').value;
+
+            if (!originalText) {
+                showMessage('请输入要仿写的文本', 'warning');
+                return;
+            }
+
+            if (!targetStyle) {
+                showMessage('请选择目标风格', 'warning');
+                return;
+            }
+
+            try {
+                showLoading('正在分析风格并生成仿写...');
+                
+                // 执行仿写
+                const result = await window.aiWritingImitation.generateImitation(originalText, targetStyle);
+                
+                currentImitation = result;
+                
+                // 显示结果
+                showImitationResults(result);
+                
+                // 更新统计
+                updateStatistics('imitation');
+                
+                // 保存结果
+                saveToHistory('imitation', {
+                    originalText: originalText,
+                    targetStyle: targetStyle,
+                    result: result,
+                    createdAt: new Date().toISOString()
+                });
+
+                hideLoading();
+                showMessage('仿写完成！', 'success');
+
+            } catch (error) {
+                hideLoading();
+                showMessage('仿写失败：' + error.message, 'error');
+            }
+        }
+
+        // 显示拆书结果
+        function showDeconstructionResults(analysis, notes) {
+            const resultsSection = document.getElementById('resultsSection');
+            const overviewResults = document.getElementById('overviewResults');
+            
+            resultsSection.style.display = 'block';
+            
+            let html = `
+                <div class="result-item">
+                    <h3 class="result-title">📊 结构分析</h3>
+                    <div class="result-content">
+                        <p><strong>结构框架：</strong>${analysis.structure.outline.map(item => item.title).join(' → ')}</p>
+                        <p><strong>主要章节：</strong>${analysis.structure.chapters.length}个</p>
+                        <p><strong>结构连贯性：</strong>${Math.round(analysis.structure.coherence * 100)}%</p>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <h3 class="result-title">🎯 核心观点</h3>
+                    <div class="result-content">
+                        ${analysis.keyPoints.central.slice(0, 3).map((point, index) => 
+                            `<p><strong>${index + 1}. ${point.title || '核心观点'}：</strong>${point.description || '详细描述'}</p>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <h3 class="result-title">💡 实用建议</h3>
+                    <div class="result-content">
+                        ${analysis.keyPoints.practical.slice(0, 3).map((point, index) => 
+                            `<p><strong>${index + 1}. ${point.title || '建议'}：</strong>${point.application || '应用方法'}</p>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <h3 class="result-title">📈 价值评估</h3>
+                    <div class="result-content">
+                        <p><strong>智力价值：</strong>${analysis.valueAssessment.intellectual}/10</p>
+                        <p><strong>实用价值：</strong>${analysis.valueAssessment.practical}/10</p>
+                        <p><strong>总体评价：</strong>${analysis.valueAssessment.overall}</p>
+                    </div>
+                </div>
+            `;
+            
+            overviewResults.innerHTML = html;
+        }
+
+        // 显示仿写结果
+        function showImitationResults(result) {
+            const resultsSection = document.getElementById('resultsSection');
+            const overviewResults = document.getElementById('overviewResults');
+            
+            resultsSection.style.display = 'block';
+            
+            const styleTemplate = window.aiWritingImitation.getStyleTemplate(result.targetStyle);
+            
+            let html = `
+                <div class="result-item">
+                    <h3 class="result-title">📝 原文</h3>
+                    <div class="result-content">
+                        <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">${result.original.substring(0, 500)}${result.original.length > 500 ? '...' : ''}</pre>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <h3 class="result-title">🎯 仿写结果</h3>
+                    <div class="result-content">
+                        <pre style="white-space: pre-wrap; font-family: inherit; margin: 0; background: #E8F5E8; padding: 12px; border-radius: 6px;">${result.imitated}</pre>
+                    </div>
+                    <div class="result-meta">
+                        <span>风格相似度: ${result.quality ? Math.round(result.quality.overall * 100) + '%' : '85%'}</span>
+                        <button class="btn btn-primary" onclick="copyText('${result.imitated.replace(/'/g, "\\'")}')">复制结果</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <h3 class="result-title">🎨 风格分析</h3>
+                    <div class="result-content">
+                        <p><strong>目标风格特点：</strong>${styleTemplate.characteristics ? styleTemplate.characteristics.join('、') : '特色明显'}</p>
+                        <p><strong>情感基调：</strong>${styleTemplate.tone || '独特'}</p>
+                        <p><strong>结构特点：</strong>${styleTemplate.structure || '清晰'}</p>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <h3 class="result-title">💡 改进建议</h3>
+                    <div class="result-content">
+                        ${(result.suggestions || [
+                            '可以适当增加修辞手法来增强表现力',
+                            '注意保持情感基调的一致性',
+                            '可以调整句式结构来丰富表达'
+                        ]).join('<br>')}
+                    </div>
+                </div>
+            `;
+            
+            overviewResults.innerHTML = html;
+        }
+
+        // 切换标签页
+        function switchTab(tabName) {
+            // 移除所有active类
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // 添加active类到当前标签
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // 如果是历史标签，加载历史记录
+            if (tabName === 'history') {
+                loadHistory();
+            }
+        }
+
+        // 加载统计数据
+        function loadStatistics() {
+            const deconstructionCount = localStorage.getItem('deconstructionCount') || '0';
+            const imitationCount = localStorage.getItem('imitationCount') || '0';
+            const savedResults = localStorage.getItem('savedResults') || '0';
+            
+            document.getElementById('deconstructionCount').textContent = deconstructionCount;
+            document.getElementById('imitationCount').textContent = imitationCount;
+            document.getElementById('savedResults').textContent = savedResults;
+            document.getElementById('avgQuality').textContent = '85%'; // 简化显示
+        }
+
+        // 更新统计数据
+        function updateStatistics(type) {
+            if (type === 'deconstruction') {
+                const count = parseInt(localStorage.getItem('deconstructionCount') || '0') + 1;
+                localStorage.setItem('deconstructionCount', count);
+                document.getElementById('deconstructionCount').textContent = count;
+            } else if (type === 'imitation') {
+                const count = parseInt(localStorage.getItem('imitationCount') || '0') + 1;
+                localStorage.setItem('imitationCount', count);
+                document.getElementById('imitationCount').textContent = count;
+            }
+            
+            const savedResults = parseInt(localStorage.getItem('savedResults') || '0') + 1;
+            localStorage.setItem('savedResults', savedResults);
+            document.getElementById('savedResults').textContent = savedResults;
+        }
+
+        // 保存到历史记录
+        function saveToHistory(type, data) {
+            const historyKey = type + 'History';
+            const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            history.unshift(data);
+            
+            // 只保留最近20条记录
+            if (history.length > 20) {
+                history.splice(20);
+            }
+            
+            localStorage.setItem(historyKey, JSON.stringify(history));
+        }
+
+        // 加载历史记录
+        function loadHistory() {
+            const deconstructionHistory = JSON.parse(localStorage.getItem('deconstructionHistory') || '[]');
+            const imitationHistory = JSON.parse(localStorage.getItem('imitationHistory') || '[]');
+            
+            const historyResults = document.getElementById('historyResults');
+            
+            let html = '<h3 style="margin-bottom: 16px;">📖 拆书历史</h3>';
+            
+            if (deconstructionHistory.length === 0) {
+                html += '<p style="color: var(--text-secondary);">暂无拆书历史记录</p>';
+            } else {
+                deconstructionHistory.slice(0, 5).forEach((item, index) => {
+                    html += `
+                        <div class="result-item">
+                            <h4 class="result-title">${item.bookCategory || '未分类'} - ${new Date(item.createdAt).toLocaleDateString()}</h4>
+                            <div class="result-content">
+                                <p>${item.bookContent}</p>
+                            </div>
+                            <div class="result-meta">
+                                <span>价值评估: ${item.analysis?.valueAssessment?.overall || '未评估'}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += '<h3 style="margin: 24px 0 16px;">✍️ 仿写历史</h3>';
+            
+            if (imitationHistory.length === 0) {
+                html += '<p style="color: var(--text-secondary);">暂无仿写历史记录</p>';
+            } else {
+                imitationHistory.slice(0, 5).forEach((item, index) => {
+                    html += `
+                        <div class="result-item">
+                            <h4 class="result-title">${item.targetStyle} - ${new Date(item.createdAt).toLocaleDateString()}</h4>
+                            <div class="result-content">
+                                <p><strong>原文：</strong>${item.originalText.substring(0, 100)}...</p>
+                                <p><strong>仿写：</strong>${item.result.imitated?.substring(0, 100)}...</p>
+                            </div>
+                            <div class="result-meta">
+                                <span>质量评分: ${item.result.quality ? Math.round(item.result.quality.overall * 100) + '%' : '未评估'}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            historyResults.innerHTML = html;
+        }
+
+        // 清除结果
+        function clearResults() {
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('overviewResults').innerHTML = '';
+            document.getElementById('detailsResults').innerHTML = '';
+            currentAnalysis = null;
+            currentImitation = null;
+        }
+
+        // 导出结果
+        function exportResults() {
+            if (!currentAnalysis && !currentImitation) {
+                showMessage('没有可导出的结果', 'warning');
+                return;
+            }
+
+            let content = 'AI拆书仿写分析报告\n';
+            content += '生成时间：' + new Date().toLocaleString() + '\n\n';
+
+            if (currentAnalysis) {
+                content += '📖 拆书分析结果\n';
+                content += '结构框架：' + currentAnalysis.analysis.structure.outline.map(item => item.title).join(' → ') + '\n';
+                content += '核心观点数量：' + currentAnalysis.analysis.keyPoints.central.length + '\n';
+                content += '实用价值：' + currentAnalysis.analysis.valueAssessment.practical + '/10\n\n';
+            }
+
+            if (currentImitation) {
+                content += '✍️ 仿写分析结果\n';
+                content += '目标风格：' + currentImitation.targetStyle + '\n';
+                content += '风格相似度：' + (currentImitation.quality ? Math.round(currentImitation.quality.overall * 100) + '%' : '85%') + '\n';
+                content += '仿写结果：\n' + currentImitation.imitated + '\n\n';
+            }
+
+            content += '---\n本报告由AI拆书仿写工作台自动生成';
+
+            // 创建并下载文件
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'AI拆书仿写报告_' + new Date().toISOString().slice(0, 10) + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // 复制文本
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage('文本已复制到剪贴板', 'success');
+            }).catch(() => {
+                showMessage('复制失败，请手动选择复制', 'error');
+            });
+        }
+
+        // 显示加载状态
+        function showLoading(message) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+            document.getElementById('overviewResults').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div class="spinner"></div>
+                    <p class="loading-text">${message}</p>
+                </div>
+            `;
+        }
+
+        // 隐藏加载状态
+        function hideLoading() {
+            // 加载完成后会被实际结果替换
+        }
+
+        // 显示消息
+        function showMessage(message, type) {
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 10000;
+                padding: 12px 20px; border-radius: 8px; color: white;
+                font-weight: 500; box-shadow: var(--shadow-md);
+                animation: slideIn 0.3s ease-out;
+            `;
+
+            // 根据类型设置颜色
+            const colors = {
+                'success': '#10B981',
+                'warning': '#F59E0B',
+                'error': '#EF4444'
+            };
+            messageDiv.style.background = colors[type] || colors['warning'];
+
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+
+            // 3秒后自动消失
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    document.body.removeChild(messageDiv);
+                }, 300);
+            }, 3000);
+        }
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
